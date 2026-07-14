@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calendario</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171C; --surface:#1D2129; --surface-hover:#262B35;
+    --line:#2E333D; --line-soft:#242830;
+    --text:#EDEBE4; --text-dim:#9CA3AF; --text-faint:#5E6472;
+    --gold:#C9A227; --gold-dim:#8C7420;
+    --green:#5FA777; --green-bg:rgba(95,167,119,0.12);
+    --amber:#E0A72E; --amber-bg:rgba(224,167,46,0.12);
+    --red:#C1503F; --red-bg:rgba(193,80,63,0.14);
+    --info:#7C93C9; --info-bg:rgba(124,147,201,0.12);
+    --purple:#9B87C4; --purple-bg:rgba(155,135,196,0.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(var(--line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:32px 32px; opacity:0.35;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+  .shell{ position:relative; z-index:1; display:flex; min-height:100vh; }
+
+  .sidebar{ width:230px; flex-shrink:0; border-right:1px solid var(--line); padding:28px 20px; display:flex; flex-direction:column; gap:34px; }
+  .brand-mark{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; }
+  .brand-sub{ font-size:11px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; letter-spacing:0.03em; margin-top:2px;}
+  nav{ display:flex; flex-direction:column; gap:4px; }
+  .nav-item{ display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:6px; font-size:13.5px; color:var(--text-dim); border:1px solid transparent; text-decoration:none; }
+  .nav-item .dot{ width:5px; height:5px; border-radius:50%; background:var(--text-faint); flex-shrink:0; }
+  .nav-item.active{ background:var(--surface); color:var(--text); border-color:var(--line); }
+  .nav-item.active .dot{ background:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,0.15); }
+  .nav-item.disabled{ opacity:0.4; }
+  .nav-item .tag{ margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--text-faint); }
+
+  main{ flex:1; padding:32px 40px 70px; max-width:1220px; }
+  .breadcrumb{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); margin-bottom:14px; text-decoration:none; display:block; }
+  .breadcrumb b{ color:var(--text-dim); }
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:26px; letter-spacing:-0.01em; }
+  .subtitle{ color:var(--text-dim); font-size:13.5px; margin-top:5px; margin-bottom:28px; }
+
+  .panel{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:22px; }
+  .panel h2{ font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:600; display:flex; align-items:center; gap:8px; }
+  .panel .panel-sub{ font-size:12px; color:var(--text-faint); margin-bottom:16px; }
+
+  .view-toggle{ display:flex; border:1px solid var(--line); border-radius:7px; overflow:hidden; }
+  .view-toggle button{ background:transparent; border:none; color:var(--text-dim); padding:7px 14px; font-size:12px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .view-toggle button.active{ background:var(--gold); color:#181A14; font-weight:600; }
+  .cal-nav{ display:flex; align-items:center; gap:10px; }
+  .cal-nav button{ background:transparent; border:1px solid var(--line); color:var(--text-dim); width:28px; height:28px; border-radius:6px; cursor:pointer; font-size:13px; }
+  .cal-nav button:hover{ border-color:var(--text-faint); }
+  .cal-label{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--text-dim); min-width:130px; text-align:center; }
+  .add-btn{ border:none; font-weight:600; padding:8px 14px; border-radius:6px; font-size:12.5px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .add-btn.gold{ background:var(--gold); color:#181A14; }
+  .add-btn.ghost-purple{ background:transparent; border:1px solid var(--purple); color:var(--purple); }
+  .toolbar-cal{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:12px; }
+
+  .legend{ display:flex; gap:18px; margin-top:14px; flex-wrap:wrap; }
+  .legend-item{ display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--text-faint); }
+  .legend-dot{ width:8px; height:8px; border-radius:50%; }
+  .legend-dot.marketing{ background:var(--info); }
+  .legend-dot.produccion{ background:var(--purple); }
+
+  .week-cal{ display:grid; grid-template-columns:repeat(7,1fr); gap:10px; }
+  .day-col{ border:1px solid var(--line); border-radius:9px; background:var(--bg); min-height:170px; display:flex; flex-direction:column; }
+  .day-head{ padding:9px 10px 7px; border-bottom:1px solid var(--line-soft); }
+  .day-name{ font-size:10.5px; color:var(--text-faint); letter-spacing:0.04em; font-family:'IBM Plex Mono',monospace; }
+  .day-date{ font-size:13px; font-weight:600; margin-top:1px; }
+  .day-today .day-head{ background:rgba(201,162,39,0.08); }
+  .day-today .day-date{ color:var(--gold); }
+  .day-body{ padding:8px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .evt{ font-size:10.6px; padding:6px 7px; border-radius:6px; border:1px solid var(--line); background:var(--surface); line-height:1.35; }
+  .evt.marketing{ border-left:3px solid var(--info); }
+  .evt.produccion{ border-left:3px solid var(--purple); }
+  .evt b{ display:block; font-size:10.2px; }
+  .evt .evt-sub{ color:var(--text-faint); font-size:9.5px; display:block; margin-top:1px; }
+  .day-empty{ font-size:10.5px; color:var(--text-faint); text-align:center; padding-top:14px; opacity:0.6; }
+
+  .month-cal{ display:grid; grid-template-columns:repeat(7,1fr); gap:8px; }
+  .month-dayname{ font-size:10px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; text-align:center; padding-bottom:4px; letter-spacing:0.04em; }
+  .month-cell{ border:1px solid var(--line); border-radius:8px; background:var(--bg); min-height:78px; padding:6px; display:flex; flex-direction:column; gap:3px; }
+  .month-cell.dim{ opacity:0.35; }
+  .month-cell.today{ border-color:var(--gold); }
+  .mc-date{ font-size:11px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; }
+  .month-cell.today .mc-date{ color:var(--gold); font-weight:600; }
+  .mc-dots{ display:flex; gap:3px; flex-wrap:wrap; }
+  .mc-dot{ width:6px; height:6px; border-radius:50%; }
+  .mc-dot.marketing{ background:var(--info); }
+  .mc-dot.produccion{ background:var(--purple); }
+  .mc-more{ font-size:9px; color:var(--text-faint); }
+
+  .overlay{ position:fixed; inset:0; background:rgba(10,11,14,0.65); display:flex; align-items:center; justify-content:center; z-index:10; opacity:0; pointer-events:none; transition:opacity .15s; }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+  .modal{ background:var(--surface); border:1px solid var(--line); border-radius:12px; width:460px; max-width:92vw; padding:22px; max-height:86vh; overflow-y:auto; }
+  .modal h3{ font-family:'Space Grotesk',sans-serif; font-size:16px; margin-bottom:4px; }
+  .modal .modal-sub{ font-size:12px; color:var(--text-faint); margin-bottom:14px; }
+
+  /* ficha picker */
+  .ficha-picker{ display:flex; flex-direction:column; gap:6px; max-height:230px; overflow-y:auto; border:1px solid var(--line); border-radius:8px; padding:6px; background:var(--bg); margin-bottom:16px; }
+  .ficha-row{ display:flex; align-items:center; gap:10px; padding:8px 9px; border-radius:7px; border:1px solid transparent; cursor:pointer; }
+  .ficha-row:hover{ background:var(--surface-hover); }
+  .ficha-row.selected{ border-color:var(--gold); background:rgba(201,162,39,0.08); }
+  .ficha-thumb{ width:36px; height:36px; border-radius:6px; background:linear-gradient(135deg,#2A3038,#1B1F26); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .ficha-thumb svg{ width:18px; height:18px; opacity:0.45; }
+  .ficha-info{ flex:1; min-width:0; }
+  .ficha-addr{ font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ficha-meta{ font-size:10.5px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; margin-top:1px; }
+  .ficha-check{ width:18px; height:18px; border-radius:5px; border:1.5px solid var(--text-faint); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .ficha-row.selected .ficha-check{ background:var(--gold); border-color:var(--gold); }
+  .ficha-check svg{ width:11px; height:11px; opacity:0; }
+  .ficha-row.selected .ficha-check svg{ opacity:1; }
+
+  .field{ margin-bottom:14px; }
+  .field label{ font-size:11.5px; color:var(--text-faint); display:block; margin-bottom:6px; font-family:'IBM Plex Mono',monospace; }
+  .field input{ width:100%; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:9px 11px; color:var(--text); font-size:13px; font-family:'Inter',sans-serif; }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .modal-actions{ display:flex; gap:8px; margin-top:6px; justify-content:flex-end; }
+  .btn{ padding:9px 15px; border-radius:6px; font-size:12.5px; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--text-dim); font-family:'Inter',sans-serif; }
+  .btn.primary{ background:var(--gold); border-color:var(--gold); color:#181A14; font-weight:600; }
+  .btn.primary:disabled{ opacity:0.4; cursor:not-allowed; }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div>
+      <div class="brand-mark">Panel de Propiedades</div>
+      <div class="brand-sub">JB &amp; RO · INMOBILIARIA</div>
+    </div>
+    <nav>
+      <a href="index.html" class="nav-item"><span class="dot"></span> Dashboard</a>
+      <a href="ficha-propiedad.html" class="nav-item"><span class="dot"></span> Ficha de propiedad</a>
+      <div class="nav-item active"><span class="dot"></span> Calendario</div>
+      <a href="cronograma.html" class="nav-item"><span class="dot"></span> Cronograma marketing</a>
+      <a href="contratos.html" class="nav-item"><span class="dot"></span> Generador de contratos</a>
+    </nav>
+  </aside>
+
+  <main>
+    <a href="index.html" class="breadcrumb">← <b>Dashboard</b> / Calendario</a>
+    <h1>Calendario de marketing</h1>
+    <div class="subtitle">Datos de ejemplo — publicaciones de Instagram y producciones de fotos, elegidas directo de las fichas</div>
+
+    <div class="panel">
+      <div class="toolbar-cal">
+        <div>
+          <h2>📅 Publicaciones y producciones</h2>
+          <div class="panel-sub" style="margin-bottom:0;">Las visitas con clientes se organizan en el Dashboard.</div>
+        </div>
+        <div style="display:flex; gap:8px;">
+          <button class="add-btn ghost-purple" onclick="openModal('produccion')">+ Cargar producción</button>
+          <button class="add-btn gold" onclick="openModal('marketing')">+ Cargar publicación</button>
+        </div>
+      </div>
+
+      <div class="toolbar-cal">
+        <div class="cal-nav">
+          <button onclick="navigate(-1)">‹</button>
+          <span class="cal-label" id="calLabel"></span>
+          <button onclick="navigate(1)">›</button>
+        </div>
+        <div class="view-toggle">
+          <button id="btnWeek" class="active" onclick="setView('week')">Semana</button>
+          <button id="btnMonth" onclick="setView('month')">Mes</button>
+        </div>
+      </div>
+
+      <div id="weekView" class="week-cal"></div>
+      <div id="monthView" class="month-cal" style="display:none;"></div>
+
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot marketing"></span> 📢 Publicación / Instagram</div>
+        <div class="legend-item"><span class="legend-dot produccion"></span> 📷 Producción de fotos/video</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <h3 id="modalTitle">Cargar publicación</h3>
+    <div class="modal-sub">Elegí la propiedad desde las fichas.</div>
+
+    <div class="ficha-picker" id="fichaPicker"></div>
+
+    <div class="field">
+      <label id="personLabel">NOTA (opcional)</label>
+      <input type="text" id="visitClient" placeholder="Ej: foto de portada + 5 interiores">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>FECHA</label>
+        <input type="date" id="visitDate">
+      </div>
+      <div class="field">
+        <label>HORA</label>
+        <input type="time" id="visitTime" value="10:00">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModal()">Cancelar</button>
+      <button class="btn primary" id="saveBtn" onclick="saveEvent()" disabled>Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const properties = [
+  { id:1, addr:"Los Cardales 245, Villa Allende", type:"Casa", photos:14 },
+  { id:2, addr:"Camino a Salsipuedes km 3.5", type:"Casa en Country", photos:6 },
+  { id:3, addr:"Av. Fuerza Aérea 1780, B° Golf", type:"Departamento", photos:12 },
+  { id:4, addr:"El Talar 88, Villa Allende Golf", type:"Casa en Country", photos:9 },
+  { id:5, addr:"Bº Lomas del Golf, Lote 34", type:"Casa", photos:3 },
+  { id:6, addr:"Sarmiento 512, centro Villa Allende", type:"Local/Oficina", photos:13 },
+  { id:7, addr:"Los Aromos 1440, La Toma", type:"Departamento a Estrenar", photos:11 },
+  { id:8, addr:"Av. Ricchieri 900, Villa Allende", type:"Casa", photos:8 },
+  { id:9, addr:"Country El Bosque, Lote 12", type:"Casa en Country", photos:16 },
+  { id:10,addr:"Los Sauces 310, B° Las Delicias", type:"Casa", photos:2 },
+  { id:11,addr:"Malvinas Argentinas 77", type:"Local/Oficina", photos:10 },
+  { id:12,addr:"Av. de las Américas 220", type:"Departamento", photos:7 },
+];
+
+function fmt(d){ return d.toISOString().slice(0,10); }
+function addDays(d,n){ const r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function propAddr(id){ const p = properties.find(p=>p.id===id); return p ? p.addr : '—'; }
+
+const today = new Date();
+today.setHours(0,0,0,0);
+
+let events = [
+  { type:'marketing', propertyId:1, date:fmt(addDays(today,0)) },
+  { type:'marketing', propertyId:6, date:fmt(addDays(today,0)) },
+  { type:'marketing', propertyId:9, date:fmt(addDays(today,2)) },
+  { type:'produccion', propertyId:2, note:"Fotógrafo — Nico", date:fmt(addDays(today,3)), time:"10:30" },
+  { type:'produccion', propertyId:5, note:"Fotógrafo — Nico", date:fmt(addDays(today,3)), time:"14:00" },
+  { type:'marketing', propertyId:11, date:fmt(addDays(today,5)) },
+  { type:'marketing', propertyId:3, date:fmt(addDays(today,-2)) },
+  { type:'produccion', propertyId:10, note:"Fotógrafo — Ceci", date:fmt(addDays(today,7)), time:"09:00" },
+  { type:'marketing', propertyId:6, date:fmt(addDays(today,9)) },
+];
+
+let view = 'week';
+let offset = 0;
+
+function setView(v){
+  view = v; offset = 0;
+  document.getElementById('btnWeek').classList.toggle('active', v==='week');
+  document.getElementById('btnMonth').classList.toggle('active', v==='month');
+  document.getElementById('weekView').style.display = v==='week' ? 'grid' : 'none';
+  document.getElementById('monthView').style.display = v==='month' ? 'grid' : 'none';
+  render();
+}
+function navigate(dir){ offset += dir; render(); }
+function render(){ if(view==='week') renderWeek(); else renderMonth(); }
+
+const DAY_NAMES = ['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+const MONTH_NAMES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+function renderWeek(){
+  const dow = (today.getDay()+6)%7;
+  const monday = addDays(today, -dow + offset*7);
+  document.getElementById('calLabel').textContent = `${monday.getDate()}/${monday.getMonth()+1} – ${addDays(monday,6).getDate()}/${addDays(monday,6).getMonth()+1}`;
+  const el = document.getElementById('weekView');
+  el.innerHTML = DAY_NAMES.map((name,i)=>{
+    const d = addDays(monday,i);
+    const dstr = fmt(d);
+    const isToday = dstr === fmt(today);
+    const dayEvents = events.filter(e=>e.date===dstr);
+    return `
+    <div class="day-col ${isToday?'day-today':''}">
+      <div class="day-head">
+        <div class="day-name">${name}</div>
+        <div class="day-date">${d.getDate()}/${d.getMonth()+1}</div>
+      </div>
+      <div class="day-body">
+        ${dayEvents.length ? dayEvents.map(e=>{
+          if(e.type==='marketing'){
+            return `<div class="evt marketing"><b>📢 ${propAddr(e.propertyId).split(',')[0]}</b><span class="evt-sub">Publicación</span></div>`;
+          }
+          return `<div class="evt produccion"><b>📷 ${propAddr(e.propertyId).split(',')[0]}</b><span class="evt-sub">${e.time||''} · ${e.note||''}</span></div>`;
+        }).join('') : `<div class="day-empty">—</div>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderMonth(){
+  const base = new Date(today.getFullYear(), today.getMonth()+offset, 1);
+  document.getElementById('calLabel').textContent = `${MONTH_NAMES[base.getMonth()]} ${base.getFullYear()}`;
+  const firstDow = (base.getDay()+6)%7;
+  const gridStart = addDays(base, -firstDow);
+  const daysInMonth = new Date(base.getFullYear(), base.getMonth()+1, 0).getDate();
+  const totalCells = Math.ceil((firstDow + daysInMonth)/7)*7;
+  const el = document.getElementById('monthView');
+  let html = DAY_NAMES.map(n=>`<div class="month-dayname">${n}</div>`).join('');
+  for(let i=0;i<totalCells;i++){
+    const d = addDays(gridStart, i);
+    const dstr = fmt(d);
+    const inMonth = d.getMonth() === base.getMonth();
+    const isToday = dstr === fmt(today);
+    const dayEvents = events.filter(e=>e.date===dstr);
+    const dots = dayEvents.slice(0,4).map(e=>`<span class="mc-dot ${e.type}"></span>`).join('');
+    html += `
+    <div class="month-cell ${inMonth?'':'dim'} ${isToday?'today':''}">
+      <div class="mc-date">${d.getDate()}</div>
+      <div class="mc-dots">${dots}</div>
+      ${dayEvents.length>4 ? `<div class="mc-more">+${dayEvents.length-4} más</div>` : ''}
+    </div>`;
+  }
+  el.innerHTML = html;
+}
+
+// ---- Modal with ficha picker ----
+let modalType = 'marketing';
+let selectedPropertyId = null;
+
+function houseSVG(){
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="#5E6472" stroke-width="1.4"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/><path d="M9.5 19v-5h5v5"/></svg>`;
+}
+
+function openModal(type){
+  modalType = type;
+  selectedPropertyId = null;
+  document.getElementById('modalTitle').textContent = type==='marketing' ? 'Cargar publicación' : 'Cargar producción';
+  document.getElementById('personLabel').textContent = type==='marketing' ? 'NOTA (opcional)' : 'FOTÓGRAFO / RESPONSABLE';
+  document.getElementById('visitClient').value = '';
+  document.getElementById('visitClient').placeholder = type==='marketing' ? 'Ej: foto de portada + 5 interiores' : 'Nombre del fotógrafo';
+  document.getElementById('visitDate').value = fmt(today);
+  document.getElementById('visitTime').value = '10:00';
+  document.getElementById('saveBtn').disabled = true;
+
+  const picker = document.getElementById('fichaPicker');
+  picker.innerHTML = properties.map(p => `
+    <div class="ficha-row" data-id="${p.id}" onclick="selectFicha(${p.id})">
+      <div class="ficha-thumb">${houseSVG()}</div>
+      <div class="ficha-info">
+        <div class="ficha-addr">${p.addr}</div>
+        <div class="ficha-meta">${p.type.toUpperCase()} · ${p.photos} fotos</div>
+      </div>
+      <div class="ficha-check"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+    </div>
+  `).join('');
+
+  document.getElementById('overlay').classList.add('show');
+}
+function selectFicha(id){
+  selectedPropertyId = id;
+  document.querySelectorAll('.ficha-row').forEach(r => r.classList.toggle('selected', parseInt(r.dataset.id)===id));
+  document.getElementById('saveBtn').disabled = false;
+}
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); }
+function saveEvent(){
+  if(!selectedPropertyId) return;
+  const date = document.getElementById('visitDate').value;
+  const time = document.getElementById('visitTime').value;
+  const note = document.getElementById('visitClient').value.trim();
+  if(!date){ alert('Elegí una fecha'); return; }
+  events.push({ type:modalType, propertyId:selectedPropertyId, date, time, note });
+  closeModal();
+  render();
+}
+
+render();
+</script>
+
+</body>
+</html>
