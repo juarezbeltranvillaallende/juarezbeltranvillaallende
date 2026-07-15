@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<title>Comercial · Juárez Beltrán</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E8EFF6;
+    --surface:#FFFFFF;
+    --surface-hover:#EEF3F8;
+    --line:#D3DEE8;
+    --line-soft:#E3EAF1;
+    --text:#1E2733;
+    --text-dim:#5B6675;
+    --text-faint:#8D97A6;
+    --gold:#B8860B;
+    --blue:#3B5FCC;
+    --blue-dim:#6B8CDB;
+    --blue-bg:rgba(59,95,204,0.10);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html,body{ height:100%; }
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px;
+  }
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:32px 32px;
+    opacity:0.35;
+    mask-image:radial-gradient(ellipse 70% 60% at 50% 30%, black 30%, transparent 85%);
+  }
+
+  .wrap{ position:relative; z-index:1; text-align:center; max-width:640px; width:100%; }
+
+  .logo{ width:112px; height:112px; margin:0 auto 28px; display:block; filter:drop-shadow(0 8px 24px rgba(59,95,204,0.35)); }
+
+  h1{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:34px;
+    letter-spacing:-0.01em; line-height:1.15;
+  }
+  .subtitle{
+    font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:0.25em;
+    color:var(--blue); margin-top:8px; font-weight:600;
+  }
+  .tagline{ color:var(--text-faint); font-size:13px; margin-top:18px; margin-bottom:48px; }
+
+  .sections{ display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+  @media (max-width:560px){ .sections{ grid-template-columns:1fr; } }
+
+  .section-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:16px;
+    padding:34px 24px; text-decoration:none; color:var(--text);
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    transition:border-color .15s, transform .15s, background .15s;
+  }
+  .section-card:hover{ border-color:var(--blue-dim); background:var(--surface-hover); transform:translateY(-2px); }
+  .section-icon{
+    width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    font-size:24px; margin-bottom:6px;
+  }
+  .section-card.comercial .section-icon{ background:var(--blue-bg); }
+  .section-card.admin .section-icon{ background:rgba(201,162,39,0.12); }
+  .section-title{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:17px; }
+  .section-desc{ font-size:12.5px; color:var(--text-faint); line-height:1.5; }
+
+  .footer-note{ margin-top:40px; font-size:11px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; letter-spacing:0.03em; }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="wrap">
+  <a href="index.html" style="display:inline-block; font-size:12px; color:var(--text-faint); text-decoration:none; margin-bottom:22px;">← Inicio</a>
+  <img class="logo" src="favicon-512.png" alt="Juárez Beltrán">
+  <h1>Comercial</h1>
+  <div class="subtitle">VILLA ALLENDE</div>
+  <div class="tagline">Elegí un área</div>
+
+  <div class="sections">
+    <a href="dashboard.html" class="section-card comercial">
+      <div class="section-icon">🏠</div>
+      <div class="section-title">Propiedades</div>
+      <div class="section-desc">Dashboard, alertas y fichas de cada propiedad.</div>
+    </a>
+    <a href="alertas-calendario.html" class="section-card admin">
+      <div class="section-icon">📣</div>
+      <div class="section-title">Marketing</div>
+      <div class="section-desc">Calendario de publicaciones y cronograma.</div>
+    </a>
+  </div>
+
+  <div class="footer-note">JB Roberts Otero · INMOBILIARIA</div>
+</div>
+
+</body>
+</html>

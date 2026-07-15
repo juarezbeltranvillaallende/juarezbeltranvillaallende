@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+
+<title>Panel de Propiedades</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#E8EFF6;
+    --surface:#FFFFFF;
+    --surface-hover:#EEF3F8;
+    --line:#D3DEE8;
+    --line-soft:#E3EAF1;
+    --text:#1E2733;
+    --text-dim:#5B6675;
+    --text-faint:#8D97A6;
+    --gold:#B8860B;
+    --gold-dim:#8C7420;
+    --green:#3E8A5C;
+    --green-bg:rgba(62,138,92,0.12);
+    --amber:#C08A1E;
+    --amber-bg:rgba(192,138,30,0.12);
+    --red:#C1503F;
+    --red-bg:rgba(193,80,63,0.10);
+    --info:#5C7BC7;
+    --info-bg:rgba(92,123,199,0.12);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* blueprint grid backdrop */
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(var(--line-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:32px 32px;
+    opacity:0.35;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+  .shell{ position:relative; z-index:1; display:flex; min-height:100vh; }
+
+  /* Sidebar */
+  .sidebar{
+    width:230px; flex-shrink:0;
+    border-right:1px solid var(--line);
+    padding:28px 20px;
+    display:flex; flex-direction:column; gap:34px;
+  }
+  .brand{ display:flex; flex-direction:column; gap:2px; }
+  .brand-mark{
+    font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px;
+    letter-spacing:0.02em;
+  }
+  .brand-sub{ font-size:11px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; letter-spacing:0.03em;}
+
+  nav{ display:flex; flex-direction:column; gap:4px; }
+  .nav-item{
+    display:flex; align-items:center; gap:11px;
+    padding:9px 10px; border-radius:6px;
+    font-size:13.5px; color:var(--text-dim);
+    cursor:pointer; user-select:none;
+    border:1px solid transparent;
+  }
+  .nav-item .dot{ width:5px; height:5px; border-radius:50%; background:var(--text-faint); flex-shrink:0; }
+  .nav-item.active{ background:var(--surface); color:var(--text); border-color:var(--line); }
+  .nav-item.active .dot{ background:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,0.15); }
+  .nav-item.disabled{ opacity:0.4; cursor:default; }
+  .nav-item .tag{
+    margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:9.5px;
+    color:var(--text-faint); letter-spacing:0.04em;
+  }
+
+  .sidebar-foot{ margin-top:auto; }
+  .conn-btn{
+    display:flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono',monospace; font-size:11px;
+    color:var(--text-faint); border:1px dashed var(--line);
+    border-radius:6px; padding:9px 10px; cursor:pointer;
+  }
+  .conn-btn:hover{ border-color:var(--text-faint); color:var(--text-dim); }
+  .conn-dot{ width:6px; height:6px; border-radius:50%; background:var(--red); }
+
+  /* Main */
+  main{ flex:1; padding:32px 40px 60px; max-width:1360px; }
+  .topbar{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    margin-bottom:28px; gap:20px; flex-wrap:wrap;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:26px;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{ color:var(--text-dim); font-size:13.5px; margin-top:5px; }
+
+  /* Toolbar */
+  .toolbar{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:20px; gap:16px; flex-wrap:wrap;
+  }
+  .filters{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+  /* Stat chips: alert / low-photo counters that double as filters */
+  .statchip{
+    border:1px solid var(--line); border-radius:8px;
+    padding:9px 15px; background:var(--surface);
+    cursor:pointer; display:flex; align-items:center; gap:9px;
+    font-family:'Inter',sans-serif;
+  }
+  .statchip:hover{ border-color:var(--text-faint); }
+  .statchip-num{ font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:600; color:var(--text-dim); }
+  .statchip-label{ font-size:12px; color:var(--text-dim); white-space:nowrap; }
+  .statchip.crit.selected{ border-color:var(--red); background:var(--red-bg); }
+  .statchip.crit.selected .statchip-num{ color:var(--red); }
+  .statchip.crit.selected .statchip-label{ color:var(--text); }
+  .statchip.warn.selected{ border-color:var(--amber); background:var(--amber-bg); }
+  .statchip.warn.selected .statchip-num{ color:var(--amber); }
+  .statchip.warn.selected .statchip-label{ color:var(--text); }
+  .statchip.info.selected{ border-color:var(--info); background:var(--info-bg); }
+  .statchip.info.selected .statchip-num{ color:var(--info); }
+  .statchip.info.selected .statchip-label{ color:var(--text); }
+
+  .chip{
+    font-size:12.5px; padding:7px 13px; border-radius:20px;
+    border:1px solid var(--line); color:var(--text-dim);
+    cursor:pointer; background:transparent; font-family:'Inter',sans-serif;
+    display:flex; align-items:center; gap:6px;
+  }
+  .chip:hover{ border-color:var(--text-faint); color:var(--text); }
+  .chip.active{ background:var(--surface); border-color:var(--gold-dim); color:var(--gold); }
+  .chip .count{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; opacity:0.75; }
+
+  .toolbar-right{ display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+  .sort{
+    font-size:12px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace;
+    display:flex; align-items:center; gap:8px;
+  }
+  select{
+    background:var(--surface); color:var(--text); border:1px solid var(--line);
+    border-radius:6px; padding:6px 10px; font-size:12.5px; font-family:'Inter',sans-serif;
+  }
+
+  /* Grid */
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr));
+    gap:16px;
+  }
+  .card{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; position:relative; transition:border-color .15s, transform .15s;
+    display:flex; flex-direction:column;
+  }
+  .card:hover{ border-color:var(--text-faint); }
+  .card.selected{ border-color:var(--gold-dim); box-shadow:0 0 0 1px var(--gold-dim) inset; }
+
+  .thumb{
+    height:150px; position:relative;
+    background:linear-gradient(135deg,#E3EAF1,#D3DEE8);
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+  .thumb svg{ opacity:0.5; }
+  .photo-badge{
+    position:absolute; bottom:8px; left:8px;
+    background:rgba(20,23,28,0.82); border:1px solid var(--line);
+    border-radius:5px; padding:3px 7px;
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px;
+    display:flex; align-items:center; gap:5px; color:var(--text-dim);
+  }
+  .photo-badge.low{ color:var(--amber); border-color:rgba(224,167,46,0.35); }
+
+  .select-toggle{
+    position:absolute; top:8px; right:8px;
+    width:22px; height:22px; border-radius:5px;
+    border:1px solid rgba(237,235,228,0.4); background:rgba(20,23,28,0.55);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .card.selected .select-toggle{ background:var(--gold); border-color:var(--gold); }
+  .select-toggle svg{ opacity:0; width:13px; height:13px; }
+  .card.selected .select-toggle svg{ opacity:1; }
+
+  /* Semaphore gauge */
+  .gauge{
+    position:absolute; top:8px; left:8px;
+    display:flex; align-items:center; gap:5px;
+    background:rgba(20,23,28,0.82); border:1px solid var(--line);
+    border-radius:20px; padding:3px 9px 3px 6px;
+  }
+  .gauge-dial{ width:14px; height:14px; border-radius:50%; position:relative; }
+  .gauge-dial::after{
+    content:''; position:absolute; inset:3px; border-radius:50%; background:#1B1E24;
+  }
+  .gauge.green .gauge-dial{ background:conic-gradient(var(--green) 0turn, var(--line) 0turn); }
+  .gauge.green .gauge-dial{ background:var(--green); }
+  .gauge.amber .gauge-dial{ background:var(--amber); }
+  .gauge.red .gauge-dial{ background:var(--red); }
+  .gauge.sindatos .gauge-dial{ background:var(--text-faint); }
+  .gauge.sindatos .gauge-text{ color:var(--text-faint); }
+  .gauge-text{ font-family:'IBM Plex Mono',monospace; font-size:10px; }
+  .gauge.green .gauge-text{ color:var(--green); }
+  .gauge.amber .gauge-text{ color:var(--amber); }
+  .gauge.red .gauge-text{ color:var(--red); }
+
+  .card-body{ padding:13px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1; }
+  .card-addr{ font-size:13.5px; font-weight:500; line-height:1.35; }
+  .card-meta{ font-size:11.5px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; }
+  .badname-tag{
+    font-size:10.5px; color:var(--info); background:var(--info-bg);
+    border:1px solid rgba(124,147,201,0.3); border-radius:5px;
+    padding:3px 7px; display:inline-block; width:fit-content;
+  }
+  .card-foot{
+    margin-top:auto; padding-top:9px; border-top:1px solid var(--line-soft);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .card-tag{
+    font-size:10px; text-transform:uppercase; letter-spacing:0.05em;
+    color:var(--text-faint);
+  }
+  .card-days{ font-family:'IBM Plex Mono',monospace; font-size:11px; }
+  .card-days.red{ color:var(--red); }
+  .card-days.sindatos{ color:var(--text-faint); }
+  .card-days.amber{ color:var(--amber); }
+  .card-days.green{ color:var(--green); }
+
+  /* Selection bar */
+  .selbar{
+    position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(120%);
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    padding:12px 14px 12px 20px; display:flex; align-items:center; gap:16px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.45);
+    transition:transform .25s ease; z-index:5;
+  }
+  .selbar.show{ transform:translateX(-50%) translateY(0); }
+  .selbar-text{ font-size:13px; }
+  .selbar-text b{ color:var(--gold); font-family:'IBM Plex Mono',monospace; }
+  .selbar-btn{
+    background:var(--gold); color:#181A14; border:none; border-radius:6px;
+    padding:9px 16px; font-size:12.5px; font-weight:600; cursor:pointer;
+    font-family:'Inter',sans-serif;
+  }
+  .selbar-btn.ghost{
+    background:transparent; color:var(--text-dim); border:1px solid var(--line);
+  }
+
+  /* Modal */
+  .overlay{
+    position:fixed; inset:0; background:rgba(10,11,14,0.65);
+    display:flex; align-items:center; justify-content:center;
+    z-index:10; opacity:0; pointer-events:none; transition:opacity .15s;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+  .modal{
+    background:var(--surface); border:1px solid var(--line); border-radius:12px;
+    width:400px; max-width:90vw; padding:24px;
+  }
+  .modal h3{ font-family:'Space Grotesk',sans-serif; font-size:16px; margin-bottom:6px; }
+  .modal p{ font-size:12.5px; color:var(--text-dim); line-height:1.5; margin-bottom:16px; }
+  .field{ margin-bottom:14px; }
+  .field label{ font-size:11.5px; color:var(--text-faint); display:block; margin-bottom:6px; font-family:'IBM Plex Mono',monospace; }
+  .field input{
+    width:100%; background:var(--bg); border:1px solid var(--line); border-radius:6px;
+    padding:9px 11px; color:var(--text); font-size:13px; font-family:'IBM Plex Mono',monospace;
+  }
+  .modal-actions{ display:flex; gap:8px; margin-top:18px; justify-content:flex-end; }
+  .btn{ padding:9px 15px; border-radius:6px; font-size:12.5px; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--text-dim); font-family:'Inter',sans-serif; }
+  .btn.primary{ background:var(--gold); border-color:var(--gold); color:#181A14; font-weight:600; }
+
+  .note{
+    margin-top:36px; border:1px dashed var(--line); border-radius:10px;
+    padding:16px 18px; font-size:12px; color:var(--text-faint); line-height:1.6;
+  }
+  .note b{ color:var(--text-dim); }
+
+  /* Visits panel */
+  .visits-panel{ margin-top:24px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; }
+  .visits-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px; }
+  .visits-panel h2{ font-family:'Space Grotesk',sans-serif; font-size:15px; font-weight:600; }
+  .visits-sub{ font-size:12px; color:var(--text-faint); margin-top:2px; }
+  .add-btn{ border:none; font-weight:600; padding:8px 14px; border-radius:6px; font-size:12.5px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .add-btn.gold{ background:var(--gold); color:#181A14; }
+  .visit-row{ display:flex; align-items:center; justify-content:space-between; padding:10px 12px; border:1px solid var(--line); border-radius:8px; background:var(--bg); margin-bottom:7px; }
+  .visit-row:last-child{ margin-bottom:0; }
+  .visit-left{ display:flex; align-items:center; gap:11px; }
+  .visit-icon{ width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; }
+  .visit-addr{ font-size:13px; }
+  .visit-meta{ font-size:11px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; margin-top:2px; }
+  .visit-when{ font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--green); white-space:nowrap; }
+  .visits-empty{ font-size:12.5px; color:var(--text-faint); text-align:center; padding:14px 0; }
+
+  /* Modal + ficha picker (shared pattern with calendario screen) */
+  .modal{ width:460px; max-height:86vh; overflow-y:auto; }
+  .modal .modal-sub{ font-size:12px; color:var(--text-faint); margin-bottom:14px; }
+
+  .ficha-picker{ display:flex; flex-direction:column; gap:6px; max-height:230px; overflow-y:auto; border:1px solid var(--line); border-radius:8px; padding:6px; background:var(--bg); margin-bottom:16px; }
+  .ficha-row{ display:flex; align-items:center; gap:10px; padding:8px 9px; border-radius:7px; border:1px solid transparent; cursor:pointer; }
+  .ficha-row:hover{ background:var(--surface-hover); }
+  .ficha-row.selected{ border-color:var(--gold); background:rgba(201,162,39,0.08); }
+  .ficha-thumb{ width:36px; height:36px; border-radius:6px; background:linear-gradient(135deg,#E3EAF1,#D3DEE8); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .ficha-thumb svg{ width:18px; height:18px; opacity:0.65; }
+  .ficha-info{ flex:1; min-width:0; }
+  .ficha-addr{ font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ficha-meta{ font-size:10.5px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; margin-top:1px; }
+  .ficha-check{ width:18px; height:18px; border-radius:5px; border:1.5px solid var(--text-faint); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .ficha-row.selected .ficha-check{ background:var(--gold); border-color:var(--gold); }
+  .ficha-check svg{ width:11px; height:11px; opacity:0; }
+  .ficha-row.selected .ficha-check svg{ opacity:1; }
+  .field-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  @media (max-width:780px){
+    .sidebar{ display:none; }
+    main{ padding:24px 18px 50px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <a href="index.html" style="text-decoration:none; color:inherit;">
+      <div class="brand-mark">Panel de Propiedades</div>
+      <div class="brand-sub">JB Roberts Otero · INMOBILIARIA</div>
+      </a>
+    </div>
+    <nav>
+      <a href="comercial.html" class="nav-item" style="opacity:.6;">← Comercial</a>
+      <div class="nav-item active"><span class="dot"></span> Dashboard</div>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="conn-btn" onclick="toggleModal(true)">
+        <span class="conn-dot"></span> Tokko: sin conectar
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <h1>Propiedades activas</h1>
+        <div class="subtitle" id="pageSubtitle">Conectando con Tokko…</div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <div class="filters" id="filters">
+        <button class="statchip crit" data-filter="alert" title="Necesita datos de consultas de Tokko — próximamente">
+          <span class="statchip-num" id="stat-alert">–</span>
+          <span class="statchip-label">🔴 En alerta <span style="opacity:.6;font-size:9px;">(pronto)</span></span>
+        </button>
+        <button class="statchip warn" data-filter="lowphoto">
+          <span class="statchip-num" id="stat-lowphoto">–</span>
+          <span class="statchip-label">📷 Fotos incompletas</span>
+        </button>
+        <button class="statchip info" data-filter="badname">
+          <span class="statchip-num" id="stat-badname">–</span>
+          <span class="statchip-label">📝 Nombre mal formateado</span>
+        </button>
+        <button class="chip active" data-filter="all">Todas <span class="count" id="c-all"></span></button>
+      </div>
+      <div class="toolbar-right">
+        <div class="sort">
+          TIPO
+          <select id="typeSelect">
+            <option value="all">Todos</option>
+          </select>
+        </div>
+        <div class="sort">
+          AGENTE
+          <select id="agentSelect">
+            <option value="all">Todos</option>
+          </select>
+        </div>
+        <div class="sort">
+          ORDENAR
+          <select id="sortSelect">
+            <option value="direccion">Dirección (A–Z)</option>
+            <option value="precio">Precio</option>
+            <option value="fotos">Cantidad de fotos</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <div class="note">
+      <b>Cómo leer el semáforo:</b> verde = recibió consultas en los últimos 15 días · ámbar = entre 15 y 30 días sin consultas · rojo = más de 30 días sin consultas, necesita empuje de marketing. Una propiedad se considera con fotos completas a partir de 11 fotos.
+    </div>
+
+    <div class="visits-panel">
+      <div class="visits-head">
+        <div>
+          <h2>🏠 Próximas visitas</h2>
+          <div class="visits-sub">Citas con clientes para ver propiedades.</div>
+        </div>
+        <button class="add-btn gold" onclick="openVisitModal()">+ Agendar visita</button>
+      </div>
+      <div id="visitsList"></div>
+    </div>
+  </main>
+</div>
+
+<div class="overlay" id="visitOverlay" onclick="if(event.target===this) closeVisitModal()">
+  <div class="modal">
+    <h3>Agendar visita</h3>
+    <div class="modal-sub">Elegí la propiedad desde las fichas.</div>
+    <div class="ficha-picker" id="visitFichaPicker"></div>
+    <div class="field">
+      <label>CLIENTE</label>
+      <input type="text" id="vClient" placeholder="Nombre del cliente">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label>FECHA</label>
+        <input type="date" id="vDate">
+      </div>
+      <div class="field">
+        <label>HORA</label>
+        <input type="time" id="vTime" value="10:00">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeVisitModal()">Cancelar</button>
+      <button class="btn primary" id="vSaveBtn" onclick="saveVisitDash()" disabled>Guardar visita</button>
+    </div>
+  </div>
+</div>
+
+<div class="selbar" id="selbar">
+  <div class="selbar-text"><b id="selCount">0</b> propiedades seleccionadas</div>
+  <button class="selbar-btn ghost" onclick="clearSelection()">Limpiar</button>
+  <button class="selbar-btn" onclick="goToCronograma()">Armar cronograma →</button>
+</div>
+
+<div class="overlay" id="overlay" onclick="if(event.target===this) toggleModal(false)">
+  <div class="modal">
+    <h3>Conectar con Tokko</h3>
+    <p>Vas a necesitar la API Key de Tokko y la URL de tu Apps Script Web App (el mismo que usás para las boletas). Por ahora esta pantalla es solo de referencia — todavía no está conectada.</p>
+    <div class="field">
+      <label>API KEY DE TOKKO</label>
+      <input type="text" placeholder="pegar acá tu api key" disabled>
+    </div>
+    <div class="field">
+      <label>URL DEL APPS SCRIPT WEB APP</label>
+      <input type="text" placeholder="https://script.google.com/macros/s/..." disabled>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="toggleModal(false)">Cerrar</button>
+      <button class="btn primary" disabled>Guardar (próximamente)</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- Conexión con Tokko (vía Apps Script) ----
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdTFRAtj_17u8RLVGiEX3p6r87my9alZ40qEr88tBs_P-UnFd7_FRROCtKe28inqIhDg/exec';
+
+let properties = [];
+
+const PHOTO_MIN = 11; // "más de 10" → incompleta si tiene 10 o menos
+const ALERT_DAYS = 15; // amber threshold; red at 2x
+
+// Formato esperado: [Venta|Alquiler] - [algo] - [Zona/barrio]
+// Se relajó a propósito: acepta guion normal (-), guion largo (–) o raya (—),
+// con o sin espacios, y no exige que el tipo/número esté escrito de una forma exacta
+// (los vendedores escriben "dos dormitorios", "Duplex", "Oficinas", etc. y son válidos igual).
+function validTitle(title){
+  if(!title) return false;
+  const t = title.trim();
+  const empiezaBien = /^(venta|alquiler)/i.test(t);
+  if(!empiezaBien) return false;
+  const separadores = t.match(/\s*[-–—]\s*/g) || [];
+  return separadores.length >= 2;
+}
+
+function status(days){
+  if(days === null || days === undefined) return 'sindatos';
+  if(days <= ALERT_DAYS) return 'green';
+  if(days <= ALERT_DAYS*2) return 'amber';
+  return 'red';
+}
+
+function fmtMoney(price, currency){
+  if(!price) return 'Consultar precio';
+  return (currency || '') + ' ' + Math.round(price).toLocaleString('es-AR');
+}
+
+async function fetchProperties(){
+  const subtitle = document.getElementById('pageSubtitle');
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=properties');
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Error desconocido al leer Tokko');
+
+    properties = data.propiedades.map(p => ({
+      id: p.id,
+      addr: p.direccion || '(sin dirección cargada)',
+      type: p.tipo || 'Sin tipo',
+      zone: p.zona || '',
+      photos: p.cantidadFotos || 0,
+      photoUrl: p.fotoPortada || '',
+      price: p.precio || 0,
+      currency: p.moneda || '',
+      operationType: p.tipoOperacion || '',
+      title: p.tituloPublicacion || '',
+      referencia: p.referencia || '',
+      superficie: p.superficie || 0,
+      ambientes: p.ambientes || 0,
+      banos: p.banos || 0,
+      publicUrl: p.urlPublica || '',
+      agente: p.agente || 'Sin asignar',
+      daysNoConsulta: null // pendiente: falta vincular consultas de Tokko a cada propiedad
+    }));
+
+    subtitle.textContent = `${properties.length} propiedades de Villa Allende, en vivo desde Tokko · las alertas por consultas todavía no están conectadas`;
+    populateTypeFilter();
+    renderAll();
+  } catch (err) {
+    subtitle.innerHTML = `⚠ No se pudo conectar con Tokko (${err.message}). <a href="#" onclick="fetchProperties();return false;" style="color:var(--gold);">Reintentar</a>`;
+    document.getElementById('grid').innerHTML = '';
+  }
+}
+
+function populateTypeFilter(){
+  const sel = document.getElementById('typeSelect');
+  const tipos = [...new Set(properties.map(p=>p.type))].sort();
+  sel.innerHTML = `<option value="all">Todos</option>` + tipos.map(t=>`<option value="${t}">${t}</option>`).join('');
+
+  const agentSel = document.getElementById('agentSelect');
+  const agentes = [...new Set(properties.map(p=>p.agente))].sort();
+  agentSel.innerHTML = `<option value="all">Todos</option>` + agentes.map(a=>`<option value="${a}">${a}</option>`).join('');
+}
+
+function renderAll(){
+  render();
+  if(typeof renderVisits === 'function') renderVisits();
+}
+
+
+const selected = new Set();
+let activeFilter = 'all';
+let typeFilter = 'all';
+let agentFilter = 'all';
+
+function houseSVG(){
+  return `<svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#8894A3" stroke-width="1.3"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/><path d="M9.5 19v-5h5v5"/></svg>`;
+}
+
+function render(){
+  let list = [...properties];
+
+  if(activeFilter === 'alert') list = list.filter(p => status(p.daysNoConsulta) !== 'green' && status(p.daysNoConsulta) !== 'sindatos');
+  if(activeFilter === 'lowphoto') list = list.filter(p => p.photos < PHOTO_MIN);
+  if(activeFilter === 'badname') list = list.filter(p => !validTitle(p.title));
+  if(typeFilter !== 'all') list = list.filter(p => p.type === typeFilter);
+  if(agentFilter !== 'all') list = list.filter(p => p.agente === agentFilter);
+
+  const sortBy = document.getElementById('sortSelect').value;
+  if(sortBy === 'precio') list.sort((a,b)=> b.price - a.price);
+  if(sortBy === 'fotos') list.sort((a,b)=> a.photos - b.photos);
+  if(sortBy === 'direccion') list.sort((a,b)=> a.addr.localeCompare(b.addr));
+
+  const grid = document.getElementById('grid');
+
+  if(properties.length === 0){
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-faint);">Cargando propiedades…</div>`;
+  } else if(list.length === 0){
+    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-faint);">No hay propiedades que coincidan con este filtro.</div>`;
+  } else {
+    grid.innerHTML = list.map(p => {
+      const st = status(p.daysNoConsulta);
+      const lowPhoto = p.photos < PHOTO_MIN;
+      const badName = !validTitle(p.title);
+      const isSel = selected.has(p.id);
+      const label = st==='sindatos' ? '—' : `${p.daysNoConsulta}d`;
+      return `
+      <div class="card ${isSel?'selected':''}" data-id="${p.id}" onclick="window.location.href='ficha-propiedad.html?id=${p.id}'" style="cursor:pointer;">
+        <div class="thumb">
+          ${p.photoUrl ? `<img src="${p.photoUrl}" alt="" style="width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+          ${!p.photoUrl ? houseSVG() : `<div style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;">${houseSVG()}</div>`}
+          <div class="gauge ${st}"><span class="gauge-dial"></span><span class="gauge-text">${label}</span></div>
+          <div class="select-toggle" onclick="toggleSelect(${p.id}, event)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg>
+          </div>
+          <div class="photo-badge ${lowPhoto?'low':''}">📷 ${p.photos} foto${p.photos!==1?'s':''}${lowPhoto?' · incompleto':''}</div>
+        </div>
+        <div class="card-body">
+          <div class="card-addr">${p.addr}</div>
+          <div class="card-meta">${p.type.toUpperCase()}${p.operationType ? ' · '+p.operationType.toUpperCase() : ''} · ${fmtMoney(p.price, p.currency)}</div>
+          <div class="card-meta" style="opacity:.7;">👤 ${p.agente}</div>
+          ${badName ? `<div class="badname-tag">📝 Nombre no sigue el formato</div>` : ''}
+          <div class="card-foot">
+            <span class="card-tag">Consultas</span>
+            <span class="card-days ${st}">${st==='sindatos' ? 'sin datos aún' : (p.daysNoConsulta===0?'hoy':'hace '+p.daysNoConsulta+'d')}</span>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('stat-alert').textContent = properties.filter(p=>status(p.daysNoConsulta)!=='green' && status(p.daysNoConsulta)!=='sindatos').length;
+  document.getElementById('stat-lowphoto').textContent = properties.filter(p=>p.photos < PHOTO_MIN).length;
+  document.getElementById('stat-badname').textContent = properties.filter(p=>!validTitle(p.title)).length;
+  document.getElementById('c-all').textContent = properties.length;
+}
+
+function toggleSelect(id, ev){
+  ev.stopPropagation();
+  if(selected.has(id)) selected.delete(id); else selected.add(id);
+  render();
+  updateSelbar();
+}
+
+function updateSelbar(){
+  const bar = document.getElementById('selbar');
+  document.getElementById('selCount').textContent = selected.size;
+  bar.classList.toggle('show', selected.size > 0);
+}
+
+function clearSelection(){
+  selected.clear();
+  render();
+  updateSelbar();
+}
+
+function goToCronograma(){
+  window.location.href = 'cronograma.html?ids=' + [...selected].join(',');
+}
+
+document.getElementById('filters').addEventListener('click', (e)=>{
+  const btn = e.target.closest('.chip, .statchip');
+  if(!btn) return;
+  const f = btn.dataset.filter;
+
+  if(f === 'all'){
+    activeFilter = 'all';
+  } else {
+    // toggle: clicking an already-active stat filter resets to "all"
+    activeFilter = (activeFilter === f) ? 'all' : f;
+  }
+
+  document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('active', activeFilter==='all'));
+  document.querySelectorAll('.statchip').forEach(c=>c.classList.toggle('selected', c.dataset.filter===activeFilter));
+  render();
+});
+
+document.getElementById('typeSelect').addEventListener('change', (e)=>{
+  typeFilter = e.target.value;
+  render();
+});
+
+document.getElementById('agentSelect').addEventListener('change', (e)=>{
+  agentFilter = e.target.value;
+  render();
+});
+
+document.getElementById('sortSelect').addEventListener('change', render);
+
+function toggleModal(show){
+  document.getElementById('overlay').classList.toggle('show', show);
+}
+
+// ---- Visits panel ----
+let visits = [
+  { id:1, propertyId:1, client:"Julieta P.", date:"2026-07-18", time:"10:00" },
+  { id:2, propertyId:3, client:"Fam. Gómez", date:"2026-07-15", time:"11:00" },
+  { id:3, propertyId:9, client:"Dueño (recorrida)", date:"2026-07-13", time:"09:30" },
+  { id:4, propertyId:4, client:"Sr. Iturbe", date:"2026-07-26", time:"16:00" },
+];
+
+function renderVisits(){
+  const list = document.getElementById('visitsList');
+  const sorted = [...visits].sort((a,b)=> new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time));
+  if(sorted.length === 0){
+    list.innerHTML = `<div class="visits-empty">No hay visitas agendadas.</div>`;
+    return;
+  }
+  list.innerHTML = sorted.map(v => {
+    const p = properties.find(p=>p.id===v.propertyId);
+    const d = new Date(v.date+'T00:00:00');
+    const dateLabel = `${d.getDate()}/${d.getMonth()+1}`;
+    return `
+    <div class="visit-row">
+      <div class="visit-left">
+        <span class="visit-icon"></span>
+        <div>
+          <div class="visit-addr">${p ? p.addr : '—'}</div>
+          <div class="visit-meta">${v.client}</div>
+        </div>
+      </div>
+      <span class="visit-when">${dateLabel} · ${v.time}</span>
+    </div>`;
+  }).join('');
+}
+
+let selectedVisitPropertyId = null;
+function openVisitModal(){
+  selectedVisitPropertyId = null;
+  document.getElementById('vClient').value = '';
+  document.getElementById('vDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('vTime').value = '10:00';
+  document.getElementById('vSaveBtn').disabled = true;
+
+  const picker = document.getElementById('visitFichaPicker');
+  if(properties.length === 0){
+    picker.innerHTML = `<div style="padding:14px; text-align:center; color:var(--text-faint); font-size:12px;">Todavía se están cargando las propiedades — esperá un segundo y volvé a abrir esto.</div>`;
+  } else {
+    picker.innerHTML = properties.map(p => `
+      <div class="ficha-row" data-id="${p.id}" onclick="selectVisitFicha(${p.id})">
+        <div class="ficha-thumb">${houseSVG()}</div>
+        <div class="ficha-info">
+          <div class="ficha-addr">${p.addr}</div>
+          <div class="ficha-meta">${p.type.toUpperCase()}</div>
+        </div>
+        <div class="ficha-check"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('visitOverlay').classList.add('show');
+}
+function selectVisitFicha(id){
+  selectedVisitPropertyId = id;
+  document.querySelectorAll('#visitFichaPicker .ficha-row').forEach(r => r.classList.toggle('selected', parseInt(r.dataset.id)===id));
+  document.getElementById('vSaveBtn').disabled = false;
+}
+function closeVisitModal(){ document.getElementById('visitOverlay').classList.remove('show'); }
+function saveVisitDash(){
+  if(!selectedVisitPropertyId) return;
+  const date = document.getElementById('vDate').value;
+  const time = document.getElementById('vTime').value;
+  const client = document.getElementById('vClient').value.trim() || 'Sin nombre';
+  if(!date){ alert('Elegí una fecha'); return; }
+  visits.push({ id:Date.now(), propertyId:selectedVisitPropertyId, client, date, time });
+  closeVisitModal();
+  renderVisits();
+}
+
+renderVisits();
+
+fetchProperties();
+</script>
+</body>
+</html>
