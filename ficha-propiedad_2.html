@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+
+<title>Ficha de Propiedad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#14171C;
+    --surface:#1D2129;
+    --surface-hover:#262B35;
+    --line:#2E333D;
+    --line-soft:#242830;
+    --text:#EDEBE4;
+    --text-dim:#9CA3AF;
+    --text-faint:#5E6472;
+    --gold:#C9A227;
+    --gold-dim:#8C7420;
+    --green:#5FA777;
+    --green-bg:rgba(95,167,119,0.12);
+    --amber:#E0A72E;
+    --amber-bg:rgba(224,167,46,0.12);
+    --red:#C1503F;
+    --red-bg:rgba(193,80,63,0.14);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{ background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+  .grid-bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    background-image:linear-gradient(var(--line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+    background-size:32px 32px; opacity:0.35;
+    mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, black 40%, transparent 90%);
+  }
+  .shell{ position:relative; z-index:1; display:flex; min-height:100vh; }
+
+  .sidebar{ width:230px; flex-shrink:0; border-right:1px solid var(--line); padding:28px 20px; display:flex; flex-direction:column; gap:34px; }
+  .brand-mark{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; }
+  .brand-sub{ font-size:11px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; letter-spacing:0.03em; margin-top:2px;}
+  nav{ display:flex; flex-direction:column; gap:4px; }
+  .nav-item{ display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:6px; font-size:13.5px; color:var(--text-dim); border:1px solid transparent; text-decoration:none; }
+  .nav-item .dot{ width:5px; height:5px; border-radius:50%; background:var(--text-faint); flex-shrink:0; }
+  .nav-item.active{ background:var(--surface); color:var(--text); border-color:var(--line); }
+  .nav-item.active .dot{ background:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,0.15); }
+  .nav-item.disabled{ opacity:0.4; }
+  .nav-item .tag{ margin-left:auto; font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--text-faint); }
+  .back-link{ font-size:12px; color:var(--text-faint); text-decoration:none; display:flex; align-items:center; gap:6px; margin-top:-10px; }
+  .back-link:hover{ color:var(--text-dim); }
+
+  main{ flex:1; padding:32px 40px 70px; max-width:1180px; }
+  .breadcrumb{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); margin-bottom:14px; }
+  .breadcrumb b{ color:var(--text-dim); }
+
+  .head{ display:flex; justify-content:space-between; align-items:flex-start; gap:20px; margin-bottom:24px; flex-wrap:wrap; }
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:25px; letter-spacing:-0.01em; max-width:600px; }
+  .head-meta{ display:flex; gap:14px; margin-top:8px; flex-wrap:wrap; }
+  .meta-pill{ font-size:12px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; border:1px solid var(--line); border-radius:6px; padding:4px 10px; }
+
+  .status-badge{ display:flex; align-items:center; gap:8px; border-radius:8px; padding:10px 16px; border:1px solid; flex-shrink:0; }
+  .status-badge.red{ border-color:var(--red); background:var(--red-bg); }
+  .status-badge.amber{ border-color:var(--amber); background:var(--amber-bg); }
+  .status-badge.green{ border-color:var(--green); background:var(--green-bg); }
+  .status-dot{ width:9px; height:9px; border-radius:50%; }
+  .status-badge.red .status-dot{ background:var(--red); }
+  .status-badge.amber .status-dot{ background:var(--amber); }
+  .status-badge.green .status-dot{ background:var(--green); }
+  .status-text{ font-size:12.5px; }
+  .status-text b{ font-family:'IBM Plex Mono',monospace; }
+
+  .layout{ display:grid; grid-template-columns:1.5fr 1fr; gap:24px; align-items:start; }
+  @media(max-width:920px){ .layout{ grid-template-columns:1fr; } }
+
+  .panel{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:20px 22px; margin-bottom:20px; }
+  .panel h2{ font-family:'Space Grotesk',sans-serif; font-size:14.5px; font-weight:600; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between; }
+  .panel h2 .small{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--text-faint); font-weight:400; }
+
+  /* Gallery */
+  .gallery-main{ height:280px; border-radius:9px; background:linear-gradient(135deg,#2A3038,#1B1F26); display:flex; align-items:center; justify-content:center; margin-bottom:10px; position:relative; overflow:hidden; }
+  .gallery-thumbs{ display:grid; grid-template-columns:repeat(6,1fr); gap:7px; }
+  .gthumb{ aspect-ratio:1; border-radius:6px; background:linear-gradient(135deg,#262B35,#1B1F26); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  .gthumb.active{ border-color:var(--gold); }
+  .gthumb svg, .gallery-main svg{ opacity:0.4; }
+  .upload-zone{
+    margin-top:12px; border:1px dashed var(--line); border-radius:8px; padding:14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  }
+  .upload-zone-text{ font-size:12px; color:var(--text-faint); line-height:1.5; }
+  .upload-zone-text b{ color:var(--text-dim); }
+  .btn{ padding:8px 14px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--text-dim); font-family:'Inter',sans-serif; white-space:nowrap; }
+  .btn.primary{ background:var(--gold); border-color:var(--gold); color:#181A14; font-weight:600; }
+  .btn:hover{ border-color:var(--text-faint); }
+
+  /* Info grid */
+  .info-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; }
+  .info-item{ }
+  .info-label{ font-size:10.5px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; letter-spacing:0.03em; margin-bottom:4px; }
+  .info-value{ font-size:14.5px; font-weight:500; }
+  .info-value.price{ font-family:'IBM Plex Mono',monospace; color:var(--gold); font-size:16px; }
+
+  /* Historial consultas */
+  .consulta-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line-soft); font-size:12.5px; }
+  .consulta-row:last-child{ border-bottom:none; }
+  .consulta-row .who{ color:var(--text); }
+  .consulta-row .when{ color:var(--text-faint); font-family:'IBM Plex Mono',monospace; font-size:11.5px; }
+  .consulta-empty{ text-align:center; padding:20px 0; color:var(--text-faint); font-size:12.5px; }
+
+  /* Diagnostic panel */
+  .diag-panel{ border-color:var(--red); }
+  .diag-panel h2{ color:var(--red); }
+  .diag-lead{ font-size:12.5px; color:var(--text-dim); margin-bottom:16px; line-height:1.55; }
+  .check-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+  .check-item{ display:flex; gap:11px; align-items:flex-start; padding:11px 12px; background:var(--bg); border:1px solid var(--line); border-radius:8px; cursor:pointer; }
+  .check-box{ width:17px; height:17px; border-radius:4px; border:1.5px solid var(--text-faint); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; }
+  .check-item.checked .check-box{ background:var(--gold); border-color:var(--gold); }
+  .check-item.checked .check-box svg{ opacity:1; }
+  .check-box svg{ width:11px; height:11px; opacity:0; }
+  .check-text{ font-size:12.5px; line-height:1.45; }
+  .check-text b{ display:block; font-size:13px; margin-bottom:2px; }
+  .check-text span{ color:var(--text-faint); }
+
+  .price-compare-toggle{
+    margin-top:8px; font-size:11.5px; color:var(--gold); cursor:pointer;
+    font-family:'IBM Plex Mono',monospace; display:inline-block;
+  }
+  .price-compare-toggle:hover{ color:#E0BC4A; }
+  .price-compare{
+    display:none; margin-top:10px; border:1px solid var(--line); border-radius:7px;
+    overflow:hidden; background:var(--bg);
+  }
+  .price-compare.show{ display:block; }
+  .pc-row{
+    display:grid; grid-template-columns:2fr 0.7fr 1.1fr 0.9fr;
+    gap:6px; padding:8px 10px; font-size:11.5px; border-bottom:1px solid var(--line-soft);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .pc-row:last-of-type{ border-bottom:none; }
+  .pc-row.pc-head{ color:var(--text-faint); font-size:10px; text-transform:uppercase; letter-spacing:0.03em; background:var(--surface); }
+  .pc-row.pc-this{ color:var(--gold); background:rgba(201,162,39,0.06); }
+  .pc-row span:first-child{ font-family:'Inter',sans-serif; }
+  .pc-note{ padding:9px 10px; font-size:11.5px; color:var(--text-dim); border-top:1px solid var(--line); }
+  .pc-note b{ color:var(--amber); }
+
+  /* Zone comparison chart */
+  .zone-chart{ display:flex; flex-direction:column; gap:9px; }
+  .zone-row{ display:flex; align-items:center; gap:10px; }
+  .zone-name{ width:150px; font-size:11.5px; color:var(--text-dim); flex-shrink:0; }
+  .zone-name.this-zone{ color:var(--text); font-weight:600; }
+  .zone-bar-track{ flex:1; height:16px; background:var(--bg); border-radius:4px; overflow:hidden; border:1px solid var(--line-soft); }
+  .zone-bar-fill{ height:100%; border-radius:4px 0 0 4px; background:var(--text-faint); }
+  .zone-bar-fill.this-zone{ background:var(--red); }
+  .zone-count{ width:26px; text-align:right; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--text-dim); flex-shrink:0; }
+  .zone-count.this-zone{ color:var(--red); }
+  .zone-note{ margin-top:14px; font-size:12px; color:var(--text-faint); background:var(--red-bg); border:1px solid rgba(193,80,63,0.3); border-radius:7px; padding:11px 13px; line-height:1.5; }
+  .zone-note b{ color:var(--red); }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div>
+      <div class="brand-mark">Panel de Propiedades</div>
+      <div class="brand-sub">JB &amp; RO · INMOBILIARIA</div>
+    </div>
+    <nav>
+      <a href="index.html" class="nav-item"><span class="dot"></span> Dashboard</a>
+      <div class="nav-item active"><span class="dot"></span> Ficha de propiedad</div>
+      <a href="alertas-calendario.html" class="nav-item"><span class="dot"></span> Calendario</a>
+      <a href="cronograma.html" class="nav-item"><span class="dot"></span> Cronograma marketing</a>
+      <a href="contratos.html" class="nav-item"><span class="dot"></span> Generador de contratos</a>
+    </nav>
+  </aside>
+
+  <main>
+    <a href="index.html" class="breadcrumb">← <b>Dashboard</b> / Ficha de propiedad</a>
+
+    <div class="head">
+      <div>
+        <h1 id="propTitle">Cargando…</h1>
+        <div class="head-meta">
+          <span class="meta-pill" id="metaType"></span>
+          <span class="meta-pill" id="metaRef"></span>
+          <span class="meta-pill" id="metaZone"></span>
+        </div>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="status-dot"></span>
+        <span class="status-text" id="statusText"></span>
+      </div>
+    </div>
+
+    <div class="layout" id="layoutGrid">
+      <!-- LEFT COLUMN -->
+      <div>
+        <div class="panel">
+          <h2>Fotos <span class="small" id="photosHeaderSmall"></span></h2>
+          <div class="gallery-main">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#5E6472" stroke-width="1.2"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/><path d="M9.5 19v-5h5v5"/></svg>
+          </div>
+          <div class="gallery-thumbs" id="galleryThumbs"></div>
+          <div class="upload-zone">
+            <div class="upload-zone-text" id="uploadZoneText"></div>
+            <button class="btn primary">+ Subir fotos</button>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Información relevante</h2>
+          <div class="info-grid" id="infoGrid"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Historial de consultas <span class="small">últimos 60 días</span></h2>
+          <div id="consultasList"></div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div id="rightCol">
+        <div class="panel diag-panel">
+          <h2>⚠ Diagnóstico <span class="small">por qué no recibe consultas</span></h2>
+          <div class="diag-lead" id="diagLead"></div>
+          <div class="check-list">
+            <div class="check-item">
+              <div class="check-box" onclick="this.parentElement.classList.toggle('checked')"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+              <div class="check-text" style="flex:1;">
+                <b>¿Revisaste el precio contra el mercado?</b>
+                <span>Compará con propiedades similares activas en la zona.</span>
+                <div class="price-compare-toggle" onclick="togglePriceCompare(event)">Ver propiedades en la zona ▾</div>
+                <div class="price-compare" id="priceCompare">
+                  <div class="pc-row pc-head">
+                    <span>Propiedad</span><span>m²</span><span>Precio</span><span>USD/m²</span>
+                  </div>
+                  <div id="priceCompareBody"></div>
+                  <div class="pc-note" id="priceNote"></div>
+                </div>
+              </div>
+            </div>
+            <div class="check-item" onclick="this.classList.toggle('checked')">
+              <div class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+              <div class="check-text"><b>¿Hace cuánto no hablás con el dueño/vendedor?</b><span>Puede necesitar un llamado de actualización.</span></div>
+            </div>
+            <div class="check-item" onclick="this.classList.toggle('checked')">
+              <div class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+              <div class="check-text"><b>¿Es un tema de zona?</b><span>Mirá la comparación de oferta abajo.</span></div>
+            </div>
+          </div>
+
+          <h2 style="margin-top:4px;">Oferta activa por zona</h2>
+          <div class="zone-chart" id="zoneChart"></div>
+          <div class="zone-note" id="zoneNote"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdTFRAtj_17u8RLVGiEX3p6r87my9alZ40qEr88tBs_P-UnFd7_FRROCtKe28inqIhDg/exec';
+
+const PHOTO_MIN = 11;
+const ALERT_DAYS = 15;
+function status(days){ if(days === null || days === undefined) return 'sindatos'; if(days <= ALERT_DAYS) return 'green'; if(days <= ALERT_DAYS*2) return 'amber'; return 'red'; }
+function usdM2(p){ return p.superficie ? Math.round(p.price / p.superficie) : 0; }
+function diasDesde(fechaISO){
+  if(!fechaISO) return null;
+  const d = new Date(fechaISO);
+  const hoy = new Date();
+  return Math.max(0, Math.round((hoy - d) / (1000*60*60*24)));
+}
+
+let properties = [];
+
+async function cargarFicha(){
+  document.getElementById('propTitle').textContent = 'Cargando…';
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=properties');
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error || 'Error al leer Tokko');
+
+    properties = data.propiedades.map(function(p){
+      return {
+        id: p.id,
+        addr: p.direccion || '(sin dirección cargada)',
+        type: p.tipo || 'Sin tipo',
+        zone: p.zona || 'Sin zona',
+        photos: p.cantidadFotos || 0,
+        fotoPortada: p.fotoPortada || '',
+        fotos: p.fotos || [],
+        price: p.precio || 0,
+        currency: p.moneda || '',
+        operationType: p.tipoOperacion || '',
+        referencia: p.referencia || '',
+        superficie: p.superficie || 0,
+        ambientes: p.ambientes || 0,
+        banos: p.banos || 0,
+        agente: p.agente || 'Sin asignar',
+        diasEnMercado: diasDesde(p.fechaCreacion),
+        publicUrl: p.urlPublica || '',
+        daysNoConsulta: null // pendiente: falta vincular consultas de Tokko a cada propiedad
+      };
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const requestedId = parseInt(params.get('id'));
+    const p = properties.find(function(x){ return x.id === requestedId; }) || properties[0];
+
+    if(!p){
+      document.getElementById('propTitle').textContent = 'No se encontraron propiedades';
+      return;
+    }
+    if(requestedId && !properties.find(function(x){ return x.id === requestedId; })){
+      document.getElementById('propTitle').innerHTML = `⚠ No encontramos esa propiedad puntual (puede que ya no esté activa) — mostrando otra de ejemplo: <br>`;
+    }
+
+    renderFicha(p);
+  } catch(err) {
+    document.getElementById('propTitle').textContent = '⚠ No se pudo conectar con Tokko';
+    document.getElementById('metaType').textContent = err.message;
+  }
+}
+
+function renderFicha(p){
+  // ---- Header ----
+  document.title = `${p.type} — ${p.addr}`;
+  document.getElementById('propTitle').innerHTML += `${p.type} — ${p.addr}`;
+  document.getElementById('metaType').textContent = p.type.toUpperCase();
+  document.getElementById('metaRef').textContent = `REF. ${p.referencia}`;
+  document.getElementById('metaZone').textContent = `Zona: ${p.zone}`;
+
+  const st = status(p.daysNoConsulta);
+  const badge = document.getElementById('statusBadge');
+  badge.classList.add(st);
+  document.getElementById('statusText').innerHTML = st === 'sindatos'
+    ? 'Consultas: <b>sin datos todavía</b>'
+    : (st === 'green'
+      ? (p.daysNoConsulta === 0 ? 'Recibió consultas <b>hoy</b>' : `Última consulta hace <b>${p.daysNoConsulta} días</b>`)
+      : `Sin consultas hace <b>${p.daysNoConsulta} días</b>`);
+
+  // ---- Photos (reales) ----
+  document.getElementById('photosHeaderSmall').textContent = `${p.photos} cargadas · mínimo recomendado ${PHOTO_MIN}`;
+  const galleryMain = document.querySelector('.gallery-main');
+  if(p.fotoPortada){
+    galleryMain.innerHTML = `<img src="${p.fotoPortada}" alt="" style="width:100%;height:100%;object-fit:cover;" id="mainGalleryImg">`;
+  }
+  const thumbs = p.fotos.slice(0, 6);
+  document.getElementById('galleryThumbs').innerHTML = thumbs.length
+    ? thumbs.map(function(url, i){
+        return `<div class="gthumb ${i===0?'active':''}" onclick="document.getElementById('mainGalleryImg').src='${url}'; document.querySelectorAll('.gthumb').forEach(function(t){t.classList.remove('active')}); this.classList.add('active');" style="background-image:url('${url}'); background-size:cover; background-position:center;"></div>`;
+      }).join('')
+    : `<div class="gthumb active"></div>`;
+  const faltan = PHOTO_MIN - p.photos;
+  document.getElementById('uploadZoneText').innerHTML = faltan > 0
+    ? `<b>Faltan ${faltan} foto${faltan!==1?'s':''}</b> para llegar al mínimo. Podés subir fotos propias acá sin tocar Tokko.`
+    : `<b>✅ Fotos completas.</b> Igual podés reemplazar alguna si está desactualizada.`;
+
+  // ---- Info grid ----
+  document.getElementById('infoGrid').innerHTML = `
+    <div class="info-item"><div class="info-label">PRECIO</div><div class="info-value price">${p.currency} ${Math.round(p.price).toLocaleString('es-AR')}</div></div>
+    <div class="info-item"><div class="info-label">OPERACIÓN</div><div class="info-value">${p.operationType || '—'}</div></div>
+    <div class="info-item"><div class="info-label">AMBIENTES</div><div class="info-value">${p.ambientes}</div></div>
+    <div class="info-item"><div class="info-label">BAÑOS</div><div class="info-value">${p.banos}</div></div>
+    <div class="info-item"><div class="info-label">SUPERFICIE</div><div class="info-value">${p.superficie ? p.superficie+' m²' : '—'}</div></div>
+    <div class="info-item"><div class="info-label">EN EL MERCADO</div><div class="info-value">${p.diasEnMercado !== null ? p.diasEnMercado+' días' : '—'}</div></div>
+    <div class="info-item"><div class="info-label">AGENTE</div><div class="info-value">${p.agente}</div></div>
+    ${p.publicUrl ? `<div class="info-item"><div class="info-label">EN TOKKO</div><div class="info-value"><a href="${p.publicUrl}" target="_blank" style="color:var(--gold);">Ver publicación ↗</a></div></div>` : ''}
+  `;
+
+  // ---- Consultas: todavía no conectado ----
+  document.getElementById('consultasList').innerHTML = `<div class="consulta-empty">Todavía no conectamos las consultas por propiedad — próximamente.</div>`;
+
+  // ---- Diagnostic panel (solo si está en alerta; hoy siempre "sin datos" hasta conectar consultas) ----
+  if(st !== 'red' && st !== 'amber'){
+    document.getElementById('rightCol').style.display = 'none';
+    document.getElementById('layoutGrid').style.gridTemplateColumns = '1fr';
+  } else {
+    document.getElementById('diagLead').textContent = st === 'red'
+      ? 'Esta propiedad está en alerta roja. Repasá esto con el vendedor antes de destacarla de nuevo:'
+      : 'Esta propiedad está en alerta ámbar. Vale la pena revisar esto antes de que pase a rojo:';
+
+    const zoneMates = properties.filter(function(x){ return x.zone === p.zone && x.id !== p.id; });
+    const pcBody = document.getElementById('priceCompareBody');
+    const pcNote = document.getElementById('priceNote');
+    if(zoneMates.length === 0){
+      pcBody.innerHTML = `<div class="pc-row pc-this"><span>Esta propiedad</span><span>${p.superficie}</span><span>${p.currency} ${Math.round(p.price).toLocaleString('es-AR')}</span><span>${usdM2(p)}</span></div>`;
+      pcNote.innerHTML = `No hay más propiedades activas en ${p.zone} para comparar todavía.`;
+    } else {
+      const rows = [Object.assign({}, p, {isThis:true})].concat(zoneMates.slice(0,3));
+      pcBody.innerHTML = rows.map(function(r){
+        return `
+        <div class="pc-row ${r.isThis?'pc-this':''}">
+          <span>${r.isThis ? 'Esta propiedad' : r.type+' — '+r.addr.split(',')[0]}</span>
+          <span>${r.superficie}</span>
+          <span>${r.currency} ${Math.round(r.price).toLocaleString('es-AR')}</span>
+          <span>${usdM2(r)}</span>
+        </div>`;
+      }).join('');
+      const zoneAvg = Math.round(zoneMates.reduce(function(s,x){return s+usdM2(x);},0) / zoneMates.length);
+      const diffPct = zoneAvg ? Math.round(((usdM2(p) - zoneAvg) / zoneAvg) * 100) : 0;
+      pcNote.innerHTML = diffPct > 0
+        ? `Está <b>~${diffPct}% arriba</b> del promedio de la zona (${zoneAvg}).`
+        : `Está <b>~${Math.abs(diffPct)}% abajo</b> del promedio de la zona (${zoneAvg}) — el precio no parece ser el problema.`;
+    }
+
+    const zoneCounts = {};
+    properties.forEach(function(x){ zoneCounts[x.zone] = (zoneCounts[x.zone]||0) + 1; });
+    const sortedZones = Object.entries(zoneCounts).sort(function(a,b){return b[1]-a[1];});
+    const maxCount = sortedZones[0][1];
+    const topZones = sortedZones.slice(0,4);
+    if(!topZones.find(function(z){return z[0]===p.zone;})) topZones[topZones.length-1] = [p.zone, zoneCounts[p.zone]];
+
+    document.getElementById('zoneChart').innerHTML = topZones.map(function(entry){
+      const zone = entry[0], count = entry[1];
+      const isThis = zone === p.zone;
+      return `
+      <div class="zone-row">
+        <div class="zone-name ${isThis?'this-zone':''}">${zone}</div>
+        <div class="zone-bar-track"><div class="zone-bar-fill ${isThis?'this-zone':''}" style="width:${Math.round(count/maxCount*100)}%"></div></div>
+        <div class="zone-count ${isThis?'this-zone':''}">${count}</div>
+      </div>`;
+    }).join('');
+
+    const thisCount = zoneCounts[p.zone];
+    const others = sortedZones.filter(function(z){return z[0]!==p.zone;}).map(function(z){return z[1];});
+    const othersAvg = others.length ? others.reduce(function(a,b){return a+b;},0)/others.length : thisCount;
+    document.getElementById('zoneNote').innerHTML = thisCount > othersAvg * 1.4
+      ? `<b>${p.zone} tiene bastante más oferta activa</b> que el resto — es probable que el problema sea competencia, no la propiedad en sí.`
+      : `${p.zone} no tiene una oferta especialmente alta comparada con otras zonas — probablemente no sea un tema de competencia de zona.`;
+  }
+}
+
+function togglePriceCompare(ev){
+  ev.stopPropagation();
+  document.getElementById('priceCompare').classList.toggle('show');
+}
+
+cargarFicha();
+</script>
+
+</body>
+</html>
