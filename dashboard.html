@@ -7,7 +7,7 @@
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
 
-<title>Dashboard de Propiedades</title>
+<title>Propiedades Activas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -52,7 +52,8 @@
   .breadcrumb{ font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--text-faint); margin-bottom:14px; }
   .breadcrumb b{ color:var(--text-dim); }
 
-  h1{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:28px; letter-spacing:-0.01em; margin-bottom:24px; }
+  h1{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:28px; letter-spacing:-0.01em; margin-bottom:6px; }
+  .subtitle{ font-size:13px; color:var(--text-faint); margin-bottom:24px; }
 
   /* Stats bar */
   .stats-bar{ display:grid; grid-template-columns:repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-bottom:32px; }
@@ -68,14 +69,30 @@
   .stat-card.amber .stat-number{ color:var(--amber); }
   .stat-card.green .stat-number{ color:var(--green); }
 
-  /* Filters */
-  .filters{ display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap; }
-  .filter-btn{
+  /* Filters bar */
+  .filters-bar{ display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; align-items:center; }
+  .filter-group{ display:flex; gap:8px; align-items:center; }
+  .filter-label{ font-size:12px; color:var(--text-faint); font-family:'IBM Plex Mono',monospace; font-weight:600; text-transform:uppercase; letter-spacing:0.03em; }
+  .filter-select, .search-box{
+    padding:9px 12px; border-radius:6px; border:1px solid var(--line);
+    background:var(--surface); color:var(--text); font-family:'Inter',sans-serif; font-size:13px;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .filter-select:hover, .search-box:hover{ border-color:var(--text-dim); }
+  .filter-select:focus, .search-box:focus{ outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,134,11,0.1); }
+  .search-box{ flex:1; min-width:180px; display:flex; align-items:center; gap:8px; padding:9px 12px; }
+  .search-box input{ flex:1; border:none; background:transparent; color:var(--text); font-size:13px; }
+  .search-box input::placeholder{ color:var(--text-faint); }
+  .search-icon{ width:16px; height:16px; opacity:0.5; flex-shrink:0; }
+
+  /* State badges */
+  .state-badges{ display:flex; gap:8px; flex-wrap:wrap; }
+  .state-badge{
     padding:7px 14px; border-radius:6px; font-size:12px; border:1px solid var(--line);
     background:var(--surface); color:var(--text-dim); cursor:pointer; transition:all 0.2s;
   }
-  .filter-btn:hover{ border-color:var(--text-dim); }
-  .filter-btn.active{ background:var(--gold); border-color:var(--gold); color:#181A14; font-weight:600; }
+  .state-badge:hover{ border-color:var(--text-dim); }
+  .state-badge.active{ background:var(--gold); border-color:var(--gold); color:#181A14; font-weight:600; }
 
   /* Properties grid */
   .props-grid{
@@ -104,7 +121,6 @@
   }
   .tag.red{ border-color:var(--red); background:var(--red-bg); color:var(--red); }
   .tag.amber{ border-color:var(--amber); background:var(--amber-bg); color:var(--amber); }
-  .tag.green{ border-color:var(--green); background:var(--green-bg); color:var(--green); }
 
   .empty{ text-align:center; padding:40px; color:var(--text-faint); }
 </style>
@@ -122,34 +138,50 @@
       </a>
     </div>
     <nav>
-      <div class="nav-item active"><span class="dot"></span> Dashboard</div>
+      <div class="nav-item active"><span class="dot"></span> Propiedades</div>
     </nav>
   </aside>
 
   <main>
-    <h1 id="mainTitle">Dashboard</h1>
+    <h1>Propiedades activas</h1>
+    <div class="subtitle" id="mainSubtitle">113 propiedades activas · en vivo desde Tokko</div>
 
     <!-- Stats -->
     <div class="stats-bar">
-      <div class="stat-card red" onclick="toggleFilter('noDrive')">
+      <div class="stat-card red" onclick="toggleState('noDrive')">
         <div class="stat-number" id="statNoDrive">0</div>
         <div class="stat-label">Sin Drive</div>
       </div>
-      <div class="stat-card amber" onclick="toggleFilter('lowPhotos')">
+      <div class="stat-card amber" onclick="toggleState('lowPhotos')">
         <div class="stat-number" id="statLowPhotos">0</div>
         <div class="stat-label">Fotos incompletas</div>
       </div>
-      <div class="stat-card" onclick="showAll()">
+      <div class="stat-card" onclick="clearFilters()">
         <div class="stat-number" id="statTotal">0</div>
         <div class="stat-label">Todas</div>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="filters">
-      <button class="filter-btn active" onclick="showAll()">Todas</button>
-      <button class="filter-btn" onclick="toggleFilter('noDrive')">Sin Drive</button>
-      <button class="filter-btn" onclick="toggleFilter('lowPhotos')">Fotos incompletas</button>
+    <div class="filters-bar">
+      <div class="filter-group">
+        <span class="filter-label">AGENTE</span>
+        <select class="filter-select" id="agentFilter" onchange="applyFilters()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+
+      <div style="flex:1; display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:9px 12px;">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
+        <input type="text" id="searchBox" placeholder="Buscar con IA..." style="border:none; background:transparent; color:var(--text); flex:1; font-size:13px; font-family:'Inter',sans-serif;" onkeyup="applyFilters()">
+      </div>
+    </div>
+
+    <!-- State filters -->
+    <div class="state-badges" style="margin-bottom:24px;">
+      <div class="state-badge active" onclick="clearFilters()">Todas</div>
+      <div class="state-badge" id="stateBadgeDrive" onclick="toggleState('noDrive')">Sin Drive</div>
+      <div class="state-badge" id="stateBadgePhotos" onclick="toggleState('lowPhotos')">Fotos incompletas</div>
     </div>
 
     <!-- Properties grid -->
@@ -162,7 +194,9 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdTFRAtj_17u8R
 const PHOTO_MIN = 11;
 
 let allProperties = [];
-let currentFilter = 'all';
+let currentStateFilter = '';
+let currentAgentFilter = '';
+let currentSearch = '';
 
 async function loadDashboard(){
   try {
@@ -181,44 +215,99 @@ async function loadDashboard(){
         price: p.precio || 0,
         currency: p.moneda || '',
         referencia: p.referencia || '',
-        linkDrive: p.linkDrive || ''
+        linkDrive: p.linkDrive || '',
+        agente: p.agente || 'Sin asignar',
+        ambientes: p.ambientes || 0,
+        superficie: p.superficie || 0
       };
     });
 
+    populateAgentFilter();
     updateStats();
-    renderCards('all');
+    renderCards();
   } catch(err) {
-    document.getElementById('mainTitle').textContent = '⚠ Error: ' + err.message;
+    document.querySelector('h1').textContent = '⚠ Error: ' + err.message;
   }
 }
 
+function isValidDriveLink(link){
+  if(!link) return false;
+  return link.startsWith('http') || link.includes('drive.google.com') || link.includes('docs.google.com');
+}
+
+function populateAgentFilter(){
+  const agents = [...new Set(allProperties.map(p => p.agente))].sort();
+  const select = document.getElementById('agentFilter');
+  agents.forEach(function(agent){
+    const option = document.createElement('option');
+    option.value = agent;
+    option.textContent = agent;
+    select.appendChild(option);
+  });
+}
+
 function updateStats(){
-  const noDrive = allProperties.filter(p => !p.linkDrive).length;
+  const noDrive = allProperties.filter(p => !isValidDriveLink(p.linkDrive)).length;
   const lowPhotos = allProperties.filter(p => p.photos < PHOTO_MIN).length;
   document.getElementById('statNoDrive').textContent = noDrive;
   document.getElementById('statLowPhotos').textContent = lowPhotos;
   document.getElementById('statTotal').textContent = allProperties.length;
 }
 
-function toggleFilter(filter){
-  currentFilter = currentFilter === filter ? 'all' : filter;
-  renderCards(currentFilter);
+function toggleState(state){
+  currentStateFilter = currentStateFilter === state ? '' : state;
+  updateBadges();
+  applyFilters();
 }
 
-function showAll(){
-  currentFilter = 'all';
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.filter-btn')[0].classList.add('active');
-  renderCards('all');
+function updateBadges(){
+  document.getElementById('stateBadgeDrive').classList.toggle('active', currentStateFilter === 'noDrive');
+  document.getElementById('stateBadgePhotos').classList.toggle('active', currentStateFilter === 'lowPhotos');
 }
 
-function renderCards(filter){
+function clearFilters(){
+  currentStateFilter = '';
+  currentAgentFilter = '';
+  currentSearch = '';
+  document.getElementById('agentFilter').value = '';
+  document.getElementById('searchBox').value = '';
+  updateBadges();
+  renderCards();
+}
+
+function applyFilters(){
+  currentAgentFilter = document.getElementById('agentFilter').value;
+  currentSearch = document.getElementById('searchBox').value.toLowerCase();
+  renderCards();
+}
+
+function renderCards(){
   let filtered = allProperties;
 
-  if(filter === 'noDrive'){
-    filtered = allProperties.filter(p => !p.linkDrive);
-  } else if(filter === 'lowPhotos'){
-    filtered = allProperties.filter(p => p.photos < PHOTO_MIN);
+  // Filtro por agente
+  if(currentAgentFilter){
+    filtered = filtered.filter(p => p.agente === currentAgentFilter);
+  }
+
+  // Filtro por estado
+  if(currentStateFilter === 'noDrive'){
+    filtered = filtered.filter(p => !isValidDriveLink(p.linkDrive));
+  } else if(currentStateFilter === 'lowPhotos'){
+    filtered = filtered.filter(p => p.photos < PHOTO_MIN);
+  }
+
+  // Búsqueda inteligente
+  if(currentSearch){
+    filtered = filtered.filter(function(p){
+      const searchText = currentSearch;
+      return p.addr.toLowerCase().includes(searchText) ||
+             p.type.toLowerCase().includes(searchText) ||
+             p.zone.toLowerCase().includes(searchText) ||
+             p.referencia.toLowerCase().includes(searchText) ||
+             p.agente.toLowerCase().includes(searchText) ||
+             searchText.includes(p.ambientes.toString()) ||
+             (p.precio && p.precio.toString().includes(searchText));
+    });
   }
 
   const grid = document.getElementById('propsGrid');
@@ -229,7 +318,7 @@ function renderCards(filter){
   }
 
   grid.innerHTML = filtered.map(function(p){
-    const noDrive = !p.linkDrive;
+    const noDrive = !isValidDriveLink(p.linkDrive);
     const lowPhotos = p.photos < PHOTO_MIN;
     let cardClass = 'prop-card';
     if(noDrive) cardClass += ' missing-drive';
