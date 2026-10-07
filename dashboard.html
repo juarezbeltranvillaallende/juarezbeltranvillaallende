@@ -123,6 +123,28 @@
   .tag.amber{ border-color:var(--amber); background:var(--amber-bg); color:var(--amber); }
 
   .empty{ text-align:center; padding:40px; color:var(--text-faint); }
+
+  /* AI Search button - floating */
+  .ai-search-btn{
+    position:fixed; bottom:28px; right:28px; z-index:100;
+    width:52px; height:52px; border-radius:50%; background:var(--gold);
+    border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 12px rgba(184,134,11,0.25); transition:all 0.2s;
+  }
+  .ai-search-btn:hover{ transform:scale(1.08); box-shadow:0 6px 16px rgba(184,134,11,0.35); }
+  .ai-search-btn svg{ width:24px; height:24px; color:#181A14; }
+
+  /* Debug panel */
+  .debug-panel{
+    position:fixed; bottom:92px; right:28px; z-index:99;
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:12px; font-size:11px; font-family:'IBM Plex Mono',monospace;
+    max-width:200px; box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    display:none;
+  }
+  .debug-panel.show{ display:block; }
+  .debug-panel .title{ font-weight:600; margin-bottom:8px; color:var(--text-dim); }
+  .debug-line{ margin:4px 0; word-break:break-all; }
 </style>
 </head>
 <body>
@@ -170,11 +192,6 @@
           <option value="">Todos</option>
         </select>
       </div>
-
-      <div style="flex:1; display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--line); border-radius:6px; padding:9px 12px;">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path></svg>
-        <input type="text" id="searchBox" placeholder="Buscar con IA..." style="border:none; background:transparent; color:var(--text); flex:1; font-size:13px; font-family:'Inter',sans-serif;" onkeyup="applyFilters()">
-      </div>
     </div>
 
     <!-- State filters -->
@@ -189,6 +206,20 @@
   </main>
 </div>
 
+<!-- AI Search button -->
+<button class="ai-search-btn" id="aiSearchBtn" title="Buscar con IA">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="11" cy="11" r="8"></circle>
+    <path d="m21 21-4.35-4.35"></path>
+  </svg>
+</button>
+
+<!-- Debug panel -->
+<div class="debug-panel" id="debugPanel">
+  <div class="title">🔍 DEBUG</div>
+  <div id="debugContent"></div>
+</div>
+
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdTFRAtj_17u8RLVGiEX3p6r87my9alZ40qEr88tBs_P-UnFd7_FRROCtKe28inqIhDg/exec';
 const PHOTO_MIN = 11;
@@ -197,6 +228,15 @@ let allProperties = [];
 let currentStateFilter = '';
 let currentAgentFilter = '';
 let currentSearch = '';
+let debugMode = false;
+
+// Toggle debug mode with Ctrl+Shift+D
+document.addEventListener('keydown', function(e){
+  if(e.ctrlKey && e.shiftKey && e.code === 'KeyD'){
+    debugMode = !debugMode;
+    document.getElementById('debugPanel').classList.toggle('show');
+  }
+});
 
 async function loadDashboard(){
   try {
@@ -222,6 +262,15 @@ async function loadDashboard(){
       };
     });
 
+    // Log para debugging
+    console.log('📊 Dashboard cargado:', {
+      total: allProperties.length,
+      sinDrive: allProperties.filter(p => !isValidDriveLink(p.linkDrive)).length,
+      ejemploLinkDrive: allProperties[0]?.linkDrive,
+      ejemploProp: allProperties[0]
+    });
+
+    if(debugMode) showDebugInfo();
     populateAgentFilter();
     updateStats();
     renderCards();
@@ -230,9 +279,27 @@ async function loadDashboard(){
   }
 }
 
+function showDebugInfo(){
+  const noDriveProps = allProperties.filter(p => !isValidDriveLink(p.linkDrive));
+  const sample = noDriveProps[0];
+  let html = `<div class="debug-line">Total: ${allProperties.length}</div>`;
+  html += `<div class="debug-line">Sin Drive: ${noDriveProps.length}</div>`;
+  if(sample){
+    html += `<div class="debug-line">Sample linkDrive:</div>`;
+    html += `<div class="debug-line" style="color:var(--red);">"${sample.linkDrive}"</div>`;
+  }
+  document.getElementById('debugContent').innerHTML = html;
+}
+
 function isValidDriveLink(link){
   if(!link) return false;
-  return link.startsWith('http') || link.includes('drive.google.com') || link.includes('docs.google.com');
+  const str = (link || '').toString().trim();
+  // Aceptar URLs de Drive, Docs, o si tiene ID de folder/file
+  if(str.startsWith('http')) return true;
+  if(str.includes('drive.google.com')) return true;
+  if(str.includes('docs.google.com')) return true;
+  if(str.match(/^[a-zA-Z0-9_-]{20,}$/)) return true; // ID de Drive/Docs
+  return false;
 }
 
 function populateAgentFilter(){
@@ -340,6 +407,41 @@ function renderCards(){
     </a>`;
   }).join('');
 }
+
+// AI Search button handler
+document.getElementById('aiSearchBtn').addEventListener('click', function(){
+  const searchBox = document.createElement('input');
+  searchBox.type = 'text';
+  searchBox.placeholder = 'Buscar con IA...';
+  searchBox.style.cssText = `
+    position: fixed;
+    bottom: 95px;
+    right: 28px;
+    width: 280px;
+    padding: 12px 16px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    z-index: 99;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  `;
+
+  searchBox.addEventListener('keyup', function(e){
+    if(e.key === 'Enter'){
+      currentSearch = this.value.toLowerCase();
+      renderCards();
+      this.remove();
+    } else if(e.key === 'Escape'){
+      this.remove();
+    }
+  });
+
+  document.body.appendChild(searchBox);
+  searchBox.focus();
+});
 
 loadDashboard();
 </script>
