@@ -262,13 +262,17 @@ async function loadDashboard(){
       };
     });
 
-    // Log para debugging
+    // Log detallado para debugging
+    const sinDrive = allProperties.filter(p => !isValidDriveLink(p.linkDrive));
+    const conDrive = allProperties.filter(p => isValidDriveLink(p.linkDrive));
     console.log('📊 Dashboard cargado:', {
       total: allProperties.length,
-      sinDrive: allProperties.filter(p => !isValidDriveLink(p.linkDrive)).length,
-      ejemploLinkDrive: allProperties[0]?.linkDrive,
-      ejemploProp: allProperties[0]
+      conDrive: conDrive.length,
+      sinDrive: sinDrive.length,
+      ejemplosConDrive: conDrive.slice(0, 2).map(p => ({ref: p.referencia, linkDrive: p.linkDrive})),
+      ejemplosSinDrive: sinDrive.slice(0, 2).map(p => ({ref: p.referencia, linkDrive: p.linkDrive}))
     });
+    console.log('🔍 Primeras 5 propiedades:', allProperties.slice(0, 5).map(p => ({ref: p.referencia, linkDrive: p.linkDrive})));
 
     if(debugMode) showDebugInfo();
     populateAgentFilter();
@@ -294,11 +298,14 @@ function showDebugInfo(){
 function isValidDriveLink(link){
   if(!link) return false;
   const str = (link || '').toString().trim();
-  // Aceptar URLs de Drive, Docs, o si tiene ID de folder/file
-  if(str.startsWith('http')) return true;
+  // Validación flexible: acepta URLs HTTP/HTTPS, IDs de Drive, o cualquier string que se vea como drive link
+  if(!str || str === '' || str === '—') return false;
+  if(str.toLowerCase().startsWith('http')) return true;
   if(str.includes('drive.google.com')) return true;
   if(str.includes('docs.google.com')) return true;
-  if(str.match(/^[a-zA-Z0-9_-]{20,}$/)) return true; // ID de Drive/Docs
+  if(str.match(/^[a-zA-Z0-9_-]{20,}$/)) return true; // ID de Drive/Docs (mínimo 20 chars)
+  // Si tiene algo de contenido y no es "sin", "no", "—", etc., asumir que es válido
+  if(str.length > 5 && !['sin', 'no', 'none', 'null', 'undefined'].includes(str.toLowerCase())) return true;
   return false;
 }
 
