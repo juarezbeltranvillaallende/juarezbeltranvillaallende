@@ -60,7 +60,6 @@
   h1{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:25px; letter-spacing:-0.01em; max-width:600px; }
   .head-meta{ display:flex; gap:14px; margin-top:8px; flex-wrap:wrap; }
   .meta-pill{ font-size:12px; color:var(--text-dim); font-family:'IBM Plex Mono',monospace; border:1px solid var(--line); border-radius:6px; padding:4px 10px; }
-  .meta-pill.missing-drive{ border-color:var(--red); background:var(--red-bg); color:var(--red); }
 
   .status-badge{ display:flex; align-items:center; gap:8px; border-radius:8px; padding:10px 16px; border:1px solid; flex-shrink:0; }
   .status-badge.red{ border-color:var(--red); background:var(--red-bg); }
@@ -104,6 +103,62 @@
   .info-value.price{ font-family:'IBM Plex Mono',monospace; color:var(--gold); font-size:16px; }
   .info-value a{ color:var(--gold); text-decoration:none; }
   .info-value a:hover{ text-decoration:underline; }
+
+  /* Historial consultas */
+  .consulta-row{ display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--line-soft); font-size:12.5px; }
+  .consulta-row:last-child{ border-bottom:none; }
+  .consulta-row .who{ color:var(--text); }
+  .consulta-row .when{ color:var(--text-faint); font-family:'IBM Plex Mono',monospace; font-size:11.5px; }
+  .consulta-empty{ text-align:center; padding:20px 0; color:var(--text-faint); font-size:12.5px; }
+
+  /* Diagnostic panel */
+  .diag-panel{ border-color:var(--red); }
+  .diag-panel h2{ color:var(--red); }
+  .diag-lead{ font-size:12.5px; color:var(--text-dim); margin-bottom:16px; line-height:1.55; }
+  .check-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+  .check-item{ display:flex; gap:11px; align-items:flex-start; padding:11px 12px; background:var(--bg); border:1px solid var(--line); border-radius:8px; cursor:pointer; }
+  .check-box{ width:17px; height:17px; border-radius:4px; border:1.5px solid var(--text-faint); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; }
+  .check-item.checked .check-box{ background:var(--gold); border-color:var(--gold); }
+  .check-item.checked .check-box svg{ opacity:1; }
+  .check-box svg{ width:11px; height:11px; opacity:0; }
+  .check-text{ font-size:12.5px; line-height:1.45; }
+  .check-text b{ display:block; font-size:13px; margin-bottom:2px; }
+  .check-text span{ color:var(--text-faint); }
+
+  .price-compare-toggle{
+    margin-top:8px; font-size:11.5px; color:var(--gold); cursor:pointer;
+    font-family:'IBM Plex Mono',monospace; display:inline-block;
+  }
+  .price-compare-toggle:hover{ color:#E0BC4A; }
+  .price-compare{
+    display:none; margin-top:10px; border:1px solid var(--line); border-radius:7px;
+    overflow:hidden; background:var(--bg);
+  }
+  .price-compare.show{ display:block; }
+  .pc-row{
+    display:grid; grid-template-columns:2fr 0.7fr 1.1fr 0.9fr;
+    gap:6px; padding:8px 10px; font-size:11.5px; border-bottom:1px solid var(--line-soft);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .pc-row:last-of-type{ border-bottom:none; }
+  .pc-row.pc-head{ color:var(--text-faint); font-size:10px; text-transform:uppercase; letter-spacing:0.03em; background:var(--surface); }
+  .pc-row.pc-this{ color:var(--gold); background:rgba(201,162,39,0.06); }
+  .pc-row span:first-child{ font-family:'Inter',sans-serif; }
+  .pc-note{ padding:9px 10px; font-size:11.5px; color:var(--text-dim); border-top:1px solid var(--line); }
+  .pc-note b{ color:var(--amber); }
+
+  /* Zone comparison chart */
+  .zone-chart{ display:flex; flex-direction:column; gap:9px; }
+  .zone-row{ display:flex; align-items:center; gap:10px; }
+  .zone-name{ width:150px; font-size:11.5px; color:var(--text-dim); flex-shrink:0; }
+  .zone-name.this-zone{ color:var(--text); font-weight:600; }
+  .zone-bar-track{ flex:1; height:16px; background:var(--bg); border-radius:4px; overflow:hidden; border:1px solid var(--line-soft); }
+  .zone-bar-fill{ height:100%; border-radius:4px 0 0 4px; background:var(--text-faint); }
+  .zone-bar-fill.this-zone{ background:var(--red); }
+  .zone-count{ width:26px; text-align:right; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--text-dim); flex-shrink:0; }
+  .zone-count.this-zone{ color:var(--red); }
+  .zone-note{ margin-top:14px; font-size:12px; color:var(--text-faint); background:var(--red-bg); border:1px solid rgba(193,80,63,0.3); border-radius:7px; padding:11px 13px; line-height:1.5; }
+  .zone-note b{ color:var(--red); }
 </style>
 </head>
 <body>
@@ -119,6 +174,7 @@
       </a>
     </div>
     <nav>
+      <a href="comercial.html" class="nav-item" style="opacity:.6;">← Comercial</a>
       <a href="dashboard.html" class="nav-item"><span class="dot"></span> Dashboard</a>
     </nav>
   </aside>
@@ -133,8 +189,11 @@
           <span class="meta-pill" id="metaType"></span>
           <span class="meta-pill" id="metaRef"></span>
           <span class="meta-pill" id="metaZone"></span>
-          <span class="meta-pill" id="metaDrive"></span>
         </div>
+      </div>
+      <div class="status-badge" id="statusBadge">
+        <span class="status-dot"></span>
+        <span class="status-text" id="statusText"></span>
       </div>
     </div>
 
@@ -154,16 +213,54 @@
         </div>
 
         <div class="panel">
-          <h2>Información</h2>
+          <h2>Información relevante</h2>
           <div class="info-grid" id="infoGrid"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Historial de consultas <span class="small">últimos 60 días</span></h2>
+          <div id="consultasList"></div>
         </div>
       </div>
 
       <!-- RIGHT COLUMN -->
       <div id="rightCol">
-        <div class="panel">
-          <h2>📋 Detalles</h2>
-          <div class="info-grid" id="detailsGrid"></div>
+        <div class="panel diag-panel">
+          <h2>📋 Preguntas para revisar</h2>
+          <div class="diag-lead">Repasá esto con el vendedor, sobre todo si la propiedad lleva tiempo sin moverse:</div>
+          <div class="check-list">
+            <div class="check-item" onclick="this.classList.toggle('checked')">
+              <div class="check-box"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+              <div class="check-text"><b>¿Hace cuánto no recibís consultas?</b><span id="consultaAnswer">—</span></div>
+            </div>
+            <div class="check-item">
+              <div class="check-box" onclick="this.parentElement.classList.toggle('checked')"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+              <div class="check-text" style="flex:1;">
+                <b>¿Hablaste con el dueño para revisar precios?</b>
+                <span>Compará contra propiedades similares antes de llamarlo.</span>
+                <div class="price-compare-toggle" onclick="togglePriceCompare(event)">Ver propiedades en la zona ▾</div>
+                <div class="price-compare" id="priceCompare">
+                  <div class="pc-row pc-head">
+                    <span>Propiedad</span><span>m²</span><span>Precio</span><span>USD/m²</span>
+                  </div>
+                  <div id="priceCompareBody"></div>
+                  <div class="pc-note" id="priceNote"></div>
+                </div>
+              </div>
+            </div>
+            <div class="check-item">
+              <div class="check-box" onclick="this.parentElement.classList.toggle('checked')"><svg viewBox="0 0 24 24" fill="none" stroke="#181A14" stroke-width="3"><path d="M4 12l5 5L20 6"/></svg></div>
+              <div class="check-text" style="flex:1;">
+                <b>¿Querés comparar con otras propiedades de la zona?</b>
+                <span id="zoneLabel">Usa la zona real de Tokko.</span>
+                <div class="price-compare-toggle" onclick="toggleZoneChart(event)">Ver oferta de la zona ▾</div>
+                <div class="price-compare" id="zoneChartWrap">
+                  <div class="zone-chart" id="zoneChart" style="padding:10px;"></div>
+                  <div class="zone-note" id="zoneNote" style="margin:0 10px 10px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -174,6 +271,15 @@
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdTFRAtj_17u8RLVGiEX3p6r87my9alZ40qEr88tBs_P-UnFd7_FRROCtKe28inqIhDg/exec';
 
 const PHOTO_MIN = 11;
+const ALERT_DAYS = 15;
+function status(days){ if(days === null || days === undefined) return 'sindatos'; if(days <= ALERT_DAYS) return 'green'; if(days <= ALERT_DAYS*2) return 'amber'; return 'red'; }
+function usdM2(p){ return p.superficie ? Math.round(p.price / p.superficie) : 0; }
+function diasDesde(fechaISO){
+  if(!fechaISO) return null;
+  const d = new Date(fechaISO);
+  const hoy = new Date();
+  return Math.max(0, Math.round((hoy - d) / (1000*60*60*24)));
+}
 
 let properties = [];
 
@@ -203,7 +309,8 @@ async function cargarFicha(){
         agente: p.agente || 'Sin asignar',
         diasEnMercado: diasDesde(p.fechaCreacion),
         publicUrl: p.urlPublica || '',
-        linkDrive: p.linkDrive || ''
+        linkDrive: p.linkDrive || '', // NUEVO: Link a carpeta Drive
+        daysNoConsulta: null // pendiente: falta vincular consultas de Tokko a cada propiedad
       };
     });
 
@@ -215,42 +322,37 @@ async function cargarFicha(){
       document.getElementById('propTitle').textContent = 'No se encontraron propiedades';
       return;
     }
+    let prefijoAviso = '';
+    if(requestedId && !properties.find(function(x){ return x.id === requestedId; })){
+      prefijoAviso = `⚠ No encontramos esa propiedad puntual (puede que ya no esté activa) — mostrando otra de ejemplo: <br>`;
+    }
 
-    renderFicha(p);
+    renderFicha(p, prefijoAviso);
   } catch(err) {
     document.getElementById('propTitle').textContent = '⚠ No se pudo conectar con Tokko';
     document.getElementById('metaType').textContent = err.message;
   }
 }
 
-function diasDesde(fechaISO){
-  if(!fechaISO) return null;
-  const d = new Date(fechaISO);
-  const hoy = new Date();
-  return Math.max(0, Math.round((hoy - d) / (1000*60*60*24)));
-}
-
-function renderFicha(p){
+function renderFicha(p, prefijoAviso){
   // ---- Header ----
   document.title = `${p.type} — ${p.addr}`;
-  document.getElementById('propTitle').textContent = `${p.type} — ${p.addr}`;
+  document.getElementById('propTitle').innerHTML = (prefijoAviso || '') + `${p.type} — ${p.addr}`;
   document.getElementById('metaType').textContent = p.type.toUpperCase();
   document.getElementById('metaRef').textContent = `REF. ${p.referencia}`;
   document.getElementById('metaZone').textContent = `Zona: ${p.zone}`;
 
-  // Indicador de Drive
-  const driveIndicator = document.getElementById('metaDrive');
-  if(p.linkDrive){
-    driveIndicator.textContent = '✅ Tiene Drive';
-    driveIndicator.style.borderColor = 'var(--green)';
-    driveIndicator.style.color = 'var(--green)';
-  } else {
-    driveIndicator.textContent = '❌ Sin Drive';
-    driveIndicator.classList.add('missing-drive');
-  }
+  const st = status(p.daysNoConsulta);
+  const badge = document.getElementById('statusBadge');
+  badge.classList.add(st);
+  document.getElementById('statusText').innerHTML = st === 'sindatos'
+    ? 'Consultas: <b>sin datos todavía</b>'
+    : (st === 'green'
+      ? (p.daysNoConsulta === 0 ? 'Recibió consultas <b>hoy</b>' : `Última consulta hace <b>${p.daysNoConsulta} días</b>`)
+      : `Sin consultas hace <b>${p.daysNoConsulta} días</b>`);
 
-  // ---- Photos ----
-  document.getElementById('photosHeaderSmall').textContent = `${p.photos} cargadas`;
+  // ---- Photos (reales) ----
+  document.getElementById('photosHeaderSmall').textContent = `${p.photos} cargadas · mínimo recomendado ${PHOTO_MIN}`;
   const galleryMain = document.querySelector('.gallery-main');
   if(p.fotoPortada){
     galleryMain.innerHTML = `<img src="${p.fotoPortada}" alt="" style="width:100%;height:100%;object-fit:cover;" id="mainGalleryImg">`;
@@ -263,8 +365,8 @@ function renderFicha(p){
     : `<div class="gthumb active"></div>`;
   const faltan = PHOTO_MIN - p.photos;
   document.getElementById('uploadZoneText').innerHTML = faltan > 0
-    ? `<b>Faltan ${faltan} foto${faltan!==1?'s':''}</b> para llegar al mínimo.`
-    : `<b>✅ Fotos completas.</b>`;
+    ? `<b>Faltan ${faltan} foto${faltan!==1?'s':''}</b> para llegar al mínimo. Podés subir fotos propias acá sin tocar Tokko.`
+    : `<b>✅ Fotos completas.</b> Igual podés reemplazar alguna si está desactualizada.`;
 
   // ---- Info grid ----
   document.getElementById('infoGrid').innerHTML = `
@@ -273,15 +375,81 @@ function renderFicha(p){
     <div class="info-item"><div class="info-label">AMBIENTES</div><div class="info-value">${p.ambientes}</div></div>
     <div class="info-item"><div class="info-label">BAÑOS</div><div class="info-value">${p.banos}</div></div>
     <div class="info-item"><div class="info-label">SUPERFICIE</div><div class="info-value">${p.superficie ? p.superficie+' m²' : '—'}</div></div>
-    <div class="info-item"><div class="info-label">EN MERCADO</div><div class="info-value">${p.diasEnMercado !== null ? p.diasEnMercado+' días' : '—'}</div></div>
+    <div class="info-item"><div class="info-label">EN EL MERCADO</div><div class="info-value">${p.diasEnMercado !== null ? p.diasEnMercado+' días' : '—'}</div></div>
+    <div class="info-item"><div class="info-label">AGENTE</div><div class="info-value">${p.agente}</div></div>
+    ${p.publicUrl ? `<div class="info-item"><div class="info-label">EN TOKKO</div><div class="info-value"><a href="${p.publicUrl}" target="_blank" style="color:var(--gold);">Ver publicación ↗</a></div></div>` : ''}
+    ${p.linkDrive ? `<div class="info-item"><div class="info-label">CARPETA DRIVE</div><div class="info-value"><a href="${p.linkDrive}" target="_blank" style="color:var(--gold);">Abrir carpeta ↗</a></div></div>` : ''}
   `;
 
-  // ---- Details ----
-  document.getElementById('detailsGrid').innerHTML = `
-    <div class="info-item"><div class="info-label">AGENTE</div><div class="info-value">${p.agente}</div></div>
-    ${p.linkDrive ? `<div class="info-item"><div class="info-label">CARPETA DRIVE</div><div class="info-value"><a href="${p.linkDrive}" target="_blank">Abrir ↗</a></div></div>` : '<div class="info-item"><div class="info-label">CARPETA DRIVE</div><div class="info-value" style="color:var(--red);">No configurado</div></div>'}
-    ${p.publicUrl ? `<div class="info-item"><div class="info-label">EN TOKKO</div><div class="info-value"><a href="${p.publicUrl}" target="_blank">Ver ↗</a></div></div>` : ''}
-  `;
+  // ---- Consultas: todavía no conectado ----
+  document.getElementById('consultasList').innerHTML = `<div class="consulta-empty">Todavía no conectamos las consultas por propiedad — próximamente.</div>`;
+
+  // ---- Preguntas para revisar (siempre visibles) ----
+  document.getElementById('consultaAnswer').textContent = st === 'sindatos'
+    ? 'Sin datos todavía — anotalo a mano si lo sabés.'
+    : (st === 'green' ? (p.daysNoConsulta === 0 ? 'Recibió consultas hoy.' : `Última consulta hace ${p.daysNoConsulta} días.`) : `Sin consultas hace ${p.daysNoConsulta} días.`);
+  document.getElementById('zoneLabel').textContent = `Zona real de Tokko: ${p.zone}.`;
+
+  {
+    const zoneMates = properties.filter(function(x){ return x.zone === p.zone && x.id !== p.id; });
+    const pcBody = document.getElementById('priceCompareBody');
+    const pcNote = document.getElementById('priceNote');
+    if(zoneMates.length === 0){
+      pcBody.innerHTML = `<div class="pc-row pc-this"><span>Esta propiedad</span><span>${p.superficie}</span><span>${p.currency} ${Math.round(p.price).toLocaleString('es-AR')}</span><span>${usdM2(p)}</span></div>`;
+      pcNote.innerHTML = `No hay más propiedades activas en ${p.zone} para comparar todavía.`;
+    } else {
+      const rows = [Object.assign({}, p, {isThis:true})].concat(zoneMates.slice(0,3));
+      pcBody.innerHTML = rows.map(function(r){
+        return `
+        <div class="pc-row ${r.isThis?'pc-this':''}">
+          <span>${r.isThis ? 'Esta propiedad' : r.type+' — '+r.addr.split(',')[0]}</span>
+          <span>${r.superficie}</span>
+          <span>${r.currency} ${Math.round(r.price).toLocaleString('es-AR')}</span>
+          <span>${usdM2(r)}</span>
+        </div>`;
+      }).join('');
+      const zoneAvg = Math.round(zoneMates.reduce(function(s,x){return s+usdM2(x);},0) / zoneMates.length);
+      const diffPct = zoneAvg ? Math.round(((usdM2(p) - zoneAvg) / zoneAvg) * 100) : 0;
+      pcNote.innerHTML = diffPct > 0
+        ? `Está <b>~${diffPct}% arriba</b> del promedio de la zona (${zoneAvg}).`
+        : `Está <b>~${Math.abs(diffPct)}% abajo</b> del promedio de la zona (${zoneAvg}) — el precio no parece ser el problema.`;
+    }
+
+    const zoneCounts = {};
+    properties.forEach(function(x){ zoneCounts[x.zone] = (zoneCounts[x.zone]||0) + 1; });
+    const sortedZones = Object.entries(zoneCounts).sort(function(a,b){return b[1]-a[1];});
+    const maxCount = sortedZones[0][1];
+    const topZones = sortedZones.slice(0,4);
+    if(!topZones.find(function(z){return z[0]===p.zone;})) topZones[topZones.length-1] = [p.zone, zoneCounts[p.zone]];
+
+    document.getElementById('zoneChart').innerHTML = topZones.map(function(entry){
+      const zone = entry[0], count = entry[1];
+      const isThis = zone === p.zone;
+      return `
+      <div class="zone-row">
+        <div class="zone-name ${isThis?'this-zone':''}">${zone}</div>
+        <div class="zone-bar-track"><div class="zone-bar-fill ${isThis?'this-zone':''}" style="width:${Math.round(count/maxCount*100)}%"></div></div>
+        <div class="zone-count ${isThis?'this-zone':''}">${count}</div>
+      </div>`;
+    }).join('');
+
+    const thisCount = zoneCounts[p.zone];
+    const others = sortedZones.filter(function(z){return z[0]!==p.zone;}).map(function(z){return z[1];});
+    const othersAvg = others.length ? others.reduce(function(a,b){return a+b;},0)/others.length : thisCount;
+    document.getElementById('zoneNote').innerHTML = thisCount > othersAvg * 1.4
+      ? `<b>${p.zone} tiene bastante más oferta activa</b> que el resto — es probable que el problema sea competencia, no la propiedad en sí.`
+      : `${p.zone} no tiene una oferta especialmente alta comparada con otras zonas — probablemente no sea un tema de competencia de zona.`;
+  }
+}
+
+function togglePriceCompare(ev){
+  ev.stopPropagation();
+  document.getElementById('priceCompare').classList.toggle('show');
+}
+
+function toggleZoneChart(ev){
+  ev.stopPropagation();
+  document.getElementById('zoneChartWrap').classList.toggle('show');
 }
 
 cargarFicha();
