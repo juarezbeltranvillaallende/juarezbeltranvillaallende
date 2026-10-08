@@ -85,6 +85,33 @@
   .search-box input::placeholder{ color:var(--text-faint); }
   .search-icon{ width:16px; height:16px; opacity:0.5; flex-shrink:0; }
 
+  /* AI Search icon */
+  .ai-search-icon{
+    display:flex; align-items:center; gap:6px; cursor:pointer;
+    padding:6px 10px; border-radius:6px; transition:all 0.2s;
+    font-size:13px; color:var(--text-faint); border:1px solid transparent;
+  }
+  .ai-search-icon:hover{
+    color:var(--gold); border-color:var(--gold); background:rgba(184,134,11,0.08);
+  }
+  .ai-search-icon svg{ width:14px; height:14px; }
+
+  .ai-search-panel{
+    position:fixed; bottom:40px; right:28px; z-index:100;
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:12px 16px; box-shadow:0 4px 12px rgba(0,0,0,0.1);
+    display:none; min-width:250px;
+  }
+  .ai-search-panel.show{ display:block; }
+  .ai-search-panel input{
+    width:100%; padding:8px 10px; border:1px solid var(--line);
+    border-radius:6px; font-family:'Inter',sans-serif; font-size:13px;
+    color:var(--text); background:var(--bg);
+  }
+  .ai-search-panel input:focus{
+    outline:none; border-color:var(--gold); box-shadow:0 0 0 3px rgba(184,134,11,0.1);
+  }
+
   /* State badges */
   .state-badges{ display:flex; gap:8px; flex-wrap:wrap; }
   .state-badge{
@@ -123,16 +150,6 @@
   .tag.amber{ border-color:var(--amber); background:var(--amber-bg); color:var(--amber); }
 
   .empty{ text-align:center; padding:40px; color:var(--text-faint); }
-
-  /* AI Search button - floating */
-  .ai-search-btn{
-    position:fixed; bottom:28px; right:28px; z-index:100;
-    width:52px; height:52px; border-radius:50%; background:var(--gold);
-    border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
-    box-shadow:0 4px 12px rgba(184,134,11,0.25); transition:all 0.2s;
-  }
-  .ai-search-btn:hover{ transform:scale(1.08); box-shadow:0 6px 16px rgba(184,134,11,0.35); }
-  .ai-search-btn svg{ width:24px; height:24px; color:#181A14; }
 
   /* Debug panel */
   .debug-panel{
@@ -192,6 +209,13 @@
           <option value="">Todos</option>
         </select>
       </div>
+      <div class="ai-search-icon" id="aiSearchToggle" title="Buscar con IA">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <span>IA</span>
+      </div>
     </div>
 
     <!-- State filters -->
@@ -206,13 +230,10 @@
   </main>
 </div>
 
-<!-- AI Search button -->
-<button class="ai-search-btn" id="aiSearchBtn" title="Buscar con IA">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-    <circle cx="11" cy="11" r="8"></circle>
-    <path d="m21 21-4.35-4.35"></path>
-  </svg>
-</button>
+<!-- AI Search panel -->
+<div class="ai-search-panel" id="aiSearchPanel">
+  <input type="text" id="aiSearchInput" placeholder="Buscar propiedades con IA...">
+</div>
 
 <!-- Debug panel -->
 <div class="debug-panel" id="debugPanel">
@@ -221,7 +242,7 @@
 </div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwdZE_F6TeO9fl02wYpefewFNVVy6mCuXAU-FmZXNSf-Id9MNKhuk1Hi4g-JhzQrD9nqw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxdTFRAtj_17u8RLVGiEX3p6r87my9alZ40qEr88tBs_P-UnFd7_FRROCtKe28inqIhDg/exec';
 const PHOTO_MIN = 11;
 
 let allProperties = [];
@@ -415,39 +436,32 @@ function renderCards(){
   }).join('');
 }
 
-// AI Search button handler
-document.getElementById('aiSearchBtn').addEventListener('click', function(){
-  const searchBox = document.createElement('input');
-  searchBox.type = 'text';
-  searchBox.placeholder = 'Buscar con IA...';
-  searchBox.style.cssText = `
-    position: fixed;
-    bottom: 95px;
-    right: 28px;
-    width: 280px;
-    padding: 12px 16px;
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    z-index: 99;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  `;
+// AI Search handler
+document.getElementById('aiSearchToggle').addEventListener('click', function(){
+  const panel = document.getElementById('aiSearchPanel');
+  panel.classList.toggle('show');
+  if(panel.classList.contains('show')){
+    document.getElementById('aiSearchInput').focus();
+  }
+});
 
-  searchBox.addEventListener('keyup', function(e){
-    if(e.key === 'Enter'){
-      currentSearch = this.value.toLowerCase();
-      renderCards();
-      this.remove();
-    } else if(e.key === 'Escape'){
-      this.remove();
-    }
-  });
+document.getElementById('aiSearchInput').addEventListener('keyup', function(e){
+  if(e.key === 'Enter'){
+    currentSearch = this.value.toLowerCase();
+    renderCards();
+    document.getElementById('aiSearchPanel').classList.remove('show');
+  } else if(e.key === 'Escape'){
+    document.getElementById('aiSearchPanel').classList.remove('show');
+  }
+});
 
-  document.body.appendChild(searchBox);
-  searchBox.focus();
+// Close search panel when clicking outside
+document.addEventListener('click', function(e){
+  const panel = document.getElementById('aiSearchPanel');
+  const toggle = document.getElementById('aiSearchToggle');
+  if(!panel.contains(e.target) && !toggle.contains(e.target)){
+    panel.classList.remove('show');
+  }
 });
 
 loadDashboard();
