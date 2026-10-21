@@ -406,33 +406,61 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       <div class="g3" style="margin-bottom:8px">
         <div class="f"><label>Ciudad *</label><input id="rs-vta-ciudad" type="text" value="Villa Allende" oninput="APP.rsChg()"></div>
         <div class="f"><label>Fecha del documento</label><input id="rs-vta-fecha" type="date"></div>
-        <div class="f"><label>Dirección del inmueble *</label><input id="rs-vta-dir" type="text" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Corredor/a interviniente</label><input id="rs-corredor" type="text" placeholder="Nombre del corredor"></div>
       </div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="f"><label>Dirección del inmueble *</label><input id="rs-vta-dir" type="text" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Descripción libre del inmueble</label><input id="rs-vta-desc" type="text" placeholder="Ej: Casa de 3 dorm, jardín..."></div>
+      </div>
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Nomenclatura catastral</label><input id="rs-catastral" type="text" placeholder="Ej: Secc. A - Manz. 1 - Parc. 5"></div>
+        <div class="f"><label>Matrícula registral</label><input id="rs-matricula" type="text" placeholder="Ej: 123456/1"></div>
+        <div class="f"><label>Cuenta de Rentas (DGR)</label><input id="rs-rentas" type="text" placeholder="Ej: 12345678"></div>
+      </div>
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Superficie terreno m²</label><input id="rs-sup-ter" type="text" placeholder="Ej: 300"></div>
+        <div class="f"><label>Superficie cubierta m²</label><input id="rs-sup-cub" type="text" placeholder="Ej: 120"></div>
+        <div class="f"><label>Días hábiles vigencia reserva</label><input id="rs-vta-dias" type="text" value="5"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><h2>Precio y forma de pago</h2></div>
+    <div class="cb">
       <div class="g3" style="margin-bottom:8px">
         <div class="f"><label>Precio total USD *</label><input id="rs-precio" type="text" placeholder="Ej: 120000" oninput="APP.rsChg()"></div>
         <div class="f"><label>Reserva en este acto (USD) *</label><input id="rs-res-acto" type="text" placeholder="Ej: 5000" oninput="APP.rsChg()"></div>
         <div class="f"><label>Al boleto (USD)</label><input id="rs-boleto" type="text" placeholder="Ej: 45000"></div>
       </div>
       <div class="g3" style="margin-bottom:8px">
-        <div class="f"><label>Superficie m²</label><input id="rs-sup" type="text"></div>
-        <div class="f"><label>Días hábiles vigencia reserva</label><input id="rs-vta-dias" type="text" value="5"></div>
+        <div class="f"><label>Saldo a escritura (USD)</label><input id="rs-saldo-esc" type="text" placeholder="Ej: 70000"></div>
+        <div class="f"><label>Días para firma del boleto</label><input id="rs-dias-boleto" type="text" placeholder="Ej: 30"></div>
+        <div class="f"><label>Escribano designado por</label><select id="rs-escribano"><option value="reservante">Reservante</option><option value="propietario">Propietario/a</option></select></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><h2>Contacto propietario / Notificaciones</h2></div>
+    <div class="cb">
+      <div class="g2">
         <div class="f"><label>WA propietario/cedente</label><input id="rs-wp" type="text" placeholder="Ej: +54 9 351 XXX"></div>
-      </div>
-      <div class="g2" style="margin-bottom:8px">
         <div class="f"><label>Email propietario/cedente</label><input id="rs-email-prop" type="text"></div>
-        <div class="f"><label>Días para boleto/cesión</label><input id="rs-dias-boleto" type="text" placeholder="Ej: 30"></div>
       </div>
+    </div>
+  </div>
       <!-- Solo cesión -->
       <div id="rs-ces-fields" class="hdn">
-        <div class="sl">Datos del boleto original (cesión)</div>
+      <div class="card">
+        <div class="ch"><h2>Datos del boleto original (cesión)</h2></div>
+        <div class="cb">
         <div class="g3">
           <div class="f"><label>Fecha suscripción boleto original</label><input id="rs-ces-fecha-bol" type="date"></div>
           <div class="f"><label>Vendedor original</label><input id="rs-ces-vendedor" type="text"></div>
           <div class="f"><label>Nombre del cedente *</label><input id="rs-ces-cedente" type="text" oninput="APP.rsChg()"></div>
         </div>
+        </div>
       </div>
-    </div>
-  </div>
+      </div>
   </div>
 
   <!-- OFERENTE (todos los tipos) -->
@@ -466,6 +494,11 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <div class="f"><label>Nombre y apellido</label><input id="rs-pr-n" type="text"></div>
         <div class="f"><label>DNI</label><input id="rs-pr-d" type="text"></div>
         <div class="f"><label>% de comisión acordado</label><input id="rs-pr-pct" type="text" placeholder="3"></div>
+      </div>
+      <div class="g3" style="margin-top:8px">
+        <div class="f"><label>Estado civil</label><select id="rs-pr-ecivil"><option value="soltero">Soltero/a</option><option value="casado">Casado/a</option><option value="divorciado">Divorciado/a</option><option value="viudo">Viudo/a</option></select></div>
+        <div class="f"><label>Domicilio</label><input id="rs-pr-dom" type="text"></div>
+        <div class="f"><label>Email</label><input id="rs-pr-em" type="email"></div>
       </div>
     </div>
   </div>
@@ -1463,9 +1496,9 @@ async function genReserva(){
   var ofNom=_sr('rs-of-n');
   var ofDni=_sr('rs-of-d');
   var ofCuit=_sr('rs-of-cuit');
-  var ofEc=_sr('rs-of-ec');
+  var ofEc=_sr('rs-of-ecivil');
   var ofDom=_sr('rs-of-dom');
-  var ofEmail=_sr('rs-of-email');
+  var ofEmail=_sr('rs-of-em');
   var ofTel=_sr('rs-of-tel');
   var ofWa=_sr('rs-of-wa');
   var ofFem=_gOf('of');
@@ -1537,56 +1570,195 @@ async function genReserva(){
   }
   else if(RTIPO==='compraventa'){
     var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
-    var fecha=_sr('rs-vta-fecha')||'';
+    var fechaDoc=_sr('rs-vta-fecha')||'';
+    var corredor=_sr('rs-corredor')||'';
     var dir=_sr('rs-vta-dir');
+    var descInm=_sr('rs-vta-desc');
+    var catastral=_sr('rs-catastral');
+    var matricula=_sr('rs-matricula');
+    var rentas=_sr('rs-rentas');
+    var supTer=_sr('rs-sup-ter');
+    var supCub=_sr('rs-sup-cub');
     var precio=_sr('rs-precio');
     var resActo=_sr('rs-res-acto');
     var alBoleto=_sr('rs-boleto');
-    var sup=_sr('rs-sup');
-    var diasHab=_sr('rs-dias-hab')||'5';
-    var waProp=_sr('rs-wa-prop');
+    var saldoEsc=_sr('rs-saldo-esc');
+    var diasHab=_sr('rs-vta-dias')||'5';
+    var diasBol=_sr('rs-dias-boleto');
+    var escribano=_sr('rs-escribano')||'reservante';
+    var waProp=_sr('rs-wp');
     var emailProp=_sr('rs-email-prop');
-    var diasBol=_sr('rs-dias-bol');
-    var comProp=_sr('rs-com-prop');
+    var prPct=_sr('rs-pr-pct')||'3';
+    var ofEcStr=(function(){
+      var ec=document.getElementById('rs-of-ecivil'); return ec?ec.options[ec.selectedIndex].text:'';
+    })();
+
+    // Helper para número en letras simple (solo para monto de reserva)
+    function numLetras(n){
+      var ns=String(n).replace(/[^0-9]/g,'');
+      var num=parseInt(ns)||0;
+      var miles=['','MIL','DOS MIL','TRES MIL','CUATRO MIL','CINCO MIL','SEIS MIL','SIETE MIL','OCHO MIL','NUEVE MIL',
+                 'DIEZ MIL','ONCE MIL','DOCE MIL','TRECE MIL','CATORCE MIL','QUINCE MIL','DIECISÉIS MIL','DIECISIETE MIL','DIECIOCHO MIL','DIECINUEVE MIL',
+                 'VEINTE MIL','VEINTIÚN MIL','VEINTIDÓS MIL','VEINTITRÉS MIL','VEINTICUATRO MIL','VEINTICINCO MIL'];
+      var cients=['','CIEN','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
+      var decs=['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
+      var unis=['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE',
+                'DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE','VEINTIUNO'];
+      if(num===0) return 'CERO';
+      if(num>99999) return ns;
+      var r='';
+      var m=Math.floor(num/1000);
+      var c=num%1000;
+      if(m>0 && m<=25) r+=miles[m]+' ';
+      else if(m>0){
+        var mc=Math.floor(m/100); var md=m%100;
+        if(mc>0) r+=cients[mc]+' ';
+        if(md>20) r+=decs[Math.floor(md/10)]+(md%10?' Y '+unis[md%10]:'')+' ';
+        else if(md>0) r+=unis[md]+' ';
+        r+='MIL ';
+      }
+      var cv=Math.floor(c/100); var cd=c%100;
+      if(cv>0) r+=(c===100?'CIEN ':cients[cv]+' ');
+      if(cd>20) r+=decs[Math.floor(cd/10)]+(cd%10?' Y '+unis[cd%10]:'')+' ';
+      else if(cd>0) r+=unis[cd]+' ';
+      return r.trim();
+    }
+
+    var resActoNum=resActo.replace(/[^0-9]/g,'');
+    var resActoLetras=numLetras(resActoNum);
+
+    var corredorStr=corredor?corredor:'_______________';
+    var ofSrTxt=(ofFem?'la Sra. ':'el Sr. ');
+    var ofSrTxtX=(ofFem?'La Sra. ':'El Sr. ');
+
+    // Armar texto de apertura
+    var parApertura='En la ciudad de '+ciudad+', Provincia de Córdoba, a los '+fechaDoc+
+      ', por intermedio de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., interviniendo '+
+      (ofFem?'la Corredora Pública ':'el Corredor Público ')+corredorStr+
+      ', Matrícula CPI N.º 6390, '+ofSrTxtX+ofNom+
+      ', DNI N.º '+ofDni+
+      (ofCuit?', CUIT/CUIL N.º '+ofCuit:'')+
+      ', estado civil '+ofEcStr+
+      ', con domicilio en '+ofDom+
+      (ofEmail?', correo electrónico '+ofEmail:'')+
+      ((ofTel||ofWa)?' y teléfono/WhatsApp '+(ofWa||ofTel):'')+
+      ', en adelante EL/LA OFERENTE, entrega en concepto de RESERVA la suma de DÓLARES ESTADOUNIDENSES '+
+      resActoLetras+' (USD '+resActo+')'+
+      ' como señal y en concepto de principio de pago a cuenta del precio acordado, en los siguientes términos y condiciones:';
+
     body+=rTit('RESERVA DE VENTA – COMPRAVENTA');
     body+=rBr();
-    body+=rTx('En '+ciudad+', a '+fecha+', '+ofSrx+ofNom+', DNI N° '+ofDni+(ofCuit?', CUIT '+ofCuit:'')+
-      (ofEc?', '+ofEc:'')+', con domicilio en '+ofDom+
-      ', en adelante "EL/LA OFERENTE", se compromete a adquirir el inmueble ubicado en '+dir+
-      (sup?' (superficie aprox. '+sup+' m²)':'')+
-      ', en las siguientes condiciones:');
+    body+=rTx(parApertura);
     body+=rBr();
-    body+=rTxB('PRECIO Y FORMA DE PAGO:');
-    body+=rTx('Precio total: U$S '+precio+' (dólares estadounidenses)');
-    body+=rTx('Reserva entregada en este acto: U$S '+resActo);
-    if(alBoleto) body+=rTx('A pagar al momento del boleto: U$S '+alBoleto);
+
+    // CLÁUSULA 1 - INMUEBLE
+    body+=rSub('1. INMUEBLE');
+    var inm1='Ubicación: '+dir+'.';
+    if(catastral) inm1+=' Nomenclatura catastral: '+catastral+'.';
+    if(matricula) inm1+=' Matrícula: '+matricula+'.';
+    if(rentas) inm1+=' Cuenta de Rentas: '+rentas+'.';
+    var supStr='';
+    if(supTer) supStr+='Superficie terreno: '+supTer+' m².';
+    if(supCub) supStr+=(supStr?' ':'')+'Superficie cubierta: '+supCub+' m².';
+    if(supStr) inm1+=' '+supStr;
+    if(descInm) inm1+=' '+descInm+'.';
+    body+=rTx(inm1);
     body+=rBr();
-    body+=rTx('El saldo restante se abonará al momento de la escritura traslativa de dominio.');
+
+    // CLÁUSULA 2 - PRECIO Y FORMA DE PAGO
+    body+=rSub('2. PRECIO Y FORMA DE PAGO');
+    body+=rTx('El precio de venta convenido es de DÓLARES ESTADOUNIDENSES '+numLetras(precio.replace(/[^0-9]/g,''))+' (USD '+precio+'), pagadero de la siguiente forma:');
+    body+=rTx('a) En este acto, en concepto de RESERVA: USD '+resActo+'.-');
+    if(alBoleto) body+=rTx('b) Al momento de la firma del boleto de compraventa: USD '+alBoleto+'.-');
+    var saldoFinal=saldoEsc||(alBoleto?'saldo':'resto del precio');
+    if(saldoEsc) body+=rTx((alBoleto?'c)':'b)')+' Al momento de la escritura traslativa de dominio: USD '+saldoEsc+'.-');
+    else body+=rTx((alBoleto?'c)':'b)')+' El saldo restante al momento de la escritura traslativa de dominio.');
+    body+=rTx('El pago se realizará en dólares estadounidenses, billetes de curso legal, billetes grandes (denominación USD 100), serie 1996 en adelante, en efectivo. Las partes renuncian expresamente a la opción prevista en el art. 765 del CCYC.');
     body+=rBr();
-    body+=rTx('La presente reserva tendrá vigencia por '+diasHab+' días hábiles a partir de la fecha. Vencido dicho plazo sin que se suscriba el boleto de compraventa por causas imputables al oferente, la suma entregada quedará en poder del propietario en concepto de seña y a título de daños y perjuicios. Si la operación no se concretare por causas imputables al propietario, éste deberá devolver la suma recibida con más su equivalente en concepto de multa.');
+
+    // CLÁUSULA 3 - PLAZO DE VIGENCIA
+    body+=rSub('3. PLAZO DE VIGENCIA');
+    var diasHabStr=diasHab==='5'?'CINCO (5)':diasHab;
+    body+=rTx('La presente reserva tendrá una vigencia de '+diasHabStr+' días hábiles a contar desde la fecha de su suscripción. La notificación de aceptación o rechazo deberá realizarse por WhatsApp'+(waProp?' al '+waProp:'')+(emailProp?' y correo electrónico '+emailProp:'')+'. Vencido el plazo sin respuesta del propietario/a, la presente caduca automáticamente y la suma entregada será reintegrada al/la oferente.');
     body+=rBr();
-    if(waProp||emailProp){
-      body+=rTxB('Datos de contacto del propietario para notificaciones:');
-      if(waProp) body+=rTx('WhatsApp: '+waProp);
-      if(emailProp) body+=rTx('Email: '+emailProp);
-      body+=rBr();
-    }
-    if(diasBol){
-      body+=rTx('Plazo para la firma del boleto de compraventa: '+diasBol+' días corridos desde la aceptación.');
-      body+=rBr();
-    }
-    body+=rTx('Datos de contacto del oferente: Email: '+ofEmail+' | Tel: '+ofTel+(ofWa?' | WA: '+ofWa:''));
+
+    // CLÁUSULA 4 - CONDICIÓN DEL INMUEBLE
+    body+=rSub('4. CONDICIÓN DEL INMUEBLE');
+    body+=rTx('El/La propietario/a manifiesta que el inmueble se encuentra libre de todo gravamen, hipoteca, embargo, inhibición u otro impedimento legal; libre de deudas por impuestos, tasas, contribuciones y servicios; con todos los servicios activos; libre de ocupantes; y con títulos perfectos y transferibles, condición ésta esencial para la operación.');
     body+=rBr();
+
+    // CLÁUSULA 5 - ACEPTACIÓN / RECHAZO / DESISTIMIENTO
+    body+=rSub('5. ACEPTACIÓN, RECHAZO Y DESISTIMIENTO');
+    body+=rTx('5.a) ACEPTACIÓN: Si el/la propietario/a aceptare la presente oferta, las partes deberán proceder a la firma del boleto de compraventa dentro de los '+( diasBol||'___' )+' días corridos de notificada la aceptación.');
+    body+=rTx('5.b) RECHAZO: Si el/la propietario/a no aceptare la presente oferta, la suma entregada en concepto de reserva será devuelta al/la oferente dentro de las 48 horas de comunicado el rechazo, sin deducción alguna.');
+    body+=rTx('5.c) DESISTIMIENTO DEL/LA RESERVANTE: Si el/la oferente desistiese de la operación una vez aceptada la reserva, perderá la suma entregada en este acto, distribuyéndose un CINCUENTA POR CIENTO (50%) para el/la propietario/a y un CINCUENTA POR CIENTO (50%) para ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., en concepto de honorarios y gastos.');
+    body+=rTx('5.d) DESISTIMIENTO DEL/LA PROPIETARIO/A: Si el/la propietario/a desistiese de la operación una vez aceptada la reserva, deberá devolver al/la oferente el DOBLE de la suma recibida en concepto de reserva, dentro de las 48 horas de producido el desistimiento.');
+    body+=rBr();
+
+    // CLÁUSULA 6 - AUTORIZACIÓN AL CORREDOR
+    body+=rSub('6. AUTORIZACIÓN AL CORREDOR INMOBILIARIO');
+    body+=rTx('El/La oferente autoriza a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. a recibir y custodiar la suma de USD '+resActo+' entregada en este acto en concepto de reserva, hasta tanto corresponda su transferencia o devolución conforme los términos del presente.');
+    body+=rBr();
+
+    // CLÁUSULA 7 - HONORARIOS
+    body+=rSub('7. HONORARIOS');
+    body+=rTx('Los honorarios de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. se establecen en el TRES POR CIENTO ('+prPct+'%) del precio total de venta, a cargo de cada parte (comprador/a y vendedor/a) por separado, pagaderos al momento de la escritura traslativa de dominio. En caso de desistimiento del/la reservante, los honorarios se cobrarán del monto perdido por éste/a. En caso de desistimiento del/la propietario/a, los honorarios estarán a cargo del/la propietario/a.');
+    body+=rBr();
+
+    // CLÁUSULA 8 - POSESIÓN Y ESTADO DE OCUPACIÓN
+    body+=rSub('8. POSESIÓN Y ESTADO DE OCUPACIÓN');
+    body+=rTx('El/La propietario/a garantiza que el inmueble será entregado libre de ocupantes y de bienes de terceros al momento de la escritura. En caso de que el inmueble se encuentre actualmente locado, el/la propietario/a deberá acreditar fehacientemente la finalización del contrato de locación y la restitución del inmueble con anterioridad a la fecha de escrituración.');
+    body+=rBr();
+
+    // CLÁUSULA 9 - ESCRIBANO
+    body+=rSub('9. ESCRIBANO');
+    var escStr=escribano==='propietario'?'EL/LA PROPIETARIO/A':'EL/LA RESERVANTE';
+    var escOtra=escribano==='propietario'?'el/la reservante':'el/la propietario/a';
+    body+=rTx('El escribano interviniente será designado por '+escStr+'. Los gastos de escrituración correspondientes al impuesto de sellos, honorarios del escribano y demás gastos serán distribuidos de acuerdo a los usos y costumbres locales, salvo pacto en contrario entre las partes.');
+    body+=rBr();
+
+    // CLÁUSULA 10 - DOMICILIOS Y NOTIFICACIONES
+    body+=rSub('10. DOMICILIOS Y NOTIFICACIONES');
+    body+=rTx('EL/LA OFERENTE constituye domicilio especial en '+ofDom+(ofEmail?'. Correo electrónico: '+ofEmail:'')+((ofWa||ofTel)?'. WhatsApp/Teléfono: '+(ofWa||ofTel):'')+'.');
     if(prNom){
-      var comStr=comProp?' ('+comProp+'% de comisión a cargo del vendedor)':'';
-      body+=rTxB('ACEPTACIÓN DEL PROPIETARIO/A:');
-      body+=rTx((prFem?'La Sra. ':'El Sr. ')+prNom+', DNI N° '+prDni+', en carácter de propietario/a, acepta la presente oferta'+comStr+'.');
-      body+=rBr();
+      body+=rTx('EL/LA PROPIETARIO/A, '+prNom+', constituye domicilio especial en '+(document.getElementById('rs-pr-dom')?_sr('rs-pr-dom'):dir)+(emailProp?'. Correo electrónico: '+emailProp:'')+(waProp?'. WhatsApp: '+waProp:'')+'.');
     }
-    body+=rBr(); body+=rBr(); body+=rBr();
-    body+=rTx('Firma del Oferente: _______________________________     Aclaración: '+ofNom);
-    if(prNom) body+=rTx('Firma del Propietario/a: _______________________________     Aclaración: '+prNom);
-    body+=rTx('Firma y sello ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.: _______________________________');
+    body+=rTx('Las notificaciones cursadas por los medios indicados se tendrán por válidas y fehacientes a las 24 horas de su envío.');
+    body+=rBr();
+
+    // CLÁUSULA 11 - JURISDICCIÓN
+    body+=rSub('11. JURISDICCIÓN');
+    body+=rTx('Para cualquier controversia que pudiera surgir del presente, las partes se someten a la jurisdicción de los Tribunales Ordinarios de la Ciudad de Córdoba, renunciando a cualquier otro fuero o jurisdicción que pudiera corresponderles.');
+    body+=rBr();
+
+    // FIRMAS
+    body+=rBr();
+    body+=rTx('_______________________________          _______________________________          _______________________________');
+    body+=rTx('Reservante                               Roberts Otero Serv. Inm. S.A.S.          Propietario/a (si acepta en el acto)');
+    body+=rTx(ofNom+'                               Matrícula CPI N.º 6390');
+    body+=rBr();
+
+    // SECCIÓN ACEPTACIÓN DEL PROPIETARIO/A
+    if(prNom){
+      body+=rBr();
+      body+=rPar('─────────────────────────────────────────────────────────────────────────',false,true,10);
+      body+=rTit('ACEPTACIÓN DEL/LA PROPIETARIO/A');
+      var prEcEl=document.getElementById('rs-pr-ecivil');
+      var prEcStr=prEcEl?prEcEl.options[prEcEl.selectedIndex].text:'';
+      body+=rTx('En la ciudad de '+ciudad+', Provincia de Córdoba, a los '+fechaDoc+
+        ', '+( prFem?'la Sra. ':'el Sr. ')+prNom+
+        ', DNI N.º '+prDni+
+        (prEcStr?', estado civil '+prEcStr:'')+
+        ', propietario/a del inmueble descripto, ACEPTÓ la propuesta de reserva en los términos precedentemente indicados.');
+      body+=rBr();
+      body+=rTx('Comisión acordada: '+prPct+'% del precio de venta a mi cargo, pagaderos al momento de la escritura.');
+      body+=rTx('Autorizo a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. a retener del producido el importe correspondiente a mis honorarios.');
+      body+=rBr();
+      body+=rBr();
+      body+=rTx('_______________________________');
+      body+=rTx((prFem?'La Sra. ':'El Sr. ')+prNom);
+      body+=rTx('Propietario/a');
+    }
   }
   else if(RTIPO==='cesion'){
     var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
@@ -1595,15 +1767,15 @@ async function genReserva(){
     var precio=_sr('rs-precio');
     var resActo=_sr('rs-res-acto');
     var alBoleto=_sr('rs-boleto');
-    var sup=_sr('rs-sup');
-    var diasHab=_sr('rs-dias-hab')||'5';
-    var waProp=_sr('rs-wa-prop');
+    var sup=_sr('rs-sup-ter');
+    var diasHab=_sr('rs-vta-dias')||'5';
+    var waProp=_sr('rs-wp');
     var emailProp=_sr('rs-email-prop');
-    var diasBol=_sr('rs-dias-bol');
+    var diasBol=_sr('rs-dias-boleto');
     var fechaBoleto=_sr('rs-ces-fecha');
     var vendedor=_sr('rs-ces-vendedor');
     var cedente=_sr('rs-ces-cedente');
-    var comProp=_sr('rs-com-prop');
+    var comProp=_sr('rs-pr-pct');
     body+=rTit('RESERVA DE VENTA – CESIÓN DE BOLETO');
     body+=rBr();
     body+=rTx('En '+ciudad+', a '+fecha+', '+ofSrx+ofNom+', DNI N° '+ofDni+(ofCuit?', CUIT '+ofCuit:'')+
