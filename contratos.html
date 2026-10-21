@@ -81,7 +81,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .hi-info span{font-size:11px;color:var(--g)}
 .emp{text-align:center;padding:2rem;color:var(--g);font-size:12px}
 .hdn{display:none!important}
-body.rv{--az:#7B3F00;--azm:#C06B1A;--azc:#FEF3C7}
+body.rv{--az:#7B3F00;--azm:#C06B1A;--azc:#FEF3C7}body.rs{--az:#1B5E20;--azm:#2E7D32;--azc:#E8F5E9}body.rs .bar{background:#1B5E20}body.rs .tb.on{border-color:#2E7D32;background:#E8F5E9}body.rs .tb.on svg{stroke:#1B5E20}body.rs .tb.on span{color:#1B5E20}body.rs .btnp{background:#2E7D32;border-color:#2E7D32}body.rs .pf{background:#2E7D32}
 body.rv .bar{background:#7B3F00}
 body.rv .tb.on{border-color:#C06B1A;background:#FEF3C7}
 body.rv .tb.on svg{stroke:#7B3F00}
@@ -100,6 +100,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
   <div class="nav">
     <button class="nb on" id="bn-nv" onclick="APP.setModo('nuevo')">&#128196; Nuevo</button>
     <button class="nb" id="bn-rv" onclick="APP.setModo('renov')">&#128260; Renovacion</button>
+    <button class="nb" id="bn-rs" onclick="APP.setModo('reserva')">&#128203; Reserva</button>
     <div class="sp"></div>
     <button class="nb on" id="bn-ct" onclick="APP.showPg('ct',this)">Contrato</button>
     <button class="nb" id="bn-hs" onclick="APP.showPg('hs',this)">Historial <span id="hcnt" style="background:rgba(255,255,255,.18);border-radius:10px;padding:1px 6px;font-size:10px;margin-left:2px"></span></button>
@@ -122,6 +123,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <button class="tb" data-t="depto" onclick="APP.selT(this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><span>Departamento</span></button>
         <button class="tb" data-t="estrenar" onclick="APP.selT(this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span>Depto a estrenar</span></button>
         <button class="tb" data-t="local" onclick="APP.selT(this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><line x1="9" y1="22" x2="9" y2="12"/><line x1="15" y1="22" x2="15" y2="12"/><line x1="9" y1="12" x2="15" y2="12"/></svg><span>Local / Oficina</span></button>
+        <button class="tb" data-t="galpon" onclick="APP.selT(this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9l10-6 10 6v12H2z"/><path d="M2 9h20"/><rect x="8" y="14" width="8" height="7"/></svg><span>Galp&#243;n</span></button>
       </div>
     </div>
   </div>
@@ -345,6 +347,140 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 </div>
 </div>
 
+<div class="pg" id="pg-rs">
+<div class="wrap">
+  <div class="prog">
+    <div class="pl"><span id="rs-plbl">Selecciona el tipo de reserva</span><span id="rs-ppct">0%</span></div>
+    <div class="pb"><div class="pf" id="rs-pfill" style="width:0%"></div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><h2>Tipo de reserva</h2></div>
+    <div class="cb">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+        <button class="tb" data-r="alquiler" onclick="APP.selR(this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span>Reserva de Alquiler</span></button>
+        <button class="tb" data-r="compraventa" onclick="APP.selR(this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><span>Reserva Venta — Compraventa</span></button>
+        <button class="tb" data-r="cesion" onclick="APP.selR(this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/></svg><span>Reserva Venta — Cesión de Boleto</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="rs-fb" class="hdn">
+  <div class="card">
+    <div class="ch"><h2>Nombre del archivo</h2></div>
+    <div class="cb"><div class="g2"><div class="f"><label>Nombre del archivo Word (sin .docx)</label><input id="rs-fn" type="text" placeholder="Ej: Reserva Garcia San Martin 542"><span class="nota">Vacío = tipo + apellido + dirección</span></div></div></div>
+  </div>
+
+  <!-- ALQUILER FIELDS -->
+  <div id="rs-alq-fields" class="hdn">
+  <div class="card">
+    <div class="ch"><h2>Datos de la reserva</h2></div>
+    <div class="cb">
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Ciudad *</label><input id="rs-ciudad" type="text" value="Villa Allende" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Fecha del documento</label><input id="rs-fecha" type="date"></div>
+        <div class="f"><label>Dirección del inmueble *</label><input id="rs-dir" type="text" oninput="APP.rsChg()"></div>
+      </div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="f"><label>Monto de reserva (Pesos) *</label><input id="rs-monto" type="text" placeholder="Ej: 150000" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Forma de pago</label><select id="rs-fpago"><option value="efectivo">Dinero efectivo</option><option value="transferencia">Transferencia bancaria</option></select></div>
+      </div>
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Alquiler mensual (Pesos) *</label><input id="rs-alqm" type="text" placeholder="Ej: 500000" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Ajuste</label><select id="rs-ajuste"><option>Trimestral IPC INDEC</option><option>Cuatrimestral IPC INDEC</option></select></div>
+        <div class="f"><label>Plazo</label><select id="rs-plazo"><option value="24">24 meses</option><option value="36">36 meses</option><option value="48">48 meses</option></select></div>
+      </div>
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Inicio locación</label><input id="rs-ini" type="date"></div>
+        <div class="f"><label>Días hábiles vigencia reserva</label><input id="rs-dias" type="text" value="5" placeholder="5"></div>
+        <div class="f"><label>Honorarios corredor (Pesos) *</label><input id="rs-honor" type="text" placeholder="Ej: 150000" oninput="APP.rsChg()"></div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- VENTA FIELDS (compraventa y cesión) -->
+  <div id="rs-vta-fields" class="hdn">
+  <div class="card">
+    <div class="ch"><h2>Datos de la reserva</h2></div>
+    <div class="cb">
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Ciudad *</label><input id="rs-vta-ciudad" type="text" value="Villa Allende" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Fecha del documento</label><input id="rs-vta-fecha" type="date"></div>
+        <div class="f"><label>Dirección del inmueble *</label><input id="rs-vta-dir" type="text" oninput="APP.rsChg()"></div>
+      </div>
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Precio total USD *</label><input id="rs-precio" type="text" placeholder="Ej: 120000" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Reserva en este acto (USD) *</label><input id="rs-res-acto" type="text" placeholder="Ej: 5000" oninput="APP.rsChg()"></div>
+        <div class="f"><label>Al boleto (USD)</label><input id="rs-boleto" type="text" placeholder="Ej: 45000"></div>
+      </div>
+      <div class="g3" style="margin-bottom:8px">
+        <div class="f"><label>Superficie m²</label><input id="rs-sup" type="text"></div>
+        <div class="f"><label>Días hábiles vigencia reserva</label><input id="rs-vta-dias" type="text" value="5"></div>
+        <div class="f"><label>WA propietario/cedente</label><input id="rs-wp" type="text" placeholder="Ej: +54 9 351 XXX"></div>
+      </div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="f"><label>Email propietario/cedente</label><input id="rs-email-prop" type="text"></div>
+        <div class="f"><label>Días para boleto/cesión</label><input id="rs-dias-boleto" type="text" placeholder="Ej: 30"></div>
+      </div>
+      <!-- Solo cesión -->
+      <div id="rs-ces-fields" class="hdn">
+        <div class="sl">Datos del boleto original (cesión)</div>
+        <div class="g3">
+          <div class="f"><label>Fecha suscripción boleto original</label><input id="rs-ces-fecha-bol" type="date"></div>
+          <div class="f"><label>Vendedor original</label><input id="rs-ces-vendedor" type="text"></div>
+          <div class="f"><label>Nombre del cedente *</label><input id="rs-ces-cedente" type="text" oninput="APP.rsChg()"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <!-- OFERENTE (todos los tipos) -->
+  <div class="card">
+    <div class="ch"><h2>Oferente / Reservante</h2></div>
+    <div class="cb">
+      <div class="g4">
+        <div class="f"><label>Género</label><div class="gbtn"><button class="gb on" data-g="m" onclick="APP.rsSetG('of',this)">Hombre</button><button class="gb" data-g="f" onclick="APP.rsSetG('of',this)">Mujer</button></div></div>
+        <div class="f"><label>Nombre y apellido *</label><input id="rs-of-n" type="text" oninput="APP.rsChg()"></div>
+        <div class="f"><label>DNI *</label><input id="rs-of-d" type="text" oninput="APP.rsChg()"></div>
+        <div class="f"><label>CUIT</label><input id="rs-of-cuit" type="text"></div>
+      </div>
+      <div class="g3" style="margin-top:8px">
+        <div class="f"><label>Estado civil</label><select id="rs-of-ecivil"><option value="soltero">Soltero/a</option><option value="casado">Casado/a</option><option value="divorciado">Divorciado/a</option><option value="viudo">Viudo/a</option></select></div>
+        <div class="f"><label>Domicilio</label><input id="rs-of-dom" type="text"></div>
+        <div class="f"><label>Email</label><input id="rs-of-em" type="email"></div>
+      </div>
+      <div class="g2" style="margin-top:8px">
+        <div class="f"><label>Teléfono / WhatsApp</label><input id="rs-of-tel" type="text"></div>
+        <div class="f"><label>WA oferente (para notificaciones)</label><input id="rs-of-wa" type="text" placeholder="Ej: +54 9 351 XXX"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROPIETARIO/CEDENTE (para completar si acepta en el acto) -->
+  <div class="card">
+    <div class="ch"><h2>Propietario / Cedente (si acepta en el acto)</h2></div>
+    <div class="cb">
+      <div class="g4">
+        <div class="f"><label>Género</label><div class="gbtn"><button class="gb on" data-g="m" onclick="APP.rsSetG('pr',this)">Hombre</button><button class="gb" data-g="f" onclick="APP.rsSetG('pr',this)">Mujer</button></div></div>
+        <div class="f"><label>Nombre y apellido</label><input id="rs-pr-n" type="text"></div>
+        <div class="f"><label>DNI</label><input id="rs-pr-d" type="text"></div>
+        <div class="f"><label>% de comisión acordado</label><input id="rs-pr-pct" type="text" placeholder="3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ch">
+      <div id="rs-bst" class="badge bwrn">Faltan campos</div>
+      <button class="btn btnp" id="rs-btn-dl" onclick="APP.genReserva()" disabled style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar Reserva</button>
+    </div>
+  </div>
+  </div><!-- rs-fb -->
+</div>
+</div>
+
+
 <div class="pg" id="pg-hs">
 <div class="wrap">
   <div class="card">
@@ -437,10 +573,17 @@ function showPg(id,btn){
 
 function setModo(m){
   MODO=m;
-  var r=(m==='renov');
-  document.getElementById('bn-nv').classList.toggle('on',!r);
+  var r=(m==='renov'), s=(m==='reserva');
+  document.getElementById('bn-nv').classList.toggle('on',!r&&!s);
   document.getElementById('bn-rv').classList.toggle('on',r);
+  var brs=document.getElementById('bn-rs'); if(brs) brs.classList.toggle('on',s);
   document.body.classList.toggle('rv',r);
+  document.body.classList.toggle('rs',s);
+  if(s){
+    showPg('rs',null);
+    return;
+  }
+  showPg('ct',null);
   if(TIPO) hdn('pnl-rv',!r);
   if(!r){
     CLO={}; CLE={};
@@ -458,9 +601,9 @@ function selT(btn){
   btn.classList.add('on');
   TIPO=btn.dataset.t;
   hdn('fb',false);
-  var L=TIPO==='local', D=(TIPO==='depto'||TIPO==='estrenar'), C=TIPO==='country', SE=TIPO==='estrenar';
-  hdn('fd-sup',!L); hdn('fd-cntry',!C); hdn('fd-coch',!SE); hdn('fd-cons',!D);
-  hdn('fd-dest',!L); hdn('fd-masc',!D);
+  var L=TIPO==='local', D=(TIPO==='depto'||TIPO==='estrenar'), C=TIPO==='country', SE=TIPO==='estrenar', G=TIPO==='galpon';
+  hdn('fd-sup',!(L||G)); hdn('fd-cntry',!C); hdn('fd-coch',!SE); hdn('fd-cons',!D);
+  hdn('fd-dest',!(L||G)); hdn('fd-masc',!D);
   var bt=document.getElementById('btipo');
   bt.textContent=btn.querySelector('span').textContent; bt.style.display='inline-flex';
   if(MODO==='renov') hdn('pnl-rv',false);
@@ -1047,7 +1190,7 @@ function numLetras(n){
 
 async function genWord(){
   try {
-    var T=TIPO, L=T==='local', D=(T==='depto'||T==='estrenar'), SE=T==='estrenar', C=T==='country';
+    var T=TIPO, L=T==='local', D=(T==='depto'||T==='estrenar'), SE=T==='estrenar', C=T==='country', G=T==='galpon';
     var hasMasc=D&&document.getElementById('mascotas').checked;
     var inclV=document.getElementById('cl-venta').checked;
     var bajaS=document.getElementById('baja').checked;
@@ -1081,13 +1224,14 @@ async function genWord(){
 
     c+=wP(cl(),{b:true,sb:200,sa:80});
     if(SE) c+=wP('El Locador, cede en locación al Locatario y este acepta, el bien inmueble de su propiedad que se describe como: Un departamento sito en calle '+v('dir')+', Barrio '+v('barrio')+', de la ciudad de '+v('ciudad')+', provincia de Córdoba y cuya identificación de la DGR es '+v('dgr')+'. La descripción del inmueble y su equipamiento se encuentra detallada en el anexo 1- acta de inventario, que forma parte integrante de este contrato'+coch+'. El departamento es "a estrenar", y se encuentra en perfecto estado de conservación e higiene, que el Locatario declara conocer y aceptar, corriendo exclusivamente a partir de la fecha el mantenimiento, limpieza y/o reparación de todas las instalaciones por exclusiva cuenta del Locatario. Esta locación se pacta por el término de '+dL+' meses a contar del día PRIMERO (01) de '+fLU(v('fi'))+', venciendo en consecuencia el día '+v('fv')+', para ser destinado a vivienda exclusivamente, no pudiendo el locatario darle otro destino.-');
+    else if(G) c+=wP('El Locador, cede en locación al Locatario y este acepta, el bien inmueble de su propiedad que se describe como un Galpón'+(v('sup')?' de '+v('sup')+' m2,':'')+(v('sup')?'':',')+' sito en calle '+v('dir')+', Barrio '+v('barrio')+', de la ciudad de '+v('ciudad')+', provincia de Córdoba y cuya identificación de la DGR es '+v('dgr')+'. Esta locación se pacta por el término de '+dL+' meses a contar del día PRIMERO (01) de '+fLU(v('fi'))+', venciendo en consecuencia el día '+v('fv')+', para ser destinado a uso comercial/industrial exclusivamente, no pudiendo el locatario darle otro destino.-');
     else if(L) c+=wP('El Locador, cede en locación al Locatario y este acepta, el bien inmueble de su propiedad que se describe como un Local comercial/oficina'+(v('sup')?' de '+v('sup')+' m2,':'')+(v('sup')?'':',')+' sito en calle '+v('dir')+', Barrio '+v('barrio')+', de la ciudad de '+v('ciudad')+', provincia de Córdoba y cuya identificación de la DGR es '+v('dgr')+'. Esta locación se pacta por el término de '+dL+' meses a contar del día PRIMERO (01) de '+fLU(v('fi'))+', venciendo en consecuencia el día '+v('fv')+', para ser destinado a uso comercial exclusivamente, no pudiendo el locatario darle otro destino.-');
     else if(C) c+=wP('El Locador, cede en locación al Locatario y este acepta, el bien inmueble de su propiedad que se describe como: Una casa sita en calle '+v('dir')+', Barrio residencial '+v('barrio')+', de la ciudad de '+v('ciudad')+', provincia de Córdoba y cuya identificación de la DGR es '+v('dgr')+'. Esta locación se pacta por el término de '+dL+' meses a contar del día PRIMERO (01) de '+fLU(v('fi'))+', venciendo en consecuencia el día '+v('fv')+', para ser destinado a vivienda exclusivamente, no pudiendo el locatario darle otro destino.-');
     else if(D) c+=wP('El Locador, cede en locación al Locatario y este acepta, el bien inmueble de su propiedad que se describe como: Un departamento sito en calle '+v('dir')+', Barrio '+v('barrio')+', de la ciudad de '+v('ciudad')+', provincia de Córdoba y cuya identificación de la DGR es '+v('dgr')+'. Esta locación se pacta por el término de '+dL+' meses a contar del día PRIMERO (01) de '+fLU(v('fi'))+', venciendo en consecuencia el día '+v('fv')+', para ser destinado a vivienda exclusivamente, no pudiendo el locatario darle otro destino.-');
     else c+=wP('El Locador, cede en locación al Locatario y este acepta, el bien inmueble de su propiedad que se describe como: Una casa, sita en calle '+v('dir')+', Barrio '+v('barrio')+', de la ciudad de '+v('ciudad')+', provincia de Córdoba y cuya identificación de la DGR es '+v('dgr')+'. Esta locación se pacta por el término de '+dL+' meses a contar del día PRIMERO (01) de '+fLU(v('fi'))+', venciendo en consecuencia el día '+v('fv')+', para ser destinado a vivienda exclusivamente, no pudiendo el locatario darle otro destino.-');
 
     c+=wP(cl(),{b:true,sb:200,sa:80});
-    c+=wPcl('Queda prohibido al Locatario, ceder el presente contrato, transferir, subarrendar, prestar total o parcialmente la propiedad o hacerse reemplazar por terceros'+(L?'.-':' ( art. 1213 y 1214  CCYC).-'));
+    c+=wPcl('Queda prohibido al Locatario, ceder el presente contrato, transferir, subarrendar, prestar total o parcialmente la propiedad o hacerse reemplazar por terceros'+((L||G)?'.-':' ( art. 1213 y 1214  CCYC).-'));
     c+=wP(cl(),{b:true,sb:200,sa:80});
     (function(){
       var precioTxt=(esDolar?'DÓLARES ESTADOUNIDENSES':'PESOS')+' '+(esDolar?'':numLetras(alqN)+' ')+'('+simb+v('alq').toLocaleString('es-AR')+'.-';
@@ -1103,14 +1247,14 @@ async function genWord(){
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('El Locatario, permitirá al Locador, o a quien lo represente la inspección de la propiedad cuando este lo estime necesario, y en caso de producirse algún desperfecto que afecte la estabilidad o seguridad de la propiedad, el Locatario esta obligado a comúnicarlo en forma fehaciente al Locador, dentro de las veinticuatro (24) horas de producido.'+(hasMasc?' Queda expresamente prohibido tener mascotas de cualquier raza y especie, siendo este, causal de rescisión del presente contrato debiendo abonar el locatario las penalidades previstas para los casos de rescisión anticipada.-':' '));
     c+=wP(cl(),{b:true,sb:200,sa:80});
-    c+=wPcl('El Locatario no podrá efectuar en la propiedad ninguna innovación, alteración o mejora en la construcción sin el previo consentimiento por escrito del Locador'+(L?'; las que se hiciesen debidamente autorizadas quedarán en beneficio exclusivo del inmueble, sin cargo de indemnización.':'. Las que se hiciesen, debidamente autorizadas, quedarán en beneficio exclusivo del inmueble sin cargo de indemnización.')+' Las mejoras que se introduzcan deberán respetar todo lo atinente a disposiciones municipales y provinciales vigentes, estando estrictamente prohibida la alteración funcional de la propiedad.-');
+    c+=wPcl('El Locatario no podrá efectuar en la propiedad ninguna innovación, alteración o mejora en la construcción sin el previo consentimiento por escrito del Locador'+((L||G)?'; las que se hiciesen debidamente autorizadas quedarán en beneficio exclusivo del inmueble, sin cargo de indemnización.':'. Las que se hiciesen, debidamente autorizadas, quedarán en beneficio exclusivo del inmueble sin cargo de indemnización.')+' Las mejoras que se introduzcan deberán respetar todo lo atinente a disposiciones municipales y provinciales vigentes, estando estrictamente prohibida la alteración funcional de la propiedad.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('El Locatario se obliga a registrar de inmediato '+(L?'ante la empresa de electricidad y gas, los servicios de Luz y Gas (si correspondiere),':'ante las empresas de electricidad y gas (si correspondiere) los servicios correspondientes,')+' a su nombre y a dejarlos pagos hasta el día en que haga devolución del inmueble, declarando conocer que no debe abonar factura alguna por servicios anteriores a la fecha de iniciación del contrato. El Locatario se compromete a contratar '+(SE?'un seguro de incendio y responsabilidad civil sobre el inmueble locado':'un seguro de incendio, y responsabilidad civil hacia linderos sobre el inmueble locado')+' por el período que dure este contrato, endosando la póliza'+(SE?'':' de incendios')+' a favor del Locador, con actualización anual. El Locatario deberá entregar la póliza dentro de los 15 (quince) dias de firmado el contrato.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('Quedan por cuenta y cargo exclusivo del Locatario y TAMBIÉN FORMAN PARTE DEL PRECIO DE LA LOCACIÓN el pago en término del servicio de obras sanitarias y/o agua domiciliaria (unidad de facturación número de cuenta '+(v('san')||'XXXX')+') y/o cualquier otro servicio y/o accesorio que recae sobre la unidad locada, como asi también el pago de la tasa municipal por alumbrado, barrido y limpieza (identificación catastral '+(v('catastro')||'XXX')+') y el pago del impuesto provincial (DGR número de cuenta '+(v('dgr')||'XXXXX')+'). Las obligaciones descriptas serán abonadas por la empresa administradora quien posteriormente las cobrará al Locatario. Por lo tanto no se considerará cumplida la prestación dineraria por parte del Locatario ni será obligación del Locador recibir el pago, si no se abonará conjuntamente con el alquiler los servicios, expensas y accesorios precedentemente mencionados, correspondientes al mes en curso. En el caso de mero atraso, los interéses, reajustes, punitorios y/o adicionales correrán por exclusiva cuenta del Locatario.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('Se deja expresa constancia que el Locatario suscribe como garantía de la presente locación un pagaré por la suma de '+(esDolar?'Dólares Estadounidenses':'Pesos')+' '+pagMletras+' ('+pagM+'.-) con fecha de vencimiento el día '+pagV+'. El mismo será devuelto al Locatario siempre que se hayan cancelado todas las obligaciones emanadas del presente. En caso de producirse la rescisión anticipada del presente, el pagaré se utilizará a los mismos efectos descriptos precedentemente y no se aplicará a las indemnizaciones que debiera abonar el Locatario por la resolución anticipada del contrato.-');
-    if(D||L){
+    if(D||L||G){
       c+=wP(cl(),{b:true,sb:200,sa:80});
       c+=wPcl('Son a cargo del Locatario y también FORMAN PARTE DEL PRECIO DE LA LOCACIÓN, además de lo estipulado en la cláusula tercera, el pago de las Expensas Comúnes Ordinarias asignadas a la unidad locada, por el consorcio del que forma parte y conforme a las disposiciones del Reglamento de Copropiedad. Los importes correspondientes a Expensas Extraordinarias serán soportados por el Locador, y en el caso que sean incluidos dentro del cupon de pago de las expensas comúnes mensuales, estos serán abonados por el Locatario y descontados del importe a abonar en concepto de canon locativo correspondiente al mismo periodo. Por lo tanto no se considerará pagado el alquiler mensual, ni será obligación del Locador recibir el pago del mismo, si no se abonan las Expensas Comúnes en la forma establecida por ser estos PARTE INTEGRANTE DEL PRECIO DEL ALQUILER. El Locatario deberá acatar todas las normas contenidas en el reglamento de copropiedad y reglamento interno del edificio, las que declara conocer y aceptar.'+(v('consorcio')?' ('+v('consorcio')+').-':'.-'));
     }
@@ -1118,11 +1262,11 @@ async function genWord(){
     var moraT='';
     if(C) moraT='La falta de pago en término del alquiler, las Expensas o Gastos Comúnes o cualquier otra obligación a cargo del Locatario lo hará incurrir en mora de pleno derecho, sin necesidad de requerimiento previo de ninguna naturaleza y las sumas adeudadas devengarán un interés punitorio fijado a opción del Locador, que en su caso establecerá según los siguientes sistemas: A) Un interés punitorio mensual igual a una vez y media (1,5) la tasa efectiva mensual vencida (T.E.M. 30 dias) que pública el Banco de la Nación Argentina. B) El equivalente al cero con treinta por ciento (0,30%) diario del monto de las sumas adeudadas, computándose su cálculo desde el primer día calendario del mes en que se produzca la mora. Ello también sin perjuicio de iniciar el Locador, las acciónes judiciales por cobro de alquileres, desalojo o cualquiera que corresponda en su caso, pactándose que los alquileres, servicios, expensas y demás accesorios, podrán ser reclamados por el procedimiento ejecutivo. El Locador podrá negarse a percibir cualquiera de estas obligaciones, sin el pago conjunto de la penalidad establecida.-';
     else if(D) moraT='La falta de pago en término del alquiler, las Expensas o Gastos Comúnes o cualquier otra obligación a cargo del Locatario lo hará incurrir en mora de pleno derecho, sin necesidad de requerimiento previo de ninguna naturaleza y las sumas adeudadas devengarán un interés punitorio fijado a opción del Locador, que en su caso establecerá según los siguientes sistemas: A) Un interés punitorio mensual igual a una vez y media (1,5) la tasa para descuentos de documentos a treinta (30) dias de plazo que aplica el Banco de la Nación Argentina. B) El equivalente al cero con treinta por ciento (0,30%) diario del monto de las sumas adeudadas, computándose su cálculo desde el primer día calendario del mes en que se produzca la mora. Ello también sin perjuicio de iniciar el Locador, las acciónes judiciales por cobro de alquileres, desalojo o cualquiera que corresponda en su caso, pactándose que los alquileres, servicios, expensas y demás accesorios, podrán ser reclamados por el procedimiento ejecutivo. El Locador podrá negarse a percibir cualquiera de estas obligaciones, sin el pago conjunto de la penalidad establecida.-';
-    else if(L) moraT='La falta de pago en término del alquiler o cualquier otra obligación a cargo del Locatario lo hará incurrir en mora de pleno derecho, sin necesidad de requerimiento previo de ninguna naturaleza y las sumas adeudadas devengarán un interés punitorio fijado a opción del Locador, que en su caso establecerá según los siguientes sistemas: A) Un interés punitorio mensual igual a una vez y media (1,5) la tasa para descuentos de documentos a treinta (30) dias de plazo que aplica el Banco de la Nación Argentina. B) El equivalente al cero con treinta por ciento (0,30%) diario del monto de las sumas adeudadas, computándose su cálculo desde el primer día calendario del mes en que se produzca la mora. Ello también sin perjuicio de iniciar el Locador, las acciónes judiciales por cobro de alquileres, desalojo o cualquiera que corresponda en su caso, pactándose que los alquileres, tributos, servicios, expensas y demás accesorios podrán ser reclamados por el procedimiento ejecutivo. El Locador podrá negarse a percibir cualquiera de estas obligaciones, sin el pago conjunto de la penalidad establecida.-';
+    else if(L||G) moraT='La falta de pago en término del alquiler o cualquier otra obligación a cargo del Locatario lo hará incurrir en mora de pleno derecho, sin necesidad de requerimiento previo de ninguna naturaleza y las sumas adeudadas devengarán un interés punitorio fijado a opción del Locador, que en su caso establecerá según los siguientes sistemas: A) Un interés punitorio mensual igual a una vez y media (1,5) la tasa para descuentos de documentos a treinta (30) dias de plazo que aplica el Banco de la Nación Argentina. B) El equivalente al cero con treinta por ciento (0,30%) diario del monto de las sumas adeudadas, computándose su cálculo desde el primer día calendario del mes en que se produzca la mora. Ello también sin perjuicio de iniciar el Locador, las acciónes judiciales por cobro de alquileres, desalojo o cualquiera que corresponda en su caso, pactándose que los alquileres, tributos, servicios, expensas y demás accesorios podrán ser reclamados por el procedimiento ejecutivo. El Locador podrá negarse a percibir cualquiera de estas obligaciones, sin el pago conjunto de la penalidad establecida.-';
     else moraT='La falta de pago en término del alquiler o cualquier otra obligación a cargo del Locatario lo hará incurrir en mora de pleno derecho, sin necesidad de requerimiento previo de ninguna naturaleza y las sumas adeudadas devengarán un interés punitorio fijado a opción del Locador, que en su caso establecerá según los siguientes sistemas: A) Un interés punitorio mensual igual a una vez y media (1,5) la tasa para descuentos de documentos a treinta (30) dias de plazo que aplica el Banco de la Nación Argentina. B) El equivalente al cero con treinta por ciento (0,30%) diario del monto de las sumas adeudadas, computándose su cálculo desde el primer día calendario del mes en que se produzca la mora. Ello también sin perjuicio de iniciar el Locador, las acciónes judiciales por cobro de alquileres, desalojo o cualquiera que corresponda en su caso, pactándose que los alquileres, servicios, expensas y demás accesorios, podrán ser reclamados por el procedimiento ejecutivo. El Locador podrá negarse a percibir cualquiera de estas obligaciones, sin el pago conjunto de la penalidad establecida.-';
     c+=wP(moraT);
     c+=wP(cl(),{b:true,sb:200,sa:80});
-    c+=wPcl('Cualquier incumplimiento a lo estipulado en el presente contrato por parte del Locatario, y especialmente la demora en '+(L?'TREINTA DIAS':'treinta dias')+' o mas en el pago del alquiler, '+(L?'servicios, Gastos Comúnes si correspondiera,':C?'impuestos, servicios, expensas,':D?'servicios, expensas,':'servicios,')+' interéses, ajustes, adicionales etc., facultará al Locador a declararlo rescindido, pudiendo exigir el desalojo inmediato como si se tratara de un contrato vencido. Sin perjuicio de reclamar las responsabilidades en que hubiese incurrido el Locatario y/o su '+(L?'personal':'familia')+', por los daños y perjuicios que erogue esta situación.-');
+    c+=wPcl('Cualquier incumplimiento a lo estipulado en el presente contrato por parte del Locatario, y especialmente la demora en '+((L||G)?'TREINTA DIAS':'treinta dias')+' o mas en el pago del alquiler, '+((L||G)?'servicios, Gastos Comúnes si correspondiera,':C?'impuestos, servicios, expensas,':D?'servicios, expensas,':'servicios,')+' interéses, ajustes, adicionales etc., facultará al Locador a declararlo rescindido, pudiendo exigir el desalojo inmediato como si se tratara de un contrato vencido. Sin perjuicio de reclamar las responsabilidades en que hubiese incurrido el Locatario y/o su '+(L?'personal':'familia')+', por los daños y perjuicios que erogue esta situación.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('Las partes manifiestan que este contrato de locación se rige estrictamente por las disposiciones referidas al Contrato de Locación, artículo 1187 siguientes y concordantes del Código Civil y Comercial, dejándose aclarado que si al vencimiento del término contractual el Locatario continuase en el uso y ocupación de la unidad alquilada, sin perjuicio de la acción de desalojo que corresponda al Locador y en concepto de cláusula punitiva e indemnización (art.790 CCYC), abonará además del importe del alquiler mensual último, una suma diaria de Pesos equivalentes al DIEZ POR CIENTO (10%) de la merced locativa vigente, por cada día que demorase en la restitución del bien locado.-');
     // GARANTES
@@ -1254,6 +1398,286 @@ function updHC(){
   e.textContent=h.length||''; e.style.display=h.length?'inline':'none';
 }
 
+// ─── RESERVA ──────────────────────────────────────────────
+var RTIPO=''; // 'alquiler' | 'compraventa' | 'cesion'
+var RS_GEN={of:'m', pr:'m'};
+
+function selR(btn){
+  var pgrs=document.getElementById('pg-rs');
+  if(pgrs) pgrs.querySelectorAll('.tb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  RTIPO=btn.dataset.r;
+  var isAlq=(RTIPO==='alquiler');
+  var isCes=(RTIPO==='cesion');
+  hdn('rs-alq-fields', !isAlq);
+  hdn('rs-vta-fields', isAlq);
+  hdn('rs-ces-fields', !isCes);
+  hdn('rs-fb', false);
+  rsChg();
+}
+
+function rsChg(){
+  if(!RTIPO){
+    var btn=document.getElementById('rs-btn-dl');
+    if(btn) btn.disabled=true;
+    return;
+  }
+  var ok=true;
+  var required=['rs-of-n','rs-of-d'];
+  if(RTIPO==='alquiler') required=required.concat(['rs-alq-ciudad','rs-alq-dir','rs-monto','rs-alq-mens','rs-honor']);
+  else required=required.concat(['rs-vta-ciudad','rs-vta-dir','rs-precio','rs-res-acto']);
+  if(RTIPO==='cesion') required=required.concat(['rs-ces-cedente']);
+  required.forEach(function(id){
+    var el=document.getElementById(id);
+    if(!el||!el.value.trim()) ok=false;
+  });
+  var filled=0;
+  required.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&el.value.trim()) filled++;
+  });
+  var pct=Math.round((filled/required.length)*100);
+  var pf=document.getElementById('rs-pfill');
+  if(pf){ pf.style.width=pct+'%'; pf.textContent=pct+'%'; }
+  var btn=document.getElementById('rs-btn-dl');
+  if(btn) btn.disabled=!ok;
+}
+
+function rsSetG(pref, btn){
+  btn.closest('.gbtn').querySelectorAll('.gb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  RS_GEN[pref]=btn.dataset.g;
+}
+
+function _gOf(pref){ return RS_GEN[pref]==='f'; }
+function _sr(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
+
+async function genReserva(){
+  if(!RTIPO) return;
+  var zip=new JSZip();
+  var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>';
+  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>';
+  var wRels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>';
+
+  var body='';
+  var ofNom=_sr('rs-of-n');
+  var ofDni=_sr('rs-of-d');
+  var ofCuit=_sr('rs-of-cuit');
+  var ofEc=_sr('rs-of-ec');
+  var ofDom=_sr('rs-of-dom');
+  var ofEmail=_sr('rs-of-email');
+  var ofTel=_sr('rs-of-tel');
+  var ofWa=_sr('rs-of-wa');
+  var ofFem=_gOf('of');
+  var ofSr=ofFem?'la Sra. ':'el Sr. ';
+  var ofSrx=ofFem?'La Sra. ':'El Sr. ';
+  var prNom=_sr('rs-pr-n');
+  var prDni=_sr('rs-pr-d');
+  var prFem=_gOf('pr');
+  var prSr=prFem?'la Sra. ':'el Sr. ';
+  var fnFld=_sr('rs-fn')||('reserva_'+RTIPO);
+  var fn=(fnFld||('reserva_'+RTIPO)).replace(/\s+/g,'_')+'.docx';
+
+  function rP(txt, bold, center, sz){
+    var rpr=(bold?'<w:b/>':''),(sz?'<w:sz><w:val>'+(sz*2)+'</w:val></w:sz><w:szCs><w:val>'+(sz*2)+'</w:val></w:szCs>':'');
+    var ppr=center?'<w:pPr><w:jc w:val="center"/></w:pPr>':'';
+    return '<w:p>'+ppr+'<w:r><w:rPr>'+rpr+rpr2+'</w:rPr><w:t xml:space="preserve">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</w:t></w:r></w:p>';
+    function rpr2(){ return sz?'<w:sz w:val="'+(sz*2)+'"/><w:szCs w:val="'+(sz*2)+'"/>':''; }
+  }
+  function rPar(txt, bold, center, sz){
+    var rpr='';
+    if(bold) rpr+='<w:b/>';
+    if(sz) rpr+='<w:sz w:val="'+(sz*2)+'"/><w:szCs w:val="'+(sz*2)+'"/>';
+    var ppr='';
+    if(center) ppr='<w:pPr><w:jc w:val="center"/></w:pPr>';
+    return '<w:p>'+ppr+'<w:r><w:rPr>'+rpr+'</w:rPr><w:t xml:space="preserve">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</w:t></w:r></w:p>';
+  }
+  function rBr(){ return '<w:p><w:r><w:t></w:t></w:r></w:p>'; }
+  function rTit(txt){ return rPar(txt,true,true,14); }
+  function rSub(txt){ return rPar(txt,true,false,12); }
+  function rTx(txt){ return rPar(txt,false,false,11); }
+  function rTxB(txt){ return rPar(txt,true,false,11); }
+
+  if(RTIPO==='alquiler'){
+    var ciudad=_sr('rs-alq-ciudad')||'Villa Allende';
+    var fecha=_sr('rs-alq-fecha')||'';
+    var dir=_sr('rs-alq-dir');
+    var monto=_sr('rs-monto');
+    var fpago=_sr('rs-fpago');
+    var mens=_sr('rs-alq-mens');
+    var ajuste=_sr('rs-alq-ajuste')||'ICL (BCRA) trimestral';
+    var plazo=_sr('rs-plazo')||'3';
+    var inicio=_sr('rs-inicio');
+    var dias=_sr('rs-dias')||'3';
+    var honor=_sr('rs-honor');
+    body+=rTit('RESERVA DE ALQUILER');
+    body+=rBr();
+    body+=rTx('En '+ciudad+', a '+fecha+', '+ofSrx+ofNom+', DNI N° '+ofDni+(ofCuit?', CUIT '+ofCuit:'')+
+      (ofEc?', '+ofEc:'')+', con domicilio en '+ofDom+
+      ', entrega en este acto en concepto de RESERVA DE ALQUILER la suma de PESOS '+monto+
+      ' ('+fpago+') a la inmobiliaria ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., en adelante "LA INMOBILIARIA", para ser aplicada, en caso de efectivizarse la operación, al alquiler del inmueble sito en '+dir+'.');
+    body+=rBr();
+    body+=rTxB('CONDICIONES DEL ALQUILER OFERTADO:');
+    body+=rTx('Alquiler mensual: $ '+mens);
+    body+=rTx('Ajuste: '+ajuste);
+    body+=rTx('Plazo: '+plazo+' años');
+    if(inicio) body+=rTx('Inicio de la locación: '+inicio);
+    body+=rBr();
+    body+=rTx('La presente reserva tendrá una vigencia de '+dias+' días hábiles a partir de la fecha de su suscripción, plazo dentro del cual se deberá concretar el contrato de locación. Vencido dicho plazo sin que la operación se realice por causas imputables al oferente, la reserva quedará en poder de LA INMOBILIARIA en concepto de daños y perjuicios.');
+    body+=rBr();
+    body+=rTx('En caso de que el propietario no acepte la oferta, la suma entregada será devuelta en su totalidad al oferente.');
+    body+=rBr();
+    body+=rTx('Honorarios de la inmobiliaria a cargo del locatario: $ '+honor);
+    body+=rBr();
+    body+=rTx('Datos de contacto del oferente: Email: '+ofEmail+' | Tel: '+ofTel+(ofWa?' | WA: '+ofWa:''));
+    body+=rBr();
+    if(prNom){
+      body+=rTxB('ACEPTACIÓN DEL PROPIETARIO/A:');
+      body+=rTx(prFem?'La Sra. ':'El Sr. '+prNom+', DNI N° '+prDni+', en carácter de propietario/a del inmueble, acepta la presente oferta en los términos indicados.');
+      body+=rBr();
+    }
+    body+=rBr(); body+=rBr(); body+=rBr();
+    body+=rTx('Firma del Oferente: _______________________________     Aclaración: '+ofNom);
+    if(prNom) body+=rTx('Firma del Propietario/a: _______________________________     Aclaración: '+prNom);
+    body+=rTx('Firma y sello ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.: _______________________________');
+  }
+  else if(RTIPO==='compraventa'){
+    var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
+    var fecha=_sr('rs-vta-fecha')||'';
+    var dir=_sr('rs-vta-dir');
+    var precio=_sr('rs-precio');
+    var resActo=_sr('rs-res-acto');
+    var alBoleto=_sr('rs-boleto');
+    var sup=_sr('rs-sup');
+    var diasHab=_sr('rs-dias-hab')||'5';
+    var waProp=_sr('rs-wa-prop');
+    var emailProp=_sr('rs-email-prop');
+    var diasBol=_sr('rs-dias-bol');
+    var comProp=_sr('rs-com-prop');
+    body+=rTit('RESERVA DE VENTA – COMPRAVENTA');
+    body+=rBr();
+    body+=rTx('En '+ciudad+', a '+fecha+', '+ofSrx+ofNom+', DNI N° '+ofDni+(ofCuit?', CUIT '+ofCuit:'')+
+      (ofEc?', '+ofEc:'')+', con domicilio en '+ofDom+
+      ', en adelante "EL/LA OFERENTE", se compromete a adquirir el inmueble ubicado en '+dir+
+      (sup?' (superficie aprox. '+sup+' m²)':'')+
+      ', en las siguientes condiciones:');
+    body+=rBr();
+    body+=rTxB('PRECIO Y FORMA DE PAGO:');
+    body+=rTx('Precio total: U$S '+precio+' (dólares estadounidenses)');
+    body+=rTx('Reserva entregada en este acto: U$S '+resActo);
+    if(alBoleto) body+=rTx('A pagar al momento del boleto: U$S '+alBoleto);
+    body+=rBr();
+    body+=rTx('El saldo restante se abonará al momento de la escritura traslativa de dominio.');
+    body+=rBr();
+    body+=rTx('La presente reserva tendrá vigencia por '+diasHab+' días hábiles a partir de la fecha. Vencido dicho plazo sin que se suscriba el boleto de compraventa por causas imputables al oferente, la suma entregada quedará en poder del propietario en concepto de seña y a título de daños y perjuicios. Si la operación no se concretare por causas imputables al propietario, éste deberá devolver la suma recibida con más su equivalente en concepto de multa.');
+    body+=rBr();
+    if(waProp||emailProp){
+      body+=rTxB('Datos de contacto del propietario para notificaciones:');
+      if(waProp) body+=rTx('WhatsApp: '+waProp);
+      if(emailProp) body+=rTx('Email: '+emailProp);
+      body+=rBr();
+    }
+    if(diasBol){
+      body+=rTx('Plazo para la firma del boleto de compraventa: '+diasBol+' días corridos desde la aceptación.');
+      body+=rBr();
+    }
+    body+=rTx('Datos de contacto del oferente: Email: '+ofEmail+' | Tel: '+ofTel+(ofWa?' | WA: '+ofWa:''));
+    body+=rBr();
+    if(prNom){
+      var comStr=comProp?' ('+comProp+'% de comisión a cargo del vendedor)':'';
+      body+=rTxB('ACEPTACIÓN DEL PROPIETARIO/A:');
+      body+=rTx((prFem?'La Sra. ':'El Sr. ')+prNom+', DNI N° '+prDni+', en carácter de propietario/a, acepta la presente oferta'+comStr+'.');
+      body+=rBr();
+    }
+    body+=rBr(); body+=rBr(); body+=rBr();
+    body+=rTx('Firma del Oferente: _______________________________     Aclaración: '+ofNom);
+    if(prNom) body+=rTx('Firma del Propietario/a: _______________________________     Aclaración: '+prNom);
+    body+=rTx('Firma y sello ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.: _______________________________');
+  }
+  else if(RTIPO==='cesion'){
+    var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
+    var fecha=_sr('rs-vta-fecha')||'';
+    var dir=_sr('rs-vta-dir');
+    var precio=_sr('rs-precio');
+    var resActo=_sr('rs-res-acto');
+    var alBoleto=_sr('rs-boleto');
+    var sup=_sr('rs-sup');
+    var diasHab=_sr('rs-dias-hab')||'5';
+    var waProp=_sr('rs-wa-prop');
+    var emailProp=_sr('rs-email-prop');
+    var diasBol=_sr('rs-dias-bol');
+    var fechaBoleto=_sr('rs-ces-fecha');
+    var vendedor=_sr('rs-ces-vendedor');
+    var cedente=_sr('rs-ces-cedente');
+    var comProp=_sr('rs-com-prop');
+    body+=rTit('RESERVA DE VENTA – CESIÓN DE BOLETO');
+    body+=rBr();
+    body+=rTx('En '+ciudad+', a '+fecha+', '+ofSrx+ofNom+', DNI N° '+ofDni+(ofCuit?', CUIT '+ofCuit:'')+
+      (ofEc?', '+ofEc:'')+', con domicilio en '+ofDom+
+      ', en adelante "EL/LA CESIONARIO/A", se compromete a adquirir mediante cesión de boleto de compraventa el inmueble ubicado en '+dir+
+      (sup?' (superficie aprox. '+sup+' m²)':'')+
+      '.');
+    body+=rBr();
+    body+=rTxB('ANTECEDENTES:');
+    body+=rTx('Boleto de compraventa original suscripto con fecha: '+fechaBoleto);
+    body+=rTx('Vendedor original: '+vendedor);
+    body+=rTx('Cedente (actual titular del boleto): '+cedente);
+    body+=rBr();
+    body+=rTxB('PRECIO Y FORMA DE PAGO:');
+    body+=rTx('Precio total de la cesión: U$S '+precio+' (dólares estadounidenses)');
+    body+=rTx('Reserva entregada en este acto: U$S '+resActo);
+    if(alBoleto) body+=rTx('A pagar al momento de la escritura de cesión: U$S '+alBoleto);
+    body+=rBr();
+    body+=rTx('La presente reserva tendrá vigencia por '+diasHab+' días hábiles a partir de la fecha. Vencido dicho plazo sin que se suscriba la cesión de boleto por causas imputables al cesionario, la suma entregada quedará en poder del cedente en concepto de seña y a título de daños y perjuicios. Si la operación no se concretare por causas imputables al cedente, éste deberá devolver la suma recibida con más su equivalente en concepto de multa.');
+    body+=rBr();
+    if(diasBol){
+      body+=rTx('Plazo para la firma de la cesión de boleto: '+diasBol+' días corridos desde la aceptación.');
+      body+=rBr();
+    }
+    body+=rTx('Datos de contacto del cesionario/a: Email: '+ofEmail+' | Tel: '+ofTel+(ofWa?' | WA: '+ofWa:''));
+    body+=rBr();
+    if(prNom){
+      var comStr=comProp?' ('+comProp+'% de comisión a cargo del cedente)':'';
+      body+=rTxB('ACEPTACIÓN DEL CEDENTE:');
+      body+=rTx((prFem?'La Sra. ':'El Sr. ')+prNom+', DNI N° '+prDni+', en carácter de cedente, acepta la presente oferta'+comStr+'.');
+      body+=rBr();
+    }
+    body+=rBr(); body+=rBr(); body+=rBr();
+    body+=rTx('Firma del Cesionario/a: _______________________________     Aclaración: '+ofNom);
+    if(prNom) body+=rTx('Firma del Cedente: _______________________________     Aclaración: '+prNom);
+    body+=rTx('Firma y sello ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.: _______________________________');
+  }
+
+  var docXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" '+
+    'xmlns:mo="http://schemas.microsoft.com/office/mac/office/2008/main" '+
+    'xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" '+
+    'xmlns:mv="urn:schemas-microsoft-com:mac:vml" '+
+    'xmlns:o="urn:schemas-microsoft-com:office:office" '+
+    'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" '+
+    'xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" '+
+    'xmlns:v="urn:schemas-microsoft-com:vml" '+
+    'xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" '+
+    'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" '+
+    'xmlns:w10="urn:schemas-microsoft-com:office:word" '+
+    'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '+
+    'xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" '+
+    'xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" '+
+    'xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" '+
+    'xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" '+
+    'xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" mc:Ignorable="mv mo w14 wp14">'+
+    '<w:body>'+body+
+    '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr>'+
+    '</w:body></w:document>';
+
+  zip.file('_rels/.rels', rels);
+  zip.file('[Content_Types].xml', ct);
+  zip.file('word/_rels/document.xml.rels', wRels);
+  zip.file('word/document.xml', docXml);
+  var blob=await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
+  var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fn; a.click();
+}
+
 // ─── INIT ─────────────────────────────────────────────────
 updHC();
 addG();
@@ -1265,7 +1689,8 @@ return {
   chg:chg, limpiar:limpiar, procAnt:procAnt, genWord:genWord,
   renderH:renderH, delH:delH, borrarH:borrarH,
   addLoc:addLoc, remLoc:remLoc,
-  initClauseEditor:initClauseEditor, setMoneda:setMoneda
+  initClauseEditor:initClauseEditor, setMoneda:setMoneda,
+  selR:selR, rsChg:rsChg, rsSetG:rsSetG, genReserva:genReserva
 };
 
 })();
