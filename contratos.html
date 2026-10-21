@@ -1478,12 +1478,6 @@ async function genReserva(){
   var fnFld=_sr('rs-fn')||('reserva_'+RTIPO);
   var fn=(fnFld||('reserva_'+RTIPO)).replace(/\s+/g,'_')+'.docx';
 
-  function rP(txt, bold, center, sz){
-    var rpr=(bold?'<w:b/>':''),(sz?'<w:sz><w:val>'+(sz*2)+'</w:val></w:sz><w:szCs><w:val>'+(sz*2)+'</w:val></w:szCs>':'');
-    var ppr=center?'<w:pPr><w:jc w:val="center"/></w:pPr>':'';
-    return '<w:p>'+ppr+'<w:r><w:rPr>'+rpr+rpr2+'</w:rPr><w:t xml:space="preserve">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</w:t></w:r></w:p>';
-    function rpr2(){ return sz?'<w:sz w:val="'+(sz*2)+'"/><w:szCs w:val="'+(sz*2)+'"/>':''; }
-  }
   function rPar(txt, bold, center, sz){
     var rpr='';
     if(bold) rpr+='<w:b/>';
