@@ -4,24 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Contratos — Roberts Otero</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231F4E79'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='52' font-weight='700' fill='white' text-anchor='middle'%3EJB%3C/text%3E%3C/svg%3E">
 <style>
 :root{--az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;--bg:#F5F6F8;--bd:#DDE1E7;--g:#6B7280;--k:#1A1A2E;--vd:#059669;--vdb:#D1FAE5;--or:#D97706;--orb:#FEF3C7;--rj:#DC2626;--rjb:#FEE2E2;--r:8px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--k);font-size:14px;line-height:1.5}
-.bar{background:#fff;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;border-bottom:1px solid #e2e5ec}
-.bar-logo{display:flex;flex-direction:column;gap:1px;cursor:pointer}
-.bar-logo span{font-size:15px;font-weight:700;color:#1a1a2e;letter-spacing:-.01em}
-.bar-logo small{font-size:11px;color:#9ca3af;font-weight:400;font-family:'Courier New',monospace;letter-spacing:.02em}
-.nav{display:flex;gap:6px;align-items:center}
-.nb{background:transparent;border:none;color:#6b7280;padding:5px 10px;border-radius:var(--r);font-size:12px;cursor:pointer;font-family:inherit;transition:.15s}
-.nb:hover{background:#f3f4f6;color:#1a1a2e}
-.nb.on{background:#f3f4f6;color:var(--az);font-weight:600}
-.sp{width:1px;background:#e2e5ec;height:18px;margin:0 4px}
-.bar-bc{font-size:12px;color:#9ca3af;font-family:'Courier New',monospace;letter-spacing:.02em;display:flex;align-items:center;gap:6px}
-.bar-bc a{color:#9ca3af;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:.12s}
-.bar-bc a:hover{color:#1a1a2e}
-.bar-bc .sep{color:#d1d5db}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--k);font-size:14px;line-height:1.5;margin:0}
+/* SIDEBAR LAYOUT */
+.layout{display:flex;min-height:100vh}
+.sidebar{width:210px;background:#fff;border-right:1px solid #e2e5ec;display:flex;flex-direction:column;padding:1.5rem 0;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sb-logo{padding:0 1.2rem 1.4rem;cursor:pointer;border-bottom:1px solid #f0f1f4;margin-bottom:1rem}
+.sb-logo span{display:block;font-size:15px;font-weight:700;color:#1a1a2e;letter-spacing:-.01em}
+.sb-logo small{font-size:11px;color:#9ca3af;font-family:'Courier New',monospace;letter-spacing:.02em}
+.sb-nav{display:flex;flex-direction:column;gap:2px;padding:0 .6rem}
+.sb-link{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:13px;color:#6b7280;cursor:pointer;transition:.12s;border:none;background:transparent;font-family:inherit;text-align:left;width:100%}
+.sb-link:hover{background:#f3f4f6;color:#1a1a2e}
+.sb-link.on{background:#f0f4f8;color:var(--az);font-weight:600}
+.sb-link svg{flex-shrink:0}
+.sb-back{display:flex;align-items:center;gap:5px;padding:5px 10px;font-size:12px;color:#9ca3af;cursor:pointer;transition:.12s;border:none;background:transparent;font-family:inherit;margin-bottom:.4rem}
+.sb-back:hover{color:#1a1a2e}
+.sb-sep{height:1px;background:#f0f1f4;margin:.6rem .6rem}
+.main{margin-left:210px;flex:1;background:#EAECF2;min-height:100vh}
+.main-top{padding:1.6rem 2rem .4rem;font-size:12px;color:#9ca3af;font-family:'Courier New',monospace;letter-spacing:.02em;display:flex;align-items:center;gap:6px}
+.main-top a{color:#9ca3af;cursor:pointer;text-decoration:none;transition:.12s}
+.main-top a:hover{color:#1a1a2e}
+.main-top .sep{color:#d1d5db}
 /* HOME */
 .home-wrap{max-width:800px;margin:0 auto;padding:3.5rem 2rem}
 .home-title{text-align:center;font-size:18px;font-weight:600;color:var(--g);margin-bottom:.3rem;letter-spacing:.04em;text-transform:uppercase}
@@ -116,23 +122,24 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 </style>
 </head>
 <body>
-<div class="bar">
-  <div class="bar-logo" onclick="APP.goHome()">
+<div class="layout">
+<div class="sidebar" id="sidebar">
+  <div class="sb-logo" onclick="APP.goHome()">
     <span>Generador de Contratos</span>
     <small>JB Roberts Otero · INMOBILIARIA</small>
   </div>
-  <div class="nav" id="bar-nav">
-    <div class="bar-bc" id="bar-bc" style="display:none">
-      <a onclick="APP.goHome()">← Administración</a>
-      <span class="sep">/</span>
-      <span id="bar-bc-page" style="color:#1a1a2e"></span>
-    </div>
-    <div class="sp" id="bar-sp" style="display:none"></div>
-    <button class="nb" id="bn-hs" onclick="APP.showPg('hs',this)">Historial <span id="hcnt" style="background:#f3f4f6;color:#6b7280;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:2px"></span></button>
+  <div class="sb-nav" id="sb-nav">
+    <button class="sb-back" id="sb-back" onclick="APP.goHome()" style="display:none">← Administración</button>
+    <div class="sb-sep" id="sb-sep" style="display:none"></div>
+    <button class="sb-link" id="sb-hs" onclick="APP.showPg('hs',this)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Historial <span id="hcnt" style="background:#f3f4f6;color:#6b7280;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:auto"></span>
+    </button>
   </div>
 </div>
+<div class="main">
 
-<div class="pg on" id="pg-home" style="background:#EAECF2;min-height:calc(100vh - 52px)">
+<div class="pg on" id="pg-home">
 <div class="home-wrap">
   <div class="home-cards">
     <div class="hc" onclick="APP.setModo('nuevo')">
@@ -664,15 +671,12 @@ function showPg(id,btn){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
   document.getElementById('pg-'+id).classList.add('on');
   var isHome=(id==='home');
-  var bc=document.getElementById('bar-bc');
-  var sp=document.getElementById('bar-sp');
-  var bcp=document.getElementById('bar-bc-page');
-  if(bc){ bc.style.display=isHome?'none':'flex'; }
-  if(sp){ sp.style.display=isHome?'none':''; }
-  if(bcp){
-    var labels={'ct':'Contrato','rs':'Reserva','hs':'Historial'};
-    bcp.textContent=labels[id]||id;
-  }
+  var back=document.getElementById('sb-back');
+  var sep=document.getElementById('sb-sep');
+  if(back){ back.style.display=isHome?'none':'flex'; }
+  if(sep){ sep.style.display=isHome?'none':''; }
+  document.querySelectorAll('.sb-link').forEach(function(b){b.classList.remove('on');});
+  if(btn && btn.classList && btn.classList.contains('sb-link')) btn.classList.add('on');
   if(id==='hs') renderH();
 }
 
@@ -1943,5 +1947,7 @@ window.addEventListener('load', function(){
   }
 });
 </script>
+</div>
+</div>
 </body>
 </html>
