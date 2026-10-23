@@ -338,14 +338,12 @@ function clearFilters(){
   currentAgentFilter = '';
   currentSearch = '';
   document.getElementById('agentFilter').value = '';
-  document.getElementById('searchBox').value = '';
   updateBadges();
   renderCards();
 }
 
 function applyFilters(){
   currentAgentFilter = document.getElementById('agentFilter').value;
-  currentSearch = document.getElementById('searchBox').value.toLowerCase();
   renderCards();
 }
 
