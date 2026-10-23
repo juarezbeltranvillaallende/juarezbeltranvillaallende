@@ -109,7 +109,7 @@
     background:var(--surface); color:var(--text-dim); cursor:pointer; transition:all 0.2s;
   }
   .state-badge:hover{ border-color:var(--text-dim); }
-  .state-badge.active{ background:var(--gold); border-color:var(--gold); color:#181A14; font-weight:600; }
+  .state-badge.active{ background:#1F4E79; border-color:#1F4E79; color:#fff; font-weight:600; }
 
   /* Properties grid */
   .props-grid{
@@ -120,7 +120,7 @@
     cursor:pointer; transition:all 0.2s; text-decoration:none; color:inherit;
     display:flex; flex-direction:column;
   }
-  .prop-card:hover{ border-color:var(--gold); box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+  .prop-card:hover{ border-color:#2E75B6; box-shadow:0 4px 12px rgba(0,0,0,0.08); }
   .prop-card.missing-drive{ border-color:var(--red); border-width:2px; }
   .prop-card.low-photos{ border-color:var(--amber); border-width:2px; }
 
@@ -176,11 +176,14 @@
     <div class="subtitle" id="mainSubtitle">Cargando…</div>
 
     <!-- Filters -->
-    <div class="filters-bar">
+    <div class="filters-bar" style="margin-bottom:10px;">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
         <input type="text" id="searchBox" placeholder="Buscar por dirección, tipo, zona, referencia…" oninput="applyFilters()">
       </div>
+    </div>
+
+    <div class="filters-bar" style="margin-bottom:16px;">
       <span class="filter-label">AGENTE</span>
       <select class="filter-select" id="agentFilter" onchange="applyFilters()">
         <option value="">Todos</option>
