@@ -616,9 +616,16 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 
     <!-- Datos bancarios -->
     <div style="background:#f0f7f0;border-left:4px solid #2d8a4e;border-radius:6px;padding:12px 14px;margin-bottom:14px">
-      <strong style="display:block;margin-bottom:4px;color:#1a5c34">🏦 Datos bancarios (para enviar una vez firmada la reserva)</strong>
-      <div style="font-family:monospace;font-size:0.95rem;color:#1a3a26;background:#e4f2e8;border-radius:5px;padding:8px 12px;margin-top:4px" id="rs-datos-bancarios">Cuenta Banco Macro: robertsotero.macro</div>
-      <button onclick="APP.rsCopiarBanco()" style="margin-top:8px;background:none;border:1px solid #2d8a4e;color:#2d8a4e;border-radius:5px;padding:4px 12px;cursor:pointer;font-size:0.85rem">Copiar datos</button>
+      <strong style="display:block;margin-bottom:6px;color:#1a5c34">🏦 Datos bancarios (para enviar una vez firmada la reserva)</strong>
+      <div style="font-family:monospace;font-size:0.93rem;color:#1a3a26;background:#e4f2e8;border-radius:5px;padding:10px 12px;margin-top:4px;line-height:1.8" id="rs-datos-bancarios">Banco BANCOR
+Titular: ROBERTS OTERO S.A.S
+CUIT: 33-71619127-9
+Tipo de cuenta: Cuenta Corriente en $
+N° de cuenta: 392-1797101
+CBU: 0200392201000001797115
+Alias: ARCON.PELEA.COSTA</div>
+      <div style="margin-top:8px;background:#fff3cd;border-radius:5px;padding:7px 10px;font-size:0.88rem;color:#7a5200">⚠️ <strong>IMPORTANTE:</strong> Pedir que envíen el comprobante por el grupo de WhatsApp de Reservas.</div>
+      <button onclick="APP.rsCopiarBanco()" style="margin-top:8px;background:none;border:1px solid #2d8a4e;color:#2d8a4e;border-radius:5px;padding:4px 12px;cursor:pointer;font-size:0.85rem">Copiar datos bancarios</button>
     </div>
 
     <!-- Pasos siguientes -->
@@ -628,6 +635,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <li>Enviar el documento al interesado para que lo firme</li>
         <li>Solicitar foto de la reserva firmada</li>
         <li>Una vez firmada → enviar datos bancarios para la transferencia y confirmar recepción de fondos</li>
+        <li>⚠️ <strong>Pedir que envíen el comprobante por el grupo de WhatsApp de Reservas</strong></li>
         <li>Pedir documentación: DNI, recibos de sueldo y garantías (inquilino y garantes)</li>
         <li>Pedir informes de cada persona involucrada (inquilino y garantes)</li>
         <li>Pedir informe de propiedad con matrícula a administración</li>
@@ -1791,7 +1799,7 @@ async function genReserva(){
       {txt:ofNom, bold:true},
       {txt:', DNI '},
       {txt:ofDni, bold:true},
-      {txt:', domiciliado/a en '},
+      {txt:', '+(ofFem?'domiciliada':'domiciliado')+' en '},
       {txt:ofDom, bold:true},
       {txt:', la suma de Pesos '},
       {txt:montoLetrasStr, bold:true},
@@ -1909,7 +1917,8 @@ async function genReserva(){
 
     // Sección propietario (antes de la Aceptación formal)
     var suscriptoPr=prFem?'la suscripta':'el suscripto';
-    body+=rTx('Por la presente, '+suscriptoPr+', en carácter de propietario/a del inmueble referenciado, acepta / rechaza (tachar lo que no corresponda) la presente oferta de reserva.',F);
+    var propietarioTxt=prFem?'propietaria':'propietario';
+    body+=rTx('Por la presente, '+suscriptoPr+', en carácter de '+propietarioTxt+' del inmueble referenciado, acepta / rechaza (tachar lo que no corresponda) la presente oferta de reserva.',F);
     body+=rTx('En caso de aceptación, me obligo a mantener la oferta por el término de vigencia indicado y a suscribir el contrato de locación en las condiciones establecidas. En caso de rechazo, me comprometo a devolver la suma recibida en concepto de depósito de reserva dentro de las cuarenta y ocho (48) horas hábiles de notificado al oferente.',F);
     body+=rBr();
     body+=rTx('Firma del Propietario/a: _________________________',F);
@@ -1936,12 +1945,11 @@ async function genReserva(){
         {txt:prDni, bold:true},
         {txt:', con domicilio en '},
         {txt:prDom||'_________________________', bold:true},
-        {txt:', en mi carácter de aceptante y futuro locador/a del inmueble individualizado en el acápite del presente, acepto / rechaza (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.'}
+        {txt:', en mi carácter de aceptante y futuro '+(prFem?'locadora':'locador')+' del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.'}
       ],false,11,F);
     } else {
-      body+=rTx('En la ciudad de '+ciudad+', a los _____ días del mes de _________________ de 202___, yo, _________________________, DNI _________________________, con domicilio en _________________________, en mi carácter de aceptante y futuro locador/a del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.',F);
+      body+=rTx('En la ciudad de '+ciudad+', a los _____ días del mes de _________________ de 202___, yo, _________________________, DNI _________________________, con domicilio en _________________________, en mi carácter de aceptante y futuro '+(prFem?'locadora':'locador')+' del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.',F);
     }
-    body+=rTx('En caso de aceptación: me comprometo a abonar a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. el _____ por ciento (_____%) del precio de la locación en concepto de honorarios, en dinero efectivo al momento de suscribirse el contrato, autorizando a retener dicho importe del precio recibido.',F);
     body+=rTx('En caso de rechazo: me comprometo a devolver la suma recibida en concepto de depósito de reserva al oferente, sin excesos ni disminuciones, dentro de las cuarenta y ocho (48) horas hábiles de notificado.',F);
     body+=rBr();
     body+=rTx('Firma del Propietario/a: _________________________',F);
