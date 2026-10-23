@@ -8,14 +8,20 @@
 <style>
 :root{--az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;--bg:#F5F6F8;--bd:#DDE1E7;--g:#6B7280;--k:#1A1A2E;--vd:#059669;--vdb:#D1FAE5;--or:#D97706;--orb:#FEF3C7;--rj:#DC2626;--rjb:#FEE2E2;--r:8px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--k);font-size:14px;line-height:1.5}
-.bar{background:var(--az);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.bar-logo{font-size:14px;font-weight:600;color:#fff;cursor:pointer}
-.bar-logo small{opacity:.5;font-weight:400;font-size:11px;margin-left:6px}
-.nav{display:flex;gap:3px;align-items:center}
-.nb{background:transparent;border:none;color:rgba(255,255,255,.7);padding:5px 11px;border-radius:var(--r);font-size:12px;cursor:pointer;font-family:inherit;transition:.15s}
-.nb:hover,.nb.on{background:rgba(255,255,255,.2);color:#fff;font-weight:600}
-.sp{width:1px;background:rgba(255,255,255,.25);height:18px;margin:0 6px}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--k);font-size:14px;line-height:1.5}
+.bar{background:#fff;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;border-bottom:1px solid #e2e5ec}
+.bar-logo{display:flex;flex-direction:column;gap:1px;cursor:pointer}
+.bar-logo span{font-size:15px;font-weight:700;color:#1a1a2e;letter-spacing:-.01em}
+.bar-logo small{font-size:11px;color:#9ca3af;font-weight:400;font-family:'Courier New',monospace;letter-spacing:.02em}
+.nav{display:flex;gap:6px;align-items:center}
+.nb{background:transparent;border:none;color:#6b7280;padding:5px 10px;border-radius:var(--r);font-size:12px;cursor:pointer;font-family:inherit;transition:.15s}
+.nb:hover{background:#f3f4f6;color:#1a1a2e}
+.nb.on{background:#f3f4f6;color:var(--az);font-weight:600}
+.sp{width:1px;background:#e2e5ec;height:18px;margin:0 4px}
+.bar-bc{font-size:12px;color:#9ca3af;font-family:'Courier New',monospace;letter-spacing:.02em;display:flex;align-items:center;gap:6px}
+.bar-bc a{color:#9ca3af;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px;transition:.12s}
+.bar-bc a:hover{color:#1a1a2e}
+.bar-bc .sep{color:#d1d5db}
 /* HOME */
 .home-wrap{max-width:800px;margin:0 auto;padding:3.5rem 2rem}
 .home-title{text-align:center;font-size:18px;font-weight:600;color:var(--g);margin-bottom:.3rem;letter-spacing:.04em;text-transform:uppercase}
@@ -111,18 +117,23 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 </head>
 <body>
 <div class="bar">
-  <div class="bar-logo" onclick="APP.goHome()">Roberts Otero <small>Generador de contratos</small></div>
+  <div class="bar-logo" onclick="APP.goHome()">
+    <span>Generador de Contratos</span>
+    <small>JB Roberts Otero · INMOBILIARIA</small>
+  </div>
   <div class="nav" id="bar-nav">
-    <button class="nb" id="bn-back" onclick="APP.goHome()" style="display:none">← Inicio</button>
+    <div class="bar-bc" id="bar-bc" style="display:none">
+      <a onclick="APP.goHome()">← Administración</a>
+      <span class="sep">/</span>
+      <span id="bar-bc-page" style="color:#1a1a2e"></span>
+    </div>
     <div class="sp" id="bar-sp" style="display:none"></div>
-    <button class="nb" id="bn-hs" onclick="APP.showPg('hs',this)">Historial <span id="hcnt" style="background:rgba(255,255,255,.18);border-radius:10px;padding:1px 6px;font-size:10px;margin-left:2px"></span></button>
+    <button class="nb" id="bn-hs" onclick="APP.showPg('hs',this)">Historial <span id="hcnt" style="background:#f3f4f6;color:#6b7280;border-radius:10px;padding:1px 6px;font-size:10px;margin-left:2px"></span></button>
   </div>
 </div>
 
 <div class="pg on" id="pg-home" style="background:#EAECF2;min-height:calc(100vh - 52px)">
 <div class="home-wrap">
-  <div class="home-title">Generador de Contratos</div>
-  <div class="home-sub">Roberts Otero Servicios Inmobiliarios S.A.S. &mdash; ¿Qué querés generar hoy?</div>
   <div class="home-cards">
     <div class="hc" onclick="APP.setModo('nuevo')">
       <div class="hc-ico az">
@@ -653,10 +664,15 @@ function showPg(id,btn){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
   document.getElementById('pg-'+id).classList.add('on');
   var isHome=(id==='home');
-  var back=document.getElementById('bn-back');
+  var bc=document.getElementById('bar-bc');
   var sp=document.getElementById('bar-sp');
-  if(back){ back.style.display=isHome?'none':''; }
+  var bcp=document.getElementById('bar-bc-page');
+  if(bc){ bc.style.display=isHome?'none':'flex'; }
   if(sp){ sp.style.display=isHome?'none':''; }
+  if(bcp){
+    var labels={'ct':'Contrato','rs':'Reserva','hs':'Historial'};
+    bcp.textContent=labels[id]||id;
+  }
   if(id==='hs') renderH();
 }
 
