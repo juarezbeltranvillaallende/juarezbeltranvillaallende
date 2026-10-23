@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Contratos — Roberts Otero</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%231F4E79'/%3E%3Ctext x='50' y='68' font-family='Georgia,serif' font-size='52' font-weight='700' fill='white' text-anchor='middle'%3EJB%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg viewBox='0 0 56 56' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='56' height='56' rx='10' fill='%233B5FC0'/%3E%3Crect x='9' y='9' width='17' height='24' rx='3.5' fill='none' stroke='white' stroke-width='3.2'/%3E%3Crect x='9' y='37' width='17' height='10' rx='3.5' fill='none' stroke='white' stroke-width='3.2'/%3E%3Crect x='30' y='9' width='17' height='10' rx='3.5' fill='none' stroke='white' stroke-width='3.2'/%3E%3Crect x='30' y='23' width='17' height='24' rx='3.5' fill='none' stroke='white' stroke-width='3.2'/%3E%3C/svg%3E">
 <style>
 :root{--az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;--bg:#F5F6F8;--bd:#DDE1E7;--g:#6B7280;--k:#1A1A2E;--vd:#059669;--vdb:#D1FAE5;--or:#D97706;--orb:#FEF3C7;--rj:#DC2626;--rjb:#FEE2E2;--r:8px}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -24,12 +24,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--
 .sb-back:hover{color:#1a1a2e}
 .sb-sep{height:1px;background:#f0f1f4;margin:.6rem .6rem}
 .main{margin-left:210px;flex:1;background:#EAECF2;min-height:100vh}
+#pg-home{display:none;align-items:center;justify-content:center;min-height:100vh}
+#pg-home.on{display:flex}
 .main-top{padding:1.6rem 2rem .4rem;font-size:12px;color:#9ca3af;font-family:'Courier New',monospace;letter-spacing:.02em;display:flex;align-items:center;gap:6px}
 .main-top a{color:#9ca3af;cursor:pointer;text-decoration:none;transition:.12s}
 .main-top a:hover{color:#1a1a2e}
 .main-top .sep{color:#d1d5db}
 /* HOME */
-.home-wrap{max-width:800px;margin:0 auto;padding:3.5rem 2rem}
+.home-wrap{max-width:860px;margin:0 auto;padding:0 2rem}
 .home-title{text-align:center;font-size:18px;font-weight:600;color:var(--g);margin-bottom:.3rem;letter-spacing:.04em;text-transform:uppercase}
 .home-sub{text-align:center;font-size:13px;color:#aaa;margin-bottom:3rem;letter-spacing:.02em}
 .home-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.4rem}
@@ -124,8 +126,17 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 <body>
 <div class="layout">
 <div class="sidebar" id="sidebar">
-  <div class="sb-logo" onclick="APP.goHome()">
-    <span>Generador de Contratos</span>
+  <div class="sb-logo">
+    <a href="index.html" style="display:block;margin-bottom:.9rem;text-decoration:none">
+      <svg viewBox="0 0 56 56" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+        <rect width="56" height="56" rx="10" fill="#3B5FC0"/>
+        <rect x="9" y="9" width="17" height="24" rx="3.5" fill="none" stroke="#fff" stroke-width="3.2"/>
+        <rect x="9" y="37" width="17" height="10" rx="3.5" fill="none" stroke="#fff" stroke-width="3.2"/>
+        <rect x="30" y="9" width="17" height="10" rx="3.5" fill="none" stroke="#fff" stroke-width="3.2"/>
+        <rect x="30" y="23" width="17" height="24" rx="3.5" fill="none" stroke="#fff" stroke-width="3.2"/>
+      </svg>
+    </a>
+    <span onclick="APP.goHome()" style="cursor:pointer">Generador de Contratos</span>
     <small>JB Roberts Otero · INMOBILIARIA</small>
   </div>
   <div class="sb-nav" id="sb-nav">
