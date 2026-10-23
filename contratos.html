@@ -1541,7 +1541,7 @@ function rsChg(){
   }
   var ok=true;
   var required=['rs-of-n','rs-of-d'];
-  if(RTIPO==='alquiler') required=required.concat(['rs-alq-ciudad','rs-alq-dir','rs-monto','rs-alq-mens','rs-honor']);
+  if(RTIPO==='alquiler') required=required.concat(['rs-ciudad','rs-dir','rs-monto','rs-alqm','rs-honor']);
   else required=required.concat(['rs-vta-ciudad','rs-vta-dir','rs-precio','rs-res-acto']);
   if(RTIPO==='cesion') required=required.concat(['rs-ces-cedente']);
   required.forEach(function(id){
@@ -1610,47 +1610,130 @@ async function genReserva(){
   function rTxB(txt){ return rPar(txt,true,false,11); }
 
   if(RTIPO==='alquiler'){
-    var ciudad=_sr('rs-alq-ciudad')||'Villa Allende';
-    var fecha=_sr('rs-alq-fecha')||'';
-    var dir=_sr('rs-alq-dir');
+    var ciudad=_sr('rs-ciudad')||'Villa Allende';
+    var fecha=_sr('rs-fecha')||'';
+    var dir=_sr('rs-dir');
     var monto=_sr('rs-monto');
-    var fpago=_sr('rs-fpago');
-    var mens=_sr('rs-alq-mens');
-    var ajuste=_sr('rs-alq-ajuste')||'ICL (BCRA) trimestral';
-    var plazo=_sr('rs-plazo')||'3';
-    var inicio=_sr('rs-inicio');
-    var dias=_sr('rs-dias')||'3';
+    var fpago=(function(){ var el=document.getElementById('rs-fpago'); return el?el.options[el.selectedIndex].text:'dinero efectivo'; })();
+    var mens=_sr('rs-alqm');
+    var ajuste=(function(){ var el=document.getElementById('rs-ajuste'); return el?el.options[el.selectedIndex].text:'Trimestral IPC INDEC'; })();
+    var plazo=(function(){ var el=document.getElementById('rs-plazo'); return el?el.value:'24'; })();
+    var inicio=_sr('rs-ini');
+    var dias=_sr('rs-dias')||'5';
     var honor=_sr('rs-honor');
+
+    // Formato fecha para el documento
+    var fechaStr=fecha?(function(){
+      var p=fecha.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
+    })():'____ de __________ de 20__';
+    var inicioStr=inicio?(function(){
+      var p=inicio.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
+    })():'';
+    var plazoMeses=plazo; // ya es número en meses
+
+    // === MODELO: RESERVA DE ALQUILER (según modelo Word) ===
     body+=rTit('RESERVA DE ALQUILER');
     body+=rBr();
-    body+=rTx('En '+ciudad+', a '+fecha+', '+ofSrx+ofNom+', DNI N° '+ofDni+(ofCuit?', CUIT '+ofCuit:'')+
-      (ofEc?', '+ofEc:'')+', con domicilio en '+ofDom+
-      ', entrega en este acto en concepto de RESERVA DE ALQUILER la suma de PESOS '+monto+
-      ' ('+fpago+') a la inmobiliaria ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., en adelante "LA INMOBILIARIA", para ser aplicada, en caso de efectivizarse la operación, al alquiler del inmueble sito en '+dir+'.');
+    // Encabezado estilo recibo
+    body+=rTx('RECIBÍ de '+ofSrx+ofNom+', DNI N.º '+ofDni+(ofCuit?', CUIT/CUIL N.º '+ofCuit:'')+
+      ', estado civil '+(function(){ var el=document.getElementById('rs-of-ecivil'); return el?el.options[el.selectedIndex].text:''; })()+
+      ', con domicilio en '+ofDom+
+      (ofEmail?', correo electrónico '+ofEmail:'')+
+      ((ofTel||ofWa)?' y teléfono/WhatsApp '+(ofWa||ofTel):'')+
+      ', en adelante EL/LA OFERENTE, la suma de PESOS '+monto+' en concepto de RESERVA DE ALQUILER,'+
+      ' en '+fpago+', a imputar al alquiler del inmueble sito en '+dir+', Villa Allende, Córdoba.');
     body+=rBr();
-    body+=rTxB('CONDICIONES DEL ALQUILER OFERTADO:');
-    body+=rTx('Alquiler mensual: $ '+mens);
-    body+=rTx('Ajuste: '+ajuste);
-    body+=rTx('Plazo: '+plazo+' años');
-    if(inicio) body+=rTx('Inicio de la locación: '+inicio);
+    body+=rTx('Esta reserva se entrega a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.,'+
+      ' Río de Janeiro 1725, Torre 1, Oficina 11, Villa Allende, Córdoba (en adelante LA INMOBILIARIA),'+
+      ' quedando sujeta a las siguientes condiciones:');
     body+=rBr();
-    body+=rTx('La presente reserva tendrá una vigencia de '+dias+' días hábiles a partir de la fecha de su suscripción, plazo dentro del cual se deberá concretar el contrato de locación. Vencido dicho plazo sin que la operación se realice por causas imputables al oferente, la reserva quedará en poder de LA INMOBILIARIA en concepto de daños y perjuicios.');
+
+    // Cláusula 1
+    body+=rSub('1. Precio y condiciones del alquiler');
+    body+=rTx('Precio mensual ofrecido: $ '+mens+'.-');
+    body+=rTx('Ajuste: '+ajuste+'.');
+    body+=rTx('Plazo: '+plazoMeses+' meses.');
+    if(inicioStr) body+=rTx('Inicio de la locación: '+inicioStr+'.');
     body+=rBr();
-    body+=rTx('En caso de que el propietario no acepte la oferta, la suma entregada será devuelta en su totalidad al oferente.');
+
+    // Cláusula 2
+    body+=rSub('2. Estado del inmueble');
+    body+=rTx('EL/LA OFERENTE declara haber visitado el inmueble y conocer sus características y estado de conservación,'+
+      ' sin que ello implique renuncia a los derechos que le correspondan por vicios ocultos o defectos jurídicos.');
     body+=rBr();
-    body+=rTx('Honorarios de la inmobiliaria a cargo del locatario: $ '+honor);
+
+    // Cláusula 3
+    body+=rSub('3. Vigencia');
+    body+=rTx('La presente reserva tendrá vigencia por '+dias+' días hábiles a partir de la fecha de suscripción,'+
+      ' plazo dentro del cual el/la propietario/a deberá aceptar o rechazar la oferta.'+
+      ' La inmobiliaria notificará al/la OFERENTE la decisión del/la propietario/a dentro de ese plazo.');
     body+=rBr();
-    body+=rTx('Datos de contacto del oferente: Email: '+ofEmail+' | Tel: '+ofTel+(ofWa?' | WA: '+ofWa:''));
+
+    // Cláusula 5 (igual que el modelo — no hay cláusula 4)
+    body+=rSub('5. Desistimiento');
+    body+=rTx('5.a) Si EL/LA OFERENTE desistiese de la operación una vez aceptada la reserva por el/la propietario/a,'+
+      ' perderá la suma entregada en este acto, la que será distribuida en partes iguales entre el/la propietario/a y LA INMOBILIARIA.');
+    body+=rTx('5.b) Si el/la propietario/a rechazare la oferta o no se pronunciara dentro del plazo de vigencia,'+
+      ' LA INMOBILIARIA devolverá al/la OFERENTE la totalidad de la suma entregada dentro de las 48 hs hábiles siguientes.');
+    body+=rTx('5.c) Si el/la propietario/a, habiendo aceptado la reserva, desistiese de la operación,'+
+      ' deberá devolver al/la OFERENTE el doble del importe recibido dentro de las 48 hs hábiles de notificado el desistimiento.'+
+      ' LA INMOBILIARIA tendrá derecho a cobrar sus honorarios al/la propietario/a.');
     body+=rBr();
+
+    // Cláusula 6
+    body+=rSub('6. Honorarios');
+    body+=rTx('Los honorarios de LA INMOBILIARIA a cargo del/la LOCATARIO/A ascienden a la suma de $ '+honor+'.-');
+    body+=rBr();
+
+    // Cláusula 7
+    body+=rSub('7. Autorización al corredor');
+    body+=rTx('Roberts Otero deja constancia de recibir del/de la OFERENTE la suma indicada en concepto de reserva'+
+      ' y extiende el presente como recibo por el importe efectivamente recibido.'+
+      ' Una vez aceptada la oferta, la suma será custodiada por LA INMOBILIARIA hasta que corresponda su restitución o entrega.');
+    body+=rBr();
+
+    // Datos del oferente y firmas
+    body+=rBr();
+    body+=rSub('Datos del Oferente y Firma');
+    body+=rTx('Fecha: '+fechaStr);
+    body+=rTx('Nombre y apellido: '+ofNom);
+    body+=rTx('DNI: '+ofDni);
+    body+=rTx('Domicilio: '+ofDom);
+    body+=rTx('Teléfono: '+(ofTel||ofWa||''));
+    body+=rTx('Email: '+ofEmail);
+    body+=rBr();
+    body+=rTx('Firma del/la Oferente: _______________________________');
+    body+=rBr();
+    body+=rTx('Firma del corredor: _______________________________');
+    body+=rBr();
+    body+=rTx('Matrícula: _______________________________');
+    body+=rBr();
+
+    // Tres ejemplares
+    body+=rBr();
+    body+=rTx('El presente instrumento se firma en tres (3) ejemplares de igual tenor y a un solo efecto:'+
+      ' uno para el/la OFERENTE, uno para el/la propietario/a y uno para ROBERTS OTERO.');
+    body+=rBr();
+
     if(prNom){
-      body+=rTxB('ACEPTACIÓN DEL PROPIETARIO/A:');
-      body+=rTx(prFem?'La Sra. ':'El Sr. '+prNom+', DNI N° '+prDni+', en carácter de propietario/a del inmueble, acepta la presente oferta en los términos indicados.');
+      // Sección Aceptación del Propietario (separada)
       body+=rBr();
+      body+=rPar('─────────────────────────────────────────────────────────────────────────',false,true,10);
+      body+=rTit('Aceptación del Propietario');
+      body+=rBr();
+      var prEcEl2=document.getElementById('rs-pr-ecivil');
+      var prEcStr2=prEcEl2?prEcEl2.options[prEcEl2.selectedIndex].text:'';
+      body+=rTx((prFem?'La Sra. ':'El Sr. ')+prNom+
+        ', DNI N.º '+prDni+
+        (prEcStr2?', estado civil '+prEcStr2:'')+
+        ', en carácter de propietario/a del inmueble, acepta la presente oferta en los términos indicados.'+
+        ' Me obligo a pagar a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. el porcentaje de comisión acordado'+
+        ' en concepto de honorarios al momento de firmarse el contrato de locación.');
+      body+=rBr();
+      body+=rTx('Firma del/la Propietario/a: _______________________________');
+      body+=rBr();
+      body+=rTx('Firma del corredor: _______________________________');
     }
-    body+=rBr(); body+=rBr(); body+=rBr();
-    body+=rTx('Firma del Oferente: _______________________________     Aclaración: '+ofNom);
-    if(prNom) body+=rTx('Firma del Propietario/a: _______________________________     Aclaración: '+prNom);
-    body+=rTx('Firma y sello ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.: _______________________________');
   }
   else if(RTIPO==='compraventa'){
     var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
@@ -1856,7 +1939,7 @@ async function genReserva(){
     var waProp=_sr('rs-wp');
     var emailProp=_sr('rs-email-prop');
     var diasBol=_sr('rs-dias-boleto');
-    var fechaBoleto=_sr('rs-ces-fecha');
+    var fechaBoleto=_sr('rs-ces-fecha-bol');
     var vendedor=_sr('rs-ces-vendedor');
     var cedente=_sr('rs-ces-cedente');
     var comProp=_sr('rs-pr-pct');
