@@ -546,7 +546,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 
   <!-- OFERENTE (todos los tipos) -->
   <div class="card">
-    <div class="ch"><h2>Oferente / Reservante</h2></div>
+    <div class="ch"><h2>Reservante</h2></div>
     <div class="cb">
       <div class="g4">
         <div class="f"><label>Género</label><div class="gbtn"><button class="gb on" data-g="m" onclick="APP.rsSetG('of',this)">Hombre</button><button class="gb" data-g="f" onclick="APP.rsSetG('of',this)">Mujer</button></div></div>
@@ -568,7 +568,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 
   <!-- PROPIETARIO/CEDENTE (para completar si acepta en el acto) -->
   <div class="card">
-    <div class="ch"><h2>Propietario / Cedente (si acepta en el acto)</h2></div>
+    <div class="ch"><h2>Propietario/a</h2></div>
     <div class="cb">
       <div class="g4">
         <div class="f"><label>Género</label><div class="gbtn"><button class="gb on" data-g="m" onclick="APP.rsSetG('pr',this)">Hombre</button><button class="gb" data-g="f" onclick="APP.rsSetG('pr',this)">Mujer</button></div></div>
@@ -1757,7 +1757,7 @@ async function genReserva(){
     var fecha=_sr('rs-fecha')||'';
     var dir=_sr('rs-dir');
     var monto=_sr('rs-monto');
-    var fpago=(function(){ var el=document.getElementById('rs-fpago'); return el?el.options[el.selectedIndex].text:'dinero efectivo'; })();
+    var fpago=(function(){ var el=document.getElementById('rs-fpago'); if(!el) return 'dinero efectivo'; var v=el.value; return v==='transferencia'?'transferencia bancaria':el.options[el.selectedIndex].text.toLowerCase(); })();
     var mens=_sr('rs-alqm');
     var ajuste=(function(){ var el=document.getElementById('rs-ajuste'); return el?el.options[el.selectedIndex].text:'Trimestral IPC INDEC'; })();
     var plazo=(function(){ var el=document.getElementById('rs-plazo'); return el?el.value:'24'; })();
@@ -1805,7 +1805,7 @@ async function genReserva(){
       {txt:montoLetrasStr, bold:true},
       {txt:' ($ '},
       {txt:montoFmt, bold:true},
-      {txt:'), en '+fpago+', en concepto de reserva y garantía ad referéndum del aceptante, por el alquiler del inmueble ubicado en '},
+      {txt:'), '+(fpago==='transferencia bancaria'?'mediante ':' en ')+fpago+', en concepto de reserva y garantía ad referéndum del aceptante, por el alquiler del inmueble ubicado en '},
       {txt:dir, bold:true},
       {txt:'.'}
     ],false,11,F);
@@ -1847,7 +1847,7 @@ async function genReserva(){
       {txt:montoLetrasStr, bold:true},
       {txt:' ($ '},
       {txt:montoFmt, bold:true},
-      {txt:'), '},
+      {txt:'), '+(fpago==='transferencia bancaria'?'mediante ':'')},
       {txt:fpago, bold:true},
       {txt:', sirviendo el presente de eficaz recibo.'}
     ]);
@@ -1898,7 +1898,7 @@ async function genReserva(){
     body+=rBr();
 
     // Datos del Oferente y Firma
-    body+=rSub('Datos del Oferente y Firma',F);
+    body+=rSub('Datos del Reservante y Firma',F);
     body+=rBr();
     body+=rParMix([{txt:ciudad+', '},{txt:fechaStr,bold:true}],false,11,F);
     body+=rParMix([{txt:'Apellido y Nombre: '},{txt:ofNom,bold:true}],false,11,F);
@@ -1933,7 +1933,7 @@ async function genReserva(){
     // Aceptación del Propietario (sección separada, siempre se muestra)
     body+=rBr();
     body+=rPar('─────────────────────────────────────────────────────────────────────────',false,true,10,false,F);
-    body+=rTit('Aceptación del Propietario',F);
+    body+=rTit('Aceptación del Propietario/a',F);
     body+=rBr();
     if(prNom){
       var prEcEl2=document.getElementById('rs-pr-ecivil');
