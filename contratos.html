@@ -1539,23 +1539,26 @@ function rsChg(){
     if(btn) btn.disabled=true;
     return;
   }
-  var ok=true;
+  var labels={'rs-of-n':'Nombre oferente','rs-of-d':'DNI oferente','rs-ciudad':'Ciudad','rs-dir':'Dirección','rs-monto':'Monto reserva','rs-alqm':'Alquiler mensual','rs-honor':'Honorarios','rs-vta-ciudad':'Ciudad','rs-vta-dir':'Dirección','rs-precio':'Precio','rs-res-acto':'Reserva en acto','rs-ces-cedente':'Cedente'};
   var required=['rs-of-n','rs-of-d'];
   if(RTIPO==='alquiler') required=required.concat(['rs-ciudad','rs-dir','rs-monto','rs-alqm','rs-honor']);
   else required=required.concat(['rs-vta-ciudad','rs-vta-dir','rs-precio','rs-res-acto']);
   if(RTIPO==='cesion') required=required.concat(['rs-ces-cedente']);
+  var missing=[];
   required.forEach(function(id){
     var el=document.getElementById(id);
-    if(!el||!el.value.trim()) ok=false;
+    if(!el||!el.value.trim()) missing.push(labels[id]||id);
   });
-  var filled=0;
-  required.forEach(function(id){
-    var el=document.getElementById(id);
-    if(el&&el.value.trim()) filled++;
-  });
+  var ok=missing.length===0;
+  var filled=required.length-missing.length;
   var pct=Math.round((filled/required.length)*100);
   var pf=document.getElementById('rs-pfill');
   if(pf){ pf.style.width=pct+'%'; pf.textContent=pct+'%'; }
+  var bst=document.getElementById('rs-bst');
+  if(bst){
+    bst.className='badge '+(ok?'bok':'bwrn');
+    bst.textContent=ok?'Listo para descargar':'Falta: '+missing.join(', ');
+  }
   var btn=document.getElementById('rs-btn-dl');
   if(btn) btn.disabled=!ok;
 }
