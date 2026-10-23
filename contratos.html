@@ -609,9 +609,16 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
     <div style="background:var(--az2,#e8f0fe);border-radius:8px;padding:12px 14px;margin-bottom:14px">
       <strong style="display:block;margin-bottom:6px;font-size:0.9rem">💬 Mensaje para enviar junto con el documento</strong>
       <div style="background:var(--bg,#fff);border:1px solid var(--brd,#ddd);border-radius:6px;padding:10px 12px;font-size:0.92rem;color:var(--tx,#222);position:relative" id="rs-msg-envio">
-        Hola! Te dejo aquí la reserva, una vez que la firmes te envío los datos bancarios.
+        Buenos días! Te envío adjunta la reserva de alquiler. Una vez que la hayas firmado y nos envíes foto, te hacemos llegar los datos bancarios para realizar la transferencia. A partir de ahí continuamos con los siguientes pasos: documentación, garantías e informes. Quedamos a disposición ante cualquier consulta.
       </div>
       <button onclick="APP.rsCopiarMsg()" style="margin-top:8px;background:none;border:1px solid var(--az,#1a56db);color:var(--az,#1a56db);border-radius:5px;padding:4px 12px;cursor:pointer;font-size:0.85rem">Copiar mensaje</button>
+    </div>
+
+    <!-- Datos bancarios -->
+    <div style="background:#f0f7f0;border-left:4px solid #2d8a4e;border-radius:6px;padding:12px 14px;margin-bottom:14px">
+      <strong style="display:block;margin-bottom:4px;color:#1a5c34">🏦 Datos bancarios (para enviar una vez firmada la reserva)</strong>
+      <div style="font-family:monospace;font-size:0.95rem;color:#1a3a26;background:#e4f2e8;border-radius:5px;padding:8px 12px;margin-top:4px" id="rs-datos-bancarios">Cuenta Banco Macro: robertsotero.macro</div>
+      <button onclick="APP.rsCopiarBanco()" style="margin-top:8px;background:none;border:1px solid #2d8a4e;color:#2d8a4e;border-radius:5px;padding:4px 12px;cursor:pointer;font-size:0.85rem">Copiar datos</button>
     </div>
 
     <!-- Pasos siguientes -->
@@ -620,9 +627,10 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       <ul style="margin:0;padding-left:18px;font-size:0.91rem;color:var(--tx,#222);line-height:1.8">
         <li>Enviar el documento al interesado para que lo firme</li>
         <li>Solicitar foto de la reserva firmada</li>
-        <li>Pedir documentación: DNI, recibos de sueldo, garantía</li>
-        <li>Una vez firmada la reserva → enviar datos bancarios para la transferencia</li>
-        <li>Confirmar recepción de fondos antes de proceder</li>
+        <li>Una vez firmada → enviar datos bancarios para la transferencia y confirmar recepción de fondos</li>
+        <li>Pedir documentación: DNI, recibos de sueldo y garantías (inquilino y garantes)</li>
+        <li>Pedir informes de cada persona involucrada (inquilino y garantes)</li>
+        <li>Pedir informe de propiedad con matrícula a administración</li>
       </ul>
     </div>
 
@@ -1642,21 +1650,23 @@ async function genReserva(){
   var fn=(fnFld||('reserva_'+RTIPO)).replace(/\s+/g,'_')+'.docx';
 
   var FONT_ALQ='Verdana';
-  function rPar(txt, bold, center, sz, underline, font){
+  // align: 'left'|'center'|'both'(justify)
+  function rPar(txt, bold, center, sz, underline, font, align){
     var rpr='';
     var f=font||'';
     if(f) rpr+='<w:rFonts w:ascii="'+f+'" w:hAnsi="'+f+'" w:cs="'+f+'"/>';
     if(bold) rpr+='<w:b/>';
     if(underline) rpr+='<w:u w:val="single"/>';
     if(sz) rpr+='<w:sz w:val="'+(sz*2)+'"/><w:szCs w:val="'+(sz*2)+'"/>';
-    var ppr='';
-    if(center) ppr='<w:pPr><w:jc w:val="center"/></w:pPr>';
+    var jc=align||( center?'center':'both' );
+    var ppr='<w:pPr><w:jc w:val="'+jc+'"/></w:pPr>';
     return '<w:p>'+ppr+'<w:r><w:rPr>'+rpr+'</w:rPr><w:t xml:space="preserve">'+txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</w:t></w:r></w:p>';
   }
-  // Párrafo con partes mixtas: array de {txt, bold}
-  function rParMix(parts, center, sz, font){
+  // Párrafo con partes mixtas: array de {txt, bold}, align: 'left'|'center'|'both'
+  function rParMix(parts, center, sz, font, align){
     var f=font||'';
-    var ppr=center?'<w:pPr><w:jc w:val="center"/></w:pPr>':'';
+    var jc=align||( center?'center':'both' );
+    var ppr='<w:pPr><w:jc w:val="'+jc+'"/></w:pPr>';
     var runs=parts.map(function(p){
       var rpr='';
       if(f) rpr+='<w:rFonts w:ascii="'+f+'" w:hAnsi="'+f+'" w:cs="'+f+'"/>';
@@ -1667,19 +1677,71 @@ async function genReserva(){
     return '<w:p>'+ppr+runs+'</w:p>';
   }
   function rBr(){ return '<w:p><w:r><w:t></w:t></w:r></w:p>'; }
-  function rTit(txt,font){ return rPar(txt,true,true,14,false,font); }
-  function rTitU(txt,font){ return rPar(txt,true,true,14,true,font); }
-  function rSub(txt,font){ return rPar(txt,true,false,12,false,font); }
-  function rTx(txt,font){ return rPar(txt,false,false,11,false,font); }
-  function rTxB(txt,font){ return rPar(txt,true,false,11,false,font); }
+  function rTit(txt,font){ return rPar(txt,true,true,14,false,font,'center'); }
+  function rTitU(txt,font){ return rPar(txt,true,true,14,true,font,'center'); }
+  function rSub(txt,font){ return rPar(txt,true,false,12,false,font,'left'); }
+  function rTx(txt,font){ return rPar(txt,false,false,11,false,font,'both'); }
+  function rTxB(txt,font){ return rPar(txt,true,false,11,false,font,'both'); }
 
-  // Convierte número (1-30) a letras mayúsculas para documentos
+  // Convierte número (1-30) a letras mayúsculas para días
   function numToWords(n){
     var w=['','UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ',
            'ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE',
            'VEINTIUNO','VEINTIDÓS','VEINTITRÉS','VEINTICUATRO','VEINTICINCO','VEINTISÉIS','VEINTISIETE','VEINTIOCHO','VEINTINUEVE','TREINTA'];
     var num=parseInt(n,10);
     return (num>=1&&num<=30)?w[num]:(n||'');
+  }
+
+  // Convierte monto numérico (puede tener puntos de miles) a letras en mayúsculas
+  function montoLetras(str){
+    if(!str) return '';
+    // quitar puntos de miles y comas decimales
+    var limpio=str.replace(/\./g,'').replace(/,/g,'.');
+    var num=parseInt(limpio,10);
+    if(isNaN(num)||num<=0) return str;
+    var u=['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE',
+           'DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE',
+           'VEINTE','VEINTIÚN','VEINTIDÓS','VEINTITRÉS','VEINTICUATRO','VEINTICINCO','VEINTISÉIS','VEINTISIETE','VEINTIOCHO','VEINTINUEVE'];
+    var dec=['','','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
+    var cen=['','CIENTO','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
+    function cientos(n){
+      if(n===0) return '';
+      if(n===100) return 'CIEN';
+      var c=Math.floor(n/100), resto=n%100;
+      var s=cen[c]||'';
+      if(resto===0) return s;
+      if(resto<30) return (s?(s+' '):'')+u[resto];
+      var d=Math.floor(resto/10), r2=resto%10;
+      return (s?(s+' '):'')+dec[d]+(r2?' Y '+u[r2]:'');
+    }
+    function miles(n){
+      if(n===0) return 'CERO';
+      var s='';
+      var mill=Math.floor(n/1000000);
+      var resto=n%1000000;
+      if(mill>0){
+        s+=(mill===1?'UN MILLÓN':(cientos(Math.floor(mill/1000))?(cientos(Math.floor(mill/1000))+' MIL '):'')+(mill%1000>0?cientos(mill%1000):'')+' MILLONES');
+        // simplify: just handle up to 999 millions
+        s=(mill===1?'UN MILLÓN':cientos(mill)+' MILLONES')+' ';
+      }
+      var mil=Math.floor(resto/1000);
+      var uni=resto%1000;
+      if(mil>0){
+        s+=(mil===1?'MIL':cientos(mil)+' MIL')+' ';
+      }
+      if(uni>0) s+=cientos(uni);
+      return s.trim();
+    }
+    return miles(num);
+  }
+
+  // Formatea monto con separador de miles (punto) para mostrar en paréntesis
+  function fmtMonto(str){
+    if(!str) return str;
+    var limpio=str.replace(/\./g,'').replace(/,/g,'');
+    var num=parseInt(limpio,10);
+    if(isNaN(num)) return str;
+    return num.toLocaleString('es-AR');
   }
 
   if(RTIPO==='alquiler'){
@@ -1699,6 +1761,13 @@ async function genReserva(){
     var emailProp=_sr('rs-pr-em');
     var waProp=_sr('rs-of-wa')||_sr('rs-of-tel');
     var honor=_sr('rs-honor');
+    // Montos en letras
+    var montoLetrasStr=montoLetras(monto);
+    var mensLetrasStr=montoLetras(mens);
+    var honorLetrasStr=montoLetras(honor);
+    var montoFmt=fmtMonto(monto);
+    var mensFmt=fmtMonto(mens);
+    var honorFmt=fmtMonto(honor);
     // Texto genérico con género del oferente
     var suscripto=ofFem?'la suscripta':'el suscripto';
 
@@ -1725,9 +1794,9 @@ async function genReserva(){
       {txt:', domiciliado/a en '},
       {txt:ofDom, bold:true},
       {txt:', la suma de Pesos '},
-      {txt:monto, bold:true},
+      {txt:montoLetrasStr, bold:true},
       {txt:' ($ '},
-      {txt:monto, bold:true},
+      {txt:montoFmt, bold:true},
       {txt:'), en '+fpago+', en concepto de reserva y garantía ad referéndum del aceptante, por el alquiler del inmueble ubicado en '},
       {txt:dir, bold:true},
       {txt:'.'}
@@ -1740,9 +1809,9 @@ async function genReserva(){
     body+=rSub('1. Precio y condiciones generales',F);
     body+=rParMix([
       {txt:'El monto del contrato se establece en un valor mensual inicial de Pesos '},
-      {txt:mens, bold:true},
+      {txt:mensLetrasStr, bold:true},
       {txt:' ($ '},
-      {txt:mens, bold:true},
+      {txt:mensFmt, bold:true},
       {txt:'), actualizable trimestralmente mediante el Índice de Precios al Consumidor (IPC) publicado por el INDEC y modificatorias. El plazo de la locación será de '},
       {txt:plazoMeses, bold:true},
       {txt:' meses, a partir del '},
@@ -1767,9 +1836,9 @@ async function genReserva(){
       {txt:' ('},
       {txt:dias, bold:true},
       {txt:') días hábiles a contar de la fecha, entregando en concepto de depósito de reserva y garantía la suma de Pesos '},
-      {txt:monto, bold:true},
+      {txt:montoLetrasStr, bold:true},
       {txt:' ($ '},
-      {txt:monto, bold:true},
+      {txt:montoFmt, bold:true},
       {txt:'), '},
       {txt:fpago, bold:true},
       {txt:', sirviendo el presente de eficaz recibo.'}
@@ -1801,10 +1870,10 @@ async function genReserva(){
     // Cláusula 6: Honorarios
     body+=rSub('6. Honorarios',F);
     body+=rParMix([
-      {txt:'El/la oferente reconoce a favor de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. la suma de Pesos '},
-      {txt:honor, bold:true},
+      {txt:(ofFem?'La':'El')+' oferente reconoce a favor de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. la suma de Pesos '},
+      {txt:honorLetrasStr, bold:true},
       {txt:' ($ '},
-      {txt:honor, bold:true},
+      {txt:honorFmt, bold:true},
       {txt:') en concepto de retribución por su participación en la presente operación, suma que abonaré en dinero efectivo a la firma del contrato.'}
     ],false,11,F);
     body+=rBr();
@@ -1813,9 +1882,9 @@ async function genReserva(){
     body+=rSub('7. Autorización al corredor',F);
     body+=rParMix([
       {txt:'Reconozco a favor de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. la suma de Pesos '},
-      {txt:honor, bold:true},
+      {txt:honorLetrasStr, bold:true},
       {txt:' ($ '},
-      {txt:honor, bold:true},
+      {txt:honorFmt, bold:true},
       {txt:') en concepto de retribución por su participación en la presente operación, suma que abonaré a la firma del contrato.'}
     ],false,11,F);
     body+=rBr();
@@ -1834,12 +1903,13 @@ async function genReserva(){
     body+=rBr();
     body+=rTx('Firma del Corredor ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.: _________________________',F);
     body+=rTx('Aclaración: _________________________',F);
-    body+=rParMix([{txt:'Matrícula: '},{txt:'_________________________'}],false,11,F);
+    body+=rParMix([{txt:'Matrícula: '},{txt:'CPI6390', bold:true}],false,11,F);
     body+=rParMix([{txt:ciudad+', '},{txt:fechaStr,bold:true}],false,11,F);
     body+=rBr();
 
     // Sección propietario (antes de la Aceptación formal)
-    body+=rTx('Por la presente, el/la suscripto/a, en carácter de propietario/a del inmueble referenciado, acepta / rechaza (tachar lo que no corresponda) la presente oferta de reserva.',F);
+    var suscriptoPr=prFem?'la suscripta':'el suscripto';
+    body+=rTx('Por la presente, '+suscriptoPr+', en carácter de propietario/a del inmueble referenciado, acepta / rechaza (tachar lo que no corresponda) la presente oferta de reserva.',F);
     body+=rTx('En caso de aceptación, me obligo a mantener la oferta por el término de vigencia indicado y a suscribir el contrato de locación en las condiciones establecidas. En caso de rechazo, me comprometo a devolver la suma recibida en concepto de depósito de reserva dentro de las cuarenta y ocho (48) horas hábiles de notificado al oferente.',F);
     body+=rBr();
     body+=rTx('Firma del Propietario/a: _________________________',F);
@@ -2181,6 +2251,21 @@ return {
   rsCerrarAviso:function(){
     var m=document.getElementById('rs-modal-aviso');
     if(m){ m.style.display='none'; }
+  },
+  rsCopiarBanco:function(){
+    var el=document.getElementById('rs-datos-bancarios');
+    if(!el) return;
+    var txt=el.innerText||el.textContent;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(txt.trim()).then(function(){
+        var btn=document.querySelector('[onclick="APP.rsCopiarBanco()"]');
+        if(btn){ var orig=btn.textContent; btn.textContent='✓ Copiado!'; setTimeout(function(){btn.textContent=orig;},2000); }
+      });
+    } else {
+      var ta=document.createElement('textarea');
+      ta.value=txt.trim(); document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
   },
   rsCopiarMsg:function(){
     var el=document.getElementById('rs-msg-envio');
