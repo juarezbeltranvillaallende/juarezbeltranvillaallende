@@ -10,9 +10,11 @@
 <style>
 :root{--az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;--or:#D97706;--orb:#FEF3C7;--vd:#059669;--vdb:#D1FAE5;--k:#1A1A2E;--g:#6B7280}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--k);-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#E8EFF6;color:var(--k);-webkit-font-smoothing:antialiased;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(#D3DEE8 1px,transparent 1px),linear-gradient(90deg,#D3DEE8 1px,transparent 1px);background-size:32px 32px;opacity:0.35;mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,black 30%,transparent 85%)}
+.home-wrap{position:relative;z-index:1}
 .home-wrap{max-width:900px;width:100%;margin:0 auto}
-.home-title{text-align:center;font-size:34px;font-weight:700;color:#1a1a2e;margin-bottom:.3rem;letter-spacing:-.01em;text-transform:none}
+.home-title{text-align:center;font-size:34px;font-weight:700;color:#1E2733;margin-bottom:.3rem;letter-spacing:-.01em}
 .home-sub{text-align:center;font-size:13px;color:#9ca3af;margin-bottom:3rem;letter-spacing:.02em;font-weight:400}
 .home-sub-az{text-align:center;font-size:13px;color:var(--azm);letter-spacing:.25em;font-weight:600;text-transform:uppercase;margin-bottom:.3rem}
 .home-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;max-width:620px;margin:0 auto}
@@ -28,8 +30,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--
 </head>
 <body>
 
+<div class="grid-bg"></div>
 <div class="home-wrap">
-  <img src="favicon-512.png" alt="Juárez Beltrán" style="width:96px;height:96px;display:block;margin:0 auto 20px;filter:drop-shadow(0 8px 24px rgba(31,78,121,0.30))">
+  <img src="favicon-512.png" alt="Juárez Beltrán" style="width:112px;height:112px;display:block;margin:0 auto 28px;filter:drop-shadow(0 8px 24px rgba(59,95,204,0.35))">
   <div class="home-title">Juárez Beltrán</div>
   <div class="home-sub-az">VILLA ALLENDE</div>
   <div class="home-sub">Elegí un área para empezar</div>
