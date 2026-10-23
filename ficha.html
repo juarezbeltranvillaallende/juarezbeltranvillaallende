@@ -44,7 +44,7 @@
   .nav-item{ display:flex; align-items:center; gap:11px; padding:9px 10px; border-radius:6px; font-size:13.5px; color:var(--text-dim); border:1px solid transparent; text-decoration:none; }
   .nav-item .dot{ width:5px; height:5px; border-radius:50%; background:var(--text-faint); flex-shrink:0; }
   .nav-item.active{ background:var(--surface); color:var(--text); border-color:var(--line); }
-  .nav-item.active .dot{ background:var(--gold); box-shadow:0 0 0 3px rgba(201,162,39,0.15); }
+  .nav-item.active .dot{ background:#2E75B6; box-shadow:0 0 0 3px rgba(46,117,182,0.15); }
   .nav-item.disabled{ opacity:0.4; }
   .nav-item .tag{ margin-left:auto; font-family:'Segoe UI',system-ui,sans-serif; font-size:9.5px; color:var(--text-faint); }
   .back-link{ font-size:12px; color:var(--text-faint); text-decoration:none; display:flex; align-items:center; gap:6px; margin-top:-10px; }
@@ -81,7 +81,7 @@
   .gallery-main{ height:280px; border-radius:9px; background:linear-gradient(135deg,#E3EAF1,#D3DEE8); display:flex; align-items:center; justify-content:center; margin-bottom:10px; position:relative; overflow:hidden; }
   .gallery-thumbs{ display:grid; grid-template-columns:repeat(6,1fr); gap:7px; }
   .gthumb{ aspect-ratio:1; border-radius:6px; background:linear-gradient(135deg,#E3EAF1,#D3DEE8); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; cursor:pointer; }
-  .gthumb.active{ border-color:var(--gold); }
+  .gthumb.active{ border-color:#2E75B6; }
   .gthumb svg, .gallery-main svg{ opacity:0.6; }
   .upload-zone{
     margin-top:12px; border:1px dashed var(--line); border-radius:8px; padding:14px;
@@ -90,7 +90,7 @@
   .upload-zone-text{ font-size:12px; color:var(--text-faint); line-height:1.5; }
   .upload-zone-text b{ color:var(--text-dim); }
   .btn{ padding:8px 14px; border-radius:6px; font-size:12px; cursor:pointer; border:1px solid var(--line); background:transparent; color:var(--text-dim); font-family:'Segoe UI',system-ui,sans-serif; white-space:nowrap; }
-  .btn.primary{ background:var(--gold); border-color:var(--gold); color:#181A14; font-weight:600; }
+  .btn.primary{ background:#1F4E79; border-color:#1F4E79; color:#fff; font-weight:600; }
   .btn:hover{ border-color:var(--text-faint); }
 
   /* Info grid */
@@ -98,8 +98,8 @@
   .info-item{ }
   .info-label{ font-size:10.5px; color:var(--text-faint); font-family:'Segoe UI',system-ui,sans-serif; letter-spacing:0.03em; margin-bottom:4px; }
   .info-value{ font-size:14.5px; font-weight:500; }
-  .info-value.price{ font-family:'Segoe UI',system-ui,sans-serif; color:var(--gold); font-size:16px; }
-  .info-value a{ color:var(--gold); text-decoration:none; }
+  .info-value.price{ font-family:'Segoe UI',system-ui,sans-serif; color:#1F4E79; font-size:16px; }
+  .info-value a{ color:#2E75B6; text-decoration:none; }
   .info-value a:hover{ text-decoration:underline; }
 
   /* Historial consultas */
@@ -116,7 +116,7 @@
   .check-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
   .check-item{ display:flex; gap:11px; align-items:flex-start; padding:11px 12px; background:var(--bg); border:1px solid var(--line); border-radius:8px; cursor:pointer; }
   .check-box{ width:17px; height:17px; border-radius:4px; border:1.5px solid var(--text-faint); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; }
-  .check-item.checked .check-box{ background:var(--gold); border-color:var(--gold); }
+  .check-item.checked .check-box{ background:#2E75B6; border-color:#2E75B6; }
   .check-item.checked .check-box svg{ opacity:1; }
   .check-box svg{ width:11px; height:11px; opacity:0; }
   .check-text{ font-size:12.5px; line-height:1.45; }
@@ -124,10 +124,10 @@
   .check-text span{ color:var(--text-faint); }
 
   .price-compare-toggle{
-    margin-top:8px; font-size:11.5px; color:var(--gold); cursor:pointer;
+    margin-top:8px; font-size:11.5px; color:#2E75B6; cursor:pointer;
     font-family:'Segoe UI',system-ui,sans-serif; display:inline-block;
   }
-  .price-compare-toggle:hover{ color:#E0BC4A; }
+  .price-compare-toggle:hover{ color:#1F4E79; }
   .price-compare{
     display:none; margin-top:10px; border:1px solid var(--line); border-radius:7px;
     overflow:hidden; background:var(--bg);
@@ -140,7 +140,7 @@
   }
   .pc-row:last-of-type{ border-bottom:none; }
   .pc-row.pc-head{ color:var(--text-faint); font-size:10px; text-transform:uppercase; letter-spacing:0.03em; background:var(--surface); }
-  .pc-row.pc-this{ color:var(--gold); background:rgba(201,162,39,0.06); }
+  .pc-row.pc-this{ color:#1F4E79; background:rgba(31,78,121,0.06); }
   .pc-row span:first-child{ font-family:'Segoe UI',system-ui,sans-serif; }
   .pc-note{ padding:9px 10px; font-size:11.5px; color:var(--text-dim); border-top:1px solid var(--line); }
   .pc-note b{ color:var(--amber); }
@@ -373,16 +373,22 @@ function renderFicha(p, prefijoAviso){
     <div class="info-item"><div class="info-label">AMBIENTES</div><div class="info-value">${p.ambientes}</div></div>
     <div class="info-item"><div class="info-label">BAÑOS</div><div class="info-value">${p.banos}</div></div>
     <div class="info-item"><div class="info-label">SUPERFICIE</div><div class="info-value">${p.superficie ? p.superficie+' m²' : '—'}</div></div>
-    <div class="info-item"><div class="info-label">EN EL MERCADO</div><div class="info-value">${p.diasEnMercado !== null ? p.diasEnMercado+' días' : '—'}</div></div>
+    <div class="info-item"><div class="info-label">EN EL MERCADO</div><div class="info-value">${p.diasEnMercado !== null ? (p.diasEnMercado < 30 ? p.diasEnMercado+' días' : Math.floor(p.diasEnMercado/30)+(Math.floor(p.diasEnMercado/30)===1?' mes':' meses')) : '—'}</div></div>
     <div class="info-item"><div class="info-label">AGENTE</div><div class="info-value">${p.agente}</div></div>
-    ${p.publicUrl ? `<div class="info-item"><div class="info-label">EN TOKKO</div><div class="info-value"><a href="${p.publicUrl}" target="_blank" style="color:var(--gold);">Ver publicación ↗</a></div></div>` : ''}
-    ${p.linkDrive ? `<div class="info-item"><div class="info-label">CARPETA DRIVE</div><div class="info-value"><a href="${p.linkDrive}" target="_blank" style="color:var(--gold);">Abrir carpeta ↗</a></div></div>` : ''}
+    ${p.publicUrl ? `<div class="info-item"><div class="info-label">EN TOKKO</div><div class="info-value"><a href="${p.publicUrl}" target="_blank">Ver publicación ↗</a></div></div>` : ''}
+    ${p.linkDrive ? `<div class="info-item"><div class="info-label">CARPETA DRIVE</div><div class="info-value"><a href="${p.linkDrive}" target="_blank">Abrir carpeta ↗</a></div></div>` : ''}
   `;
 
   // ---- Consultas: todavía no conectado ----
   document.getElementById('consultasList').innerHTML = `<div class="consulta-empty">Todavía no conectamos las consultas por propiedad — próximamente.</div>`;
 
-  // ---- Preguntas para revisar (siempre visibles) ----
+  // ---- Preguntas para revisar (solo si >6 meses en el mercado) ----
+  const rightCol = document.getElementById('rightCol');
+  if(p.diasEnMercado === null || p.diasEnMercado < 180){
+    rightCol.style.display = 'none';
+  } else {
+    rightCol.style.display = '';
+  }
   document.getElementById('consultaAnswer').textContent = st === 'sindatos'
     ? 'Sin datos todavía — anotalo a mano si lo sabés.'
     : (st === 'green' ? (p.daysNoConsulta === 0 ? 'Recibió consultas hoy.' : `Última consulta hace ${p.daysNoConsulta} días.`) : `Sin consultas hace ${p.daysNoConsulta} días.`);
