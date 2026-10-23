@@ -471,6 +471,10 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <div class="f"><label>Días hábiles vigencia reserva</label><input id="rs-dias" type="text" value="5" placeholder="5"></div>
         <div class="f"><label>Honorarios corredor (Pesos) *</label><input id="rs-honor" type="text" placeholder="Ej: 150000" oninput="APP.rsChg()"></div>
       </div>
+      <div class="f" style="margin-bottom:8px">
+        <label>Accesorios / algo especial de la propiedad <span style="font-weight:400;color:#888">(opcional — aires, roturas, elementos incluidos, etc.)</span></label>
+        <textarea id="rs-accesorios" rows="2" style="width:100%;resize:vertical" placeholder="Ej: Split en living y dormitorio principal, termotanque nuevo, persiana rota en dormitorio 2..."></textarea>
+      </div>
     </div>
   </div>
   </div>
@@ -583,11 +587,50 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
   <div class="card">
     <div class="ch">
       <div id="rs-bst" class="badge bwrn">Faltan campos</div>
-      <button class="btn btnp" id="rs-btn-dl" onclick="APP.genReserva()" disabled style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar Reserva</button>
+      <button class="btn btnp" id="rs-btn-dl" onclick="APP.rsAbrirAviso()" disabled style="margin-left:auto"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Descargar Reserva</button>
     </div>
   </div>
   </div><!-- rs-fb -->
 </div>
+</div>
+
+<!-- Modal de avisos pre-descarga -->
+<div id="rs-modal-aviso" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);align-items:center;justify-content:center">
+  <div style="background:var(--bg,#fff);border-radius:12px;max-width:560px;width:94%;padding:24px 28px;box-shadow:0 8px 40px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto">
+    <h3 style="margin:0 0 16px;font-size:1.1rem;color:var(--tx,#111)">⚠️ Antes de descargar — Recordatorios</h3>
+
+    <!-- Aviso 1: no transferir -->
+    <div style="background:#fff3cd;border-left:4px solid #f0a500;border-radius:6px;padding:12px 14px;margin-bottom:14px">
+      <strong style="display:block;margin-bottom:4px;color:#7a5200">🚫 Importante</strong>
+      <span style="font-size:0.93rem;color:#5a3c00">RECUERDEN QUE EL INTERESADO NO PUEDE TRANSFERIR A NINGUNA CUENTA ANTES DE FIRMAR Y ENVIAR FOTOS</span>
+    </div>
+
+    <!-- Mensaje para enviar -->
+    <div style="background:var(--az2,#e8f0fe);border-radius:8px;padding:12px 14px;margin-bottom:14px">
+      <strong style="display:block;margin-bottom:6px;font-size:0.9rem">💬 Mensaje para enviar junto con el documento</strong>
+      <div style="background:var(--bg,#fff);border:1px solid var(--brd,#ddd);border-radius:6px;padding:10px 12px;font-size:0.92rem;color:var(--tx,#222);position:relative" id="rs-msg-envio">
+        Hola! Te dejo aquí la reserva, una vez que la firmes te envío los datos bancarios.
+      </div>
+      <button onclick="APP.rsCopiarMsg()" style="margin-top:8px;background:none;border:1px solid var(--az,#1a56db);color:var(--az,#1a56db);border-radius:5px;padding:4px 12px;cursor:pointer;font-size:0.85rem">Copiar mensaje</button>
+    </div>
+
+    <!-- Pasos siguientes -->
+    <div style="background:var(--az2,#e8f4f1);border-radius:8px;padding:12px 14px;margin-bottom:18px">
+      <strong style="display:block;margin-bottom:8px;font-size:0.9rem">📋 Pasos siguientes</strong>
+      <ul style="margin:0;padding-left:18px;font-size:0.91rem;color:var(--tx,#222);line-height:1.8">
+        <li>Enviar el documento al interesado para que lo firme</li>
+        <li>Solicitar foto de la reserva firmada</li>
+        <li>Pedir documentación: DNI, recibos de sueldo, garantía</li>
+        <li>Una vez firmada la reserva → enviar datos bancarios para la transferencia</li>
+        <li>Confirmar recepción de fondos antes de proceder</li>
+      </ul>
+    </div>
+
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button onclick="APP.rsCerrarAviso()" style="background:none;border:1px solid var(--brd,#ccc);border-radius:7px;padding:8px 18px;cursor:pointer;font-size:0.93rem">Cancelar</button>
+      <button onclick="APP.rsCerrarAviso();APP.genReserva();" style="background:var(--az,#1a56db);color:#fff;border:none;border-radius:7px;padding:8px 20px;cursor:pointer;font-size:0.93rem;font-weight:600">⬇ Descargar de todas formas</button>
+    </div>
+  </div>
 </div>
 
 
@@ -1630,6 +1673,15 @@ async function genReserva(){
   function rTx(txt,font){ return rPar(txt,false,false,11,false,font); }
   function rTxB(txt,font){ return rPar(txt,true,false,11,false,font); }
 
+  // Convierte número (1-30) a letras mayúsculas para documentos
+  function numToWords(n){
+    var w=['','UNO','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ',
+           'ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE',
+           'VEINTIUNO','VEINTIDÓS','VEINTITRÉS','VEINTICUATRO','VEINTICINCO','VEINTISÉIS','VEINTISIETE','VEINTIOCHO','VEINTINUEVE','TREINTA'];
+    var num=parseInt(n,10);
+    return (num>=1&&num<=30)?w[num]:(n||'');
+  }
+
   if(RTIPO==='alquiler'){
     var ciudad=_sr('rs-ciudad')||'Villa Allende';
     var fecha=_sr('rs-fecha')||'';
@@ -1641,7 +1693,14 @@ async function genReserva(){
     var plazo=(function(){ var el=document.getElementById('rs-plazo'); return el?el.value:'24'; })();
     var inicio=_sr('rs-ini');
     var dias=_sr('rs-dias')||'5';
+    var diasPalabra=numToWords(dias); // e.g. "CINCO"
+    var accesorios=_sr('rs-accesorios'); // campo opcional
+    var prDom=_sr('rs-pr-dom');
+    var emailProp=_sr('rs-pr-em');
+    var waProp=_sr('rs-of-wa')||_sr('rs-of-tel');
     var honor=_sr('rs-honor');
+    // Texto genérico con género del oferente
+    var suscripto=ofFem?'la suscripta':'el suscripto';
 
     // Formato fecha para el documento
     var fechaStr=fecha?(function(){
@@ -1674,7 +1733,7 @@ async function genReserva(){
       {txt:'.'}
     ],false,11,F);
     // Párrafo 2: Por la presente...
-    body+=rTx('Por la presente y por intermedio de la firma ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., con domicilio en Río de Janeiro 1725, Torre 1, Oficina 11, Villa Allende, Córdoba, el/la suscripto/a ofrece tomar en alquiler el inmueble bajo las siguientes condiciones:',F);
+    body+=rTx('Por la presente y por intermedio de la firma ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., con domicilio en Río de Janeiro 1725, Torre 1, Oficina 11, Villa Allende, Córdoba, '+suscripto+' ofrece tomar en alquiler el inmueble bajo las siguientes condiciones:',F);
     body+=rBr();
 
     // Cláusula 1: Precio y condiciones generales
@@ -1694,9 +1753,17 @@ async function genReserva(){
 
     // Cláusula 2: Estado del inmueble
     body+=rSub('2. Estado del inmueble',F);
-    body+=rParMix([
-      {txt:'El inmueble se entregará en el estado visto y en que se encuentra, que el oferente conoce y acepta, con los siguientes accesorios: _________________________, libre de ocupantes y con los impuestos y servicios abonados hasta el día de la firma del contrato y entrega de la tenencia, corriendo los mismos a partir de ese momento por cuenta del oferente conforme pacto expreso estipulado en el respectivo contrato a suscribirse.\nA tal fin solicitó la reserva del inmueble por el término de '},
-      {txt:dias, bold:true},
+    var cl2parts=[
+      {txt:'El inmueble se entregará en el estado visto y en que se encuentra, que el oferente conoce y acepta, '}
+    ];
+    if(accesorios){
+      cl2parts.push({txt:'con los siguientes accesorios: '});
+      cl2parts.push({txt:accesorios, bold:true});
+      cl2parts.push({txt:', '});
+    }
+    cl2parts=cl2parts.concat([
+      {txt:'libre de ocupantes y con los impuestos y servicios abonados hasta el día de la firma del contrato y entrega de la tenencia, corriendo los mismos a partir de ese momento por cuenta del oferente conforme pacto expreso estipulado en el respectivo contrato a suscribirse. A tal fin solicitó la reserva del inmueble por el término de '},
+      {txt:diasPalabra, bold:true},
       {txt:' ('},
       {txt:dias, bold:true},
       {txt:') días hábiles a contar de la fecha, entregando en concepto de depósito de reserva y garantía la suma de Pesos '},
@@ -1706,14 +1773,15 @@ async function genReserva(){
       {txt:'), '},
       {txt:fpago, bold:true},
       {txt:', sirviendo el presente de eficaz recibo.'}
-    ],false,11,F);
+    ]);
+    body+=rParMix(cl2parts,false,11,F);
     body+=rBr();
 
     // Cláusula 3: Vigencia y compromisos del oferente
     body+=rSub('3. Vigencia y compromisos del oferente',F);
     body+=rParMix([
       {txt:'La presente reserva se formula por el plazo de '},
-      {txt:dias, bold:true},
+      {txt:diasPalabra, bold:true},
       {txt:' ('},
       {txt:dias, bold:true},
       {txt:') días hábiles. La resolución del propietario será notificada al oferente vía WhatsApp o correo electrónico al domicilio constituido en la presente, teniendo por recibida dentro de las veinticuatro (24) horas de enviada. Una vez notificada la aceptación, el contrato se suscribirá en el lugar, día y hora que se le indique al oferente. El sellado del contrato será abonado en su totalidad por el oferente al momento de suscribir el contrato. Dentro del plazo mencionado, el oferente se compromete a entregar la documentación necesaria para suscribir el contrato de locación, cuyas cláusulas declara conocer y haber revisado con anterioridad al presente.'}
@@ -1727,7 +1795,7 @@ async function genReserva(){
     body+=rTx('b) La no concurrencia a suscribir el contrato de locación en el lugar, día y hora indicados;',F);
     body+=rTx('c) La no entrega de la documentación personal requerida o de la garantía, dentro del plazo convenido;',F);
     body+=rTx('d) Cualquier otra reticencia en el cumplimiento de las obligaciones asumidas en la presente.',F);
-    body+=rTx('Dejo aclarado que la prueba de la comparecencia incumbe al suscripto.',F);
+    body+=rTx('Dejo aclarado que la prueba de la comparecencia incumbe a '+suscripto+'.',F);
     body+=rBr();
 
     // Cláusula 6: Honorarios
@@ -2105,7 +2173,30 @@ return {
   renderH:renderH, delH:delH, borrarH:borrarH,
   addLoc:addLoc, remLoc:remLoc,
   initClauseEditor:initClauseEditor, setMoneda:setMoneda,
-  selR:selR, rsChg:rsChg, rsSetG:rsSetG, genReserva:genReserva
+  selR:selR, rsChg:rsChg, rsSetG:rsSetG, genReserva:genReserva,
+  rsAbrirAviso:function(){
+    var m=document.getElementById('rs-modal-aviso');
+    if(m){ m.style.display='flex'; }
+  },
+  rsCerrarAviso:function(){
+    var m=document.getElementById('rs-modal-aviso');
+    if(m){ m.style.display='none'; }
+  },
+  rsCopiarMsg:function(){
+    var el=document.getElementById('rs-msg-envio');
+    if(!el) return;
+    var txt=el.innerText||el.textContent;
+    if(navigator.clipboard){
+      navigator.clipboard.writeText(txt.trim()).then(function(){
+        var btn=document.querySelector('[onclick="APP.rsCopiarMsg()"]');
+        if(btn){ var orig=btn.textContent; btn.textContent='✓ Copiado!'; setTimeout(function(){btn.textContent=orig;},2000); }
+      });
+    } else {
+      var ta=document.createElement('textarea');
+      ta.value=txt.trim(); document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    }
+  }
 };
 
 })();
