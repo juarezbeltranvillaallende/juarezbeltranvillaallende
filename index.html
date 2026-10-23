@@ -8,74 +8,54 @@
 <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
 <title>Juárez Beltrán · Villa Allende</title>
 <style>
-  :root{
-    --az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;
-    --bg:#EAECF2;--k:#1A1A2E;--g:#6B7280;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html,body{height:100%}
-  body{
-    background:var(--bg);color:var(--k);
-    font-family:'Segoe UI',system-ui,sans-serif;
-    -webkit-font-smoothing:antialiased;
-    display:flex;align-items:center;justify-content:center;
-    min-height:100vh;padding:24px;
-  }
-  .wrap{position:relative;z-index:1;text-align:center;max-width:720px;width:100%}
-  .logo{width:96px;height:96px;margin:0 auto 24px;display:block;filter:drop-shadow(0 8px 24px rgba(31,78,121,0.30))}
-  h1{font-weight:700;font-size:30px;letter-spacing:-.01em;line-height:1.15;color:var(--k)}
-  .subtitle{font-size:12px;letter-spacing:0.05em;color:var(--azm);margin-top:6px;font-weight:600;text-transform:uppercase}
-  .tagline{color:var(--g);font-size:13px;margin-top:16px;margin-bottom:3rem}
-  .cards{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;max-width:600px;margin:0 auto}
-  .hc{
-    background:#fff;border:2px solid transparent;border-radius:22px;
-    padding:2.5rem 1.8rem 2.2rem;cursor:pointer;text-align:center;
-    display:flex;flex-direction:column;align-items:center;gap:1.1rem;
-    transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.07);
-    text-decoration:none;color:var(--k);
-  }
-  .hc:hover{box-shadow:0 8px 32px rgba(0,0,0,.13);transform:translateY(-3px);border-color:var(--azm)}
-  .hc-ico{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center}
-  .hc-ico.az{background:#E8EDF5}
-  .hc-ico.or{background:#F5EFE6}
-  .hc h3{font-size:20px;font-weight:700;color:#1a1a2e;margin:0;letter-spacing:-.01em}
-  .hc p{font-size:13px;color:#8a8fa8;line-height:1.55;margin:0}
-  .footer-note{margin-top:3rem;font-size:11px;color:#aaa;letter-spacing:0.03em}
+:root{--az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;--or:#D97706;--orb:#FEF3C7;--vd:#059669;--vdb:#D1FAE5;--k:#1A1A2E;--g:#6B7280}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--k);display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem}
+.home-wrap{max-width:900px;width:100%;margin:0 auto}
+.home-title{text-align:center;font-size:18px;font-weight:600;color:var(--g);margin-bottom:.3rem;letter-spacing:.04em;text-transform:uppercase}
+.home-sub{text-align:center;font-size:13px;color:#aaa;margin-bottom:3rem;letter-spacing:.02em}
+.home-cards{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem;max-width:620px;margin:0 auto}
+.hc{background:#fff;border:2px solid transparent;border-radius:22px;padding:2.5rem 1.8rem 2.2rem;cursor:pointer;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1.1rem;transition:.18s;box-shadow:0 2px 12px rgba(0,0,0,.07);text-decoration:none;color:var(--k)}
+.hc:hover{box-shadow:0 8px 32px rgba(0,0,0,.13);transform:translateY(-3px);border-color:var(--azm)}
+.hc-ico{width:72px;height:72px;border-radius:18px;display:flex;align-items:center;justify-content:center}
+.hc-ico.az{background:#E8EDF5}
+.hc-ico.or{background:#F5EFE6}
+.hc h3{font-size:20px;font-weight:700;color:#1a1a2e;margin:0;letter-spacing:-.01em}
+.hc p{font-size:13px;color:#8a8fa8;line-height:1.55;margin:0}
+.footer-note{text-align:center;margin-top:3rem;font-size:11px;color:#aaa;letter-spacing:.03em}
 </style>
 </head>
 <body>
 
-<div class="wrap">
-  <img class="logo" src="favicon-512.png" alt="Juárez Beltrán">
-  <h1>Juárez Beltrán</h1>
-  <div class="subtitle">VILLA ALLENDE</div>
-  <div class="tagline">Elegí un área para empezar</div>
+<div class="home-wrap">
+  <div class="home-title">Juárez Beltrán</div>
+  <div class="home-sub">VILLA ALLENDE · Elegí un área para empezar</div>
 
-  <div class="cards">
+  <div class="home-cards">
     <a href="comercial.html" class="hc">
       <div class="hc-ico az">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#2E75B6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="7" width="20" height="14" rx="2"/>
-          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-          <line x1="12" y1="12" x2="12" y2="16"/>
-          <line x1="10" y1="14" x2="14" y2="14"/>
+        <svg viewBox="0 0 24 24" width="38" height="38" fill="none">
+          <rect x="2" y="7" width="20" height="15" rx="2" fill="#c5d6e8" stroke="#6a93b8" stroke-width="1.4"/>
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke="#6a93b8" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="12" y1="12" x2="12" y2="17" stroke="#6a93b8" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="9.5" y1="14.5" x2="14.5" y2="14.5" stroke="#6a93b8" stroke-width="1.4" stroke-linecap="round"/>
         </svg>
       </div>
       <h3>Comercial</h3>
-      <p>Propiedades, fichas, calendario de marketing y cronograma.</p>
+      <p>Propiedades, fichas, calendario de marketing y cronograma</p>
     </a>
     <a href="contratos.html" class="hc">
       <div class="hc-ico or">
-        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#C06B1A" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="9" y1="13" x2="15" y2="13"/>
-          <line x1="9" y1="17" x2="15" y2="17"/>
-          <line x1="9" y1="9" x2="11" y2="9"/>
+        <svg viewBox="0 0 24 24" width="38" height="38" fill="none">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="#f5e0c5" stroke="#c47d2a" stroke-width="1.4" stroke-linejoin="round"/>
+          <polyline points="14 2 14 8 20 8" stroke="#c47d2a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <line x1="8" y1="13" x2="16" y2="13" stroke="#c47d2a" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="8" y1="17" x2="16" y2="17" stroke="#c47d2a" stroke-width="1.4" stroke-linecap="round"/>
+          <line x1="8" y1="9" x2="11" y2="9" stroke="#c47d2a" stroke-width="1.4" stroke-linecap="round"/>
         </svg>
       </div>
       <h3>Administración</h3>
-      <p>Generador de contratos de alquiler, compraventa y cesión.</p>
+      <p>Generador de contratos de alquiler, compraventa y cesión</p>
     </a>
   </div>
 
