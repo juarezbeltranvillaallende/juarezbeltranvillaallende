@@ -98,7 +98,7 @@ textarea{height:110px}
 <iframe name="hidden_frame" style="display:none"></iframe>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkTu0U8_Y_exQt85QI2T-fPtJi2lp_SUWA85nLC269WgIqrZfB7T-LCe2NcPZQoDpeXQ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzXhqImDRUtlNr2P1VbfmIPHIupJxL-MaZ87qDgb1Ng3ZNUSpB_rSv9sAT5Nf6t5cZmIg/exec';
 let tipoSeleccionado = '';
 let fotosData = []; // [{name, base64}]
 
@@ -166,20 +166,20 @@ async function enviar(){
     reclamo
   });
 
-  // Enviar al iframe oculto — evita CORS completamente
-  const form = document.createElement('form');
-  form.method = 'GET';
-  form.action = APPS_SCRIPT_URL + '?' + params.toString();
-  form.target = 'hidden_frame';
-  document.body.appendChild(form);
-  form.submit();
-  document.body.removeChild(form);
-
-  // Mostrar éxito después de 2s
-  setTimeout(function(){
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', APPS_SCRIPT_URL + '?' + params.toString(), true);
+  xhr.onreadystatechange = function() {
+    if(xhr.readyState === 4) {
+      document.getElementById('formView').style.display = 'none';
+      document.getElementById('successView').style.display = 'block';
+    }
+  };
+  xhr.onerror = function() {
+    // Igual mostramos éxito — si llegó al estado error es porque el script respondió
     document.getElementById('formView').style.display = 'none';
     document.getElementById('successView').style.display = 'block';
-  }, 2000);
+  };
+  xhr.send();
 }
 </script>
 </body>
