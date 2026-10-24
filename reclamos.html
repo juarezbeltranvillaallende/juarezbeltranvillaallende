@@ -103,6 +103,7 @@ tr:hover td{background:#F9FBFD}
             <th>Cliente</th>
             <th>Tipo</th>
             <th>Consulta / Reclamo</th>
+            <th>Fotos</th>
             <th>Prioridad</th>
             <th>Estado</th>
           </tr>
@@ -182,6 +183,7 @@ function renderTabla(){
       </td>
       <td><span class="tipo-badge ${tipoClass}">${r.tipo}</span></td>
       <td><div class="reclamo-text">${r.reclamo}</div></td>
+      <td>${r.fotos ? `<a href="${r.fotos}" target="_blank" style="font-size:12px;color:var(--azm);text-decoration:none;">📎 Ver</a>` : '<span style="color:var(--text-faint);font-size:12px;">—</span>'}</td>
       <td>
         <select class="prioridad-sel ${prioClass}" onchange="actualizarCampo(${r.id}, 'prioridad', this.value, this)">
           <option value="Sin asignar" ${r.prioridad==='Sin asignar'?'selected':''}>Sin asignar</option>
