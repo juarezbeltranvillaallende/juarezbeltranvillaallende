@@ -136,10 +136,21 @@ function cargar(){
   document.head.appendChild(s);
 }
 
+function ordenarReclamos(lista){
+  const orden = { 'Pendiente': 0, 'Resuelto': 1 };
+  return lista.slice().sort(function(a, b){
+    const oa = orden[a.estado] !== undefined ? orden[a.estado] : -1;
+    const ob = orden[b.estado] !== undefined ? orden[b.estado] : -1;
+    return oa - ob;
+  });
+}
+
 function renderTabla(){
   const filtrados = filtroActual
     ? todosLosReclamos.filter(r => r.estado === filtroActual)
     : todosLosReclamos;
+
+  const ordenados = ordenarReclamos(filtrados);
 
   // Contadores
   document.getElementById('countTodos').textContent = todosLosReclamos.length;
@@ -158,9 +169,9 @@ function renderTabla(){
   document.getElementById('emptyMsg').style.display = 'none';
   document.getElementById('reclamosTable').style.display = 'table';
 
-  document.getElementById('reclamosBody').innerHTML = filtrados.map(function(r){
+  document.getElementById('reclamosBody').innerHTML = ordenados.map(function(r){
     const prioClass = r.prioridad === 'Alta' ? 'alta' : r.prioridad === 'Media' ? 'media' : r.prioridad === 'Baja' ? 'baja' : '';
-    const estadoClass = r.estado === 'Resuelto' ? 'resuelto' : 'pendiente';
+    const estadoClass = r.estado === 'Resuelto' ? 'resuelto' : r.estado === 'Pendiente' ? 'pendiente' : '';
     const tipoClass = r.tipo === 'Inquilino' ? 'inquilino' : 'propietario';
     return `
     <tr>
@@ -181,6 +192,7 @@ function renderTabla(){
       </td>
       <td>
         <select class="estado-sel ${estadoClass}" onchange="actualizarCampo(${r.id}, 'estado', this.value, this)">
+          <option value="" ${!r.estado||r.estado==='Sin asignar'?'selected':''}>— Sin asignar</option>
           <option value="Pendiente" ${r.estado==='Pendiente'?'selected':''}>⏳ Pendiente</option>
           <option value="Resuelto" ${r.estado==='Resuelto'?'selected':''}>✅ Resuelto</option>
         </select>
