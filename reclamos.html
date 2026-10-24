@@ -102,7 +102,6 @@ tr:hover td{background:#F9FBFD}
             <th>Fecha</th>
             <th>Cliente</th>
             <th>Tipo</th>
-            <th>Dirección</th>
             <th>Consulta / Reclamo</th>
             <th>Prioridad</th>
             <th>Estado</th>
@@ -167,7 +166,6 @@ function renderTabla(){
         <div class="tel-text">${r.telefono}</div>
       </td>
       <td><span class="tipo-badge ${tipoClass}">${r.tipo}</span></td>
-      <td><div class="reclamo-text" style="font-size:12px">${r.direccion || '—'}</div></td>
       <td><div class="reclamo-text">${r.reclamo}</div></td>
       <td>
         <select class="prioridad-sel ${prioClass}" onchange="actualizarCampo(${r.id}, 'prioridad', this.value, this)">
