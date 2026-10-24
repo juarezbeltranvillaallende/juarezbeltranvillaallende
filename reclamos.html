@@ -84,7 +84,7 @@ tr:hover td{background:#F9FBFD}
 
     <div class="top-bar">
       <div class="filters">
-        <div class="filter-chip active" onclick="setFiltro('', this)">Todos <span class="badge-count" id="countTodos"></span></div>
+        <div class="filter-chip active" onclick="setFiltro('nuevo', this)">Sin atender <span class="badge-count" id="countTodos"></span></div>
         <div class="filter-chip" onclick="setFiltro('Pendiente', this)">Pendientes <span class="badge-count" id="countPendiente"></span></div>
         <div class="filter-chip" onclick="setFiltro('Resuelto', this)">Resueltos <span class="badge-count" id="countResuelto"></span></div>
       </div>
@@ -119,7 +119,7 @@ tr:hover td{background:#F9FBFD}
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUYJuwZ73PXRHxscNdVQZ3gut-GV3g961Mp2JXWF8vYwGnsyWzSXWDO3l8-O1HdRLV/exec';
 
 let todosLosReclamos = [];
-let filtroActual = '';
+let filtroActual = 'nuevo';
 
 function cargar(){
   const cb = 'cb_' + Date.now();
@@ -147,14 +147,16 @@ function ordenarReclamos(lista){
 }
 
 function renderTabla(){
-  const filtrados = filtroActual
-    ? todosLosReclamos.filter(r => r.estado === filtroActual)
-    : todosLosReclamos;
+  const filtrados = filtroActual === 'nuevo'
+    ? todosLosReclamos.filter(r => !r.estado || r.estado === 'Sin asignar' || r.estado === '')
+    : filtroActual
+      ? todosLosReclamos.filter(r => r.estado === filtroActual)
+      : todosLosReclamos;
 
   const ordenados = ordenarReclamos(filtrados);
 
   // Contadores
-  document.getElementById('countTodos').textContent = todosLosReclamos.length;
+  document.getElementById('countTodos').textContent = todosLosReclamos.filter(r => !r.estado || r.estado === 'Sin asignar' || r.estado === '').length;
   document.getElementById('countPendiente').textContent = todosLosReclamos.filter(r => r.estado === 'Pendiente').length;
   document.getElementById('countResuelto').textContent = todosLosReclamos.filter(r => r.estado === 'Resuelto').length;
 
