@@ -84,7 +84,6 @@ textarea{height:110px}
         <div class="foto-previews" id="fotoPreviews"></div>
       </div>
       <button class="btn-submit" id="btnEnviar" onclick="enviar()">Enviar</button>
-      <div id="debugMsg" style="margin-top:10px;font-size:12px;color:#888;display:none"></div>
     </div>
 
     <div class="success" id="successView">
@@ -96,6 +95,7 @@ textarea{height:110px}
 
   <div class="footer-note">JB Roberts Otero · INMOBILIARIA</div>
 </div>
+<iframe name="hidden_frame" style="display:none"></iframe>
 
 <script>
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwkTu0U8_Y_exQt85QI2T-fPtJi2lp_SUWA85nLC269WgIqrZfB7T-LCe2NcPZQoDpeXQ/exec';
@@ -165,17 +165,21 @@ async function enviar(){
     tipo: tipoSeleccionado,
     reclamo
   });
-  const url = APPS_SCRIPT_URL + '?' + params.toString();
 
-  // Usamos imagen para evitar CORS — el script guarda el dato igual
-  const img = new Image();
-  img.src = url;
+  // Enviar al iframe oculto — evita CORS completamente
+  const form = document.createElement('form');
+  form.method = 'GET';
+  form.action = APPS_SCRIPT_URL + '?' + params.toString();
+  form.target = 'hidden_frame';
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
 
-  // Mostramos éxito después de 1.5s (tiempo suficiente para que llegue)
+  // Mostrar éxito después de 2s
   setTimeout(function(){
     document.getElementById('formView').style.display = 'none';
     document.getElementById('successView').style.display = 'block';
-  }, 1500);
+  }, 2000);
 }
 </script>
 </body>
