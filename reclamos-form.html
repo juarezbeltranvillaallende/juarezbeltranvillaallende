@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<title>Contacto · Juárez Beltrán</title>
+<style>
+:root{--az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;--k:#1A1A2E;--g:#6B7280}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#E8EFF6;color:var(--k);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(#D3DEE8 1px,transparent 1px),linear-gradient(90deg,#D3DEE8 1px,transparent 1px);background-size:32px 32px;opacity:0.35;mask-image:radial-gradient(ellipse 70% 60% at 50% 30%,black 30%,transparent 85%)}
+.wrap{position:relative;z-index:1;width:100%;max-width:480px}
+.logo{display:block;width:72px;height:72px;margin:0 auto 20px;filter:drop-shadow(0 6px 16px rgba(59,95,204,0.3))}
+.title{text-align:center;font-size:24px;font-weight:700;color:#1E2733;margin-bottom:.3rem}
+.sub-az{text-align:center;font-size:12px;color:var(--azm);letter-spacing:.25em;font-weight:600;text-transform:uppercase;margin-bottom:.3rem}
+.sub{text-align:center;font-size:13px;color:#9ca3af;margin-bottom:2rem}
+.card{background:#fff;border-radius:20px;padding:2rem;box-shadow:0 2px 16px rgba(0,0,0,.08)}
+.field{margin-bottom:1.2rem}
+label{display:block;font-size:12px;font-weight:600;color:#5B6675;letter-spacing:.03em;text-transform:uppercase;margin-bottom:.5rem}
+input,textarea,select{width:100%;padding:10px 13px;border:1.5px solid #D3DEE8;border-radius:9px;font-size:14px;font-family:'Segoe UI',system-ui,sans-serif;color:var(--k);background:#fff;transition:.15s;resize:none}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--azm);box-shadow:0 0 0 3px rgba(46,117,182,0.1)}
+textarea{height:110px}
+.tipo-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tipo-btn{padding:10px;border:1.5px solid #D3DEE8;border-radius:9px;text-align:center;cursor:pointer;font-size:13.5px;font-family:'Segoe UI',system-ui,sans-serif;color:#5B6675;background:#fff;transition:.15s}
+.tipo-btn.active{border-color:var(--azm);background:var(--azc);color:var(--az);font-weight:600}
+.btn-submit{width:100%;padding:13px;background:var(--az);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;font-family:'Segoe UI',system-ui,sans-serif;cursor:pointer;margin-top:.5rem;transition:.15s}
+.btn-submit:hover{background:var(--azm)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed}
+.success{display:none;text-align:center;padding:2rem 1rem}
+.success .check{font-size:48px;margin-bottom:1rem}
+.success h2{font-size:20px;font-weight:700;margin-bottom:.5rem}
+.success p{font-size:14px;color:#9ca3af;line-height:1.6}
+.footer-note{text-align:center;margin-top:1.8rem;font-size:11px;color:#aaa;letter-spacing:.03em}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="wrap">
+  <img src="favicon-512.png" alt="Juárez Beltrán" class="logo">
+  <div class="title">Juárez Beltrán</div>
+  <div class="sub-az">VILLA ALLENDE</div>
+  <div class="sub">Dejanos tu consulta o reclamo</div>
+
+  <div class="card">
+    <div id="formView">
+      <div class="field">
+        <label>Soy</label>
+        <div class="tipo-row">
+          <button class="tipo-btn" onclick="selectTipo('Inquilino', this)">🏠 Inquilino</button>
+          <button class="tipo-btn" onclick="selectTipo('Propietario', this)">🔑 Propietario</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Nombre</label>
+        <input type="text" id="nombre" placeholder="Tu nombre completo">
+      </div>
+      <div class="field">
+        <label>Teléfono / WhatsApp</label>
+        <input type="tel" id="telefono" placeholder="Ej: 3543 000000">
+      </div>
+      <div class="field">
+        <label>Contanos qué pasó</label>
+        <textarea id="reclamo" placeholder="Describí tu consulta o reclamo con el mayor detalle posible…"></textarea>
+      </div>
+      <button class="btn-submit" id="btnEnviar" onclick="enviar()">Enviar</button>
+    </div>
+
+    <div class="success" id="successView">
+      <div class="check">✅</div>
+      <h2>¡Recibimos tu mensaje!</h2>
+      <p>Te contactamos a la brevedad por WhatsApp o teléfono.<br>Gracias por comunicarte con nosotros.</p>
+    </div>
+  </div>
+
+  <div class="footer-note">JB Roberts Otero · INMOBILIARIA</div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'TU_URL_ACA';
+let tipoSeleccionado = '';
+
+function selectTipo(tipo, btn){
+  tipoSeleccionado = tipo;
+  document.querySelectorAll('.tipo-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+async function enviar(){
+  const nombre = document.getElementById('nombre').value.trim();
+  const telefono = document.getElementById('telefono').value.trim();
+  const reclamo = document.getElementById('reclamo').value.trim();
+
+  if(!tipoSeleccionado){ alert('Seleccioná si sos inquilino o propietario'); return; }
+  if(!nombre){ alert('Completá tu nombre'); return; }
+  if(!telefono){ alert('Completá tu teléfono'); return; }
+  if(!reclamo){ alert('Describí tu consulta'); return; }
+
+  const btn = document.getElementById('btnEnviar');
+  btn.disabled = true;
+  btn.textContent = 'Enviando…';
+
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ nombre, telefono, tipo: tipoSeleccionado, reclamo }),
+    });
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successView').style.display = 'block';
+  } catch(err) {
+    alert('Hubo un error al enviar. Intentá de nuevo.');
+    btn.disabled = false;
+    btn.textContent = 'Enviar';
+  }
+}
+</script>
+</body>
+</html>

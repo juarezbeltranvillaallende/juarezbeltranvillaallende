@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<title>Atención al cliente · Juárez Beltrán</title>
+<style>
+:root{
+  --bg:#E8EFF6;--surface:#fff;--line:#D3DEE8;--line-soft:#E3EAF1;
+  --text:#1E2733;--text-dim:#5B6675;--text-faint:#8D97A6;
+  --az:#1F4E79;--azm:#2E75B6;--azc:#D6E4F0;
+  --green:#3E8A5C;--green-bg:rgba(62,138,92,0.1);
+  --amber:#C08A1E;--amber-bg:rgba(192,138,30,0.1);
+  --red:#C1503F;--red-bg:rgba(193,80,63,0.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);background-size:32px 32px;opacity:.35;mask-image:radial-gradient(ellipse 80% 60% at 50% 0%,black 40%,transparent 90%)}
+.shell{position:relative;z-index:1;display:flex;min-height:100vh}
+
+.sidebar{width:230px;flex-shrink:0;border-right:1px solid var(--line);padding:28px 20px;display:flex;flex-direction:column;gap:34px}
+.brand-mark{font-weight:700;font-size:15px}
+.brand-sub{font-size:11px;color:var(--text-faint);letter-spacing:.03em;margin-top:2px}
+nav{display:flex;flex-direction:column;gap:4px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:6px;font-size:13.5px;color:var(--text-dim);border:1px solid transparent;text-decoration:none}
+.nav-item .dot{width:5px;height:5px;border-radius:50%;background:var(--text-faint);flex-shrink:0}
+.nav-item.active{background:var(--surface);color:var(--text);border-color:var(--line)}
+.nav-item.active .dot{background:var(--azm);box-shadow:0 0 0 3px rgba(46,117,182,0.15)}
+
+main{flex:1;padding:32px 40px 70px}
+h1{font-weight:700;font-size:34px;letter-spacing:-.01em;margin-bottom:6px}
+.subtitle{font-size:13px;color:var(--text-faint);margin-bottom:28px}
+
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter-chip{padding:6px 13px;border-radius:6px;font-size:12px;border:1px solid var(--line);background:var(--surface);color:var(--text-dim);cursor:pointer;transition:.15s}
+.filter-chip.active{background:var(--az);border-color:var(--az);color:#fff;font-weight:600}
+.btn-link{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;background:var(--az);color:#fff;text-decoration:none;border:none;cursor:pointer;font-family:'Segoe UI',system-ui,sans-serif}
+.btn-link:hover{background:var(--azm)}
+
+/* Tabla */
+.table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:#F4F7FB;border-bottom:1px solid var(--line)}
+th{padding:11px 14px;text-align:left;font-size:11px;font-weight:600;color:var(--text-faint);text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F9FBFD}
+
+.tipo-badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600}
+.tipo-badge.inquilino{background:var(--azc);color:var(--az)}
+.tipo-badge.propietario{background:rgba(62,138,92,0.12);color:var(--green)}
+
+.prioridad-sel{padding:5px 8px;border-radius:6px;border:1px solid var(--line);font-size:12px;font-family:'Segoe UI',system-ui,sans-serif;background:var(--surface);cursor:pointer;color:var(--text)}
+.prioridad-sel.alta{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.prioridad-sel.media{border-color:var(--amber);background:var(--amber-bg);color:var(--amber)}
+.prioridad-sel.baja{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+
+.estado-sel{padding:5px 8px;border-radius:6px;border:1px solid var(--line);font-size:12px;font-family:'Segoe UI',system-ui,sans-serif;background:var(--surface);cursor:pointer;color:var(--text)}
+.estado-sel.resuelto{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.estado-sel.pendiente{border-color:var(--amber);background:var(--amber-bg);color:var(--amber)}
+
+.reclamo-text{max-width:300px;line-height:1.5;color:var(--text-dim)}
+.fecha-text{font-size:11.5px;color:var(--text-faint);white-space:nowrap}
+.nombre-text{font-weight:600;margin-bottom:2px}
+.tel-text{font-size:11.5px;color:var(--azm)}
+
+.empty{text-align:center;padding:48px;color:var(--text-faint)}
+.loading{text-align:center;padding:48px;color:var(--text-faint)}
+
+.badge-count{display:inline-block;background:var(--azc);color:var(--az);font-size:10px;font-weight:700;border-radius:10px;padding:1px 7px;margin-left:5px}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<div class="shell">
+  <aside class="sidebar">
+    <div>
+      <a href="index.html" style="text-decoration:none;color:inherit">
+        <div class="brand-mark">Panel de Propiedades</div>
+        <div class="brand-sub">JB Roberts Otero · INMOBILIARIA</div>
+      </a>
+    </div>
+    <nav>
+      <a href="dashboard.html" class="nav-item"><span class="dot"></span> Propiedades</a>
+      <a href="reclamos.html" class="nav-item active" style="margin-top:8px;">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Atención al cliente
+      </a>
+    </nav>
+  </aside>
+
+  <main>
+    <h1>Atención al cliente</h1>
+    <div class="subtitle" id="mainSubtitle">Cargando consultas…</div>
+
+    <div class="top-bar">
+      <div class="filters">
+        <div class="filter-chip active" onclick="setFiltro('', this)">Todos <span class="badge-count" id="countTodos"></span></div>
+        <div class="filter-chip" onclick="setFiltro('Pendiente', this)">Pendientes <span class="badge-count" id="countPendiente"></span></div>
+        <div class="filter-chip" onclick="setFiltro('Resuelto', this)">Resueltos <span class="badge-count" id="countResuelto"></span></div>
+      </div>
+      <a href="reclamos-form.html" target="_blank" class="btn-link">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        Ver formulario del cliente
+      </a>
+    </div>
+
+    <div class="table-wrap">
+      <div class="loading" id="loadingMsg">Cargando…</div>
+      <table id="reclamosTable" style="display:none">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Tipo</th>
+            <th>Consulta / Reclamo</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody id="reclamosBody"></tbody>
+      </table>
+      <div class="empty" id="emptyMsg" style="display:none">No hay consultas todavía.</div>
+    </div>
+  </main>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = 'TU_URL_ACA';
+
+let todosLosReclamos = [];
+let filtroActual = '';
+
+async function cargar(){
+  try {
+    const res = await fetch(APPS_SCRIPT_URL + '?action=list');
+    const data = await res.json();
+    if(!data.ok) throw new Error(data.error);
+    todosLosReclamos = (data.reclamos || []).reverse(); // más recientes primero
+    renderTabla();
+  } catch(err) {
+    document.getElementById('loadingMsg').textContent = '⚠ No se pudo conectar. Completá la URL del Apps Script.';
+  }
+}
+
+function renderTabla(){
+  const filtrados = filtroActual
+    ? todosLosReclamos.filter(r => r.estado === filtroActual)
+    : todosLosReclamos;
+
+  // Contadores
+  document.getElementById('countTodos').textContent = todosLosReclamos.length;
+  document.getElementById('countPendiente').textContent = todosLosReclamos.filter(r => r.estado === 'Pendiente').length;
+  document.getElementById('countResuelto').textContent = todosLosReclamos.filter(r => r.estado === 'Resuelto').length;
+
+  document.getElementById('mainSubtitle').textContent = todosLosReclamos.length + ' consultas recibidas';
+  document.getElementById('loadingMsg').style.display = 'none';
+
+  if(filtrados.length === 0){
+    document.getElementById('reclamosTable').style.display = 'none';
+    document.getElementById('emptyMsg').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('emptyMsg').style.display = 'none';
+  document.getElementById('reclamosTable').style.display = 'table';
+
+  document.getElementById('reclamosBody').innerHTML = filtrados.map(function(r){
+    const prioClass = r.prioridad === 'Alta' ? 'alta' : r.prioridad === 'Media' ? 'media' : r.prioridad === 'Baja' ? 'baja' : '';
+    const estadoClass = r.estado === 'Resuelto' ? 'resuelto' : 'pendiente';
+    const tipoClass = r.tipo === 'Inquilino' ? 'inquilino' : 'propietario';
+    return `
+    <tr>
+      <td><div class="fecha-text">${r.fecha}</div></td>
+      <td>
+        <div class="nombre-text">${r.nombre}</div>
+        <div class="tel-text">${r.telefono}</div>
+      </td>
+      <td><span class="tipo-badge ${tipoClass}">${r.tipo}</span></td>
+      <td><div class="reclamo-text">${r.reclamo}</div></td>
+      <td>
+        <select class="prioridad-sel ${prioClass}" onchange="actualizarCampo(${r.id}, 'prioridad', this.value, this)">
+          <option value="Sin asignar" ${r.prioridad==='Sin asignar'?'selected':''}>Sin asignar</option>
+          <option value="Alta" ${r.prioridad==='Alta'?'selected':''}>🔴 Alta</option>
+          <option value="Media" ${r.prioridad==='Media'?'selected':''}>🟡 Media</option>
+          <option value="Baja" ${r.prioridad==='Baja'?'selected':''}>🟢 Baja</option>
+        </select>
+      </td>
+      <td>
+        <select class="estado-sel ${estadoClass}" onchange="actualizarCampo(${r.id}, 'estado', this.value, this)">
+          <option value="Pendiente" ${r.estado==='Pendiente'?'selected':''}>⏳ Pendiente</option>
+          <option value="Resuelto" ${r.estado==='Resuelto'?'selected':''}>✅ Resuelto</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function setFiltro(estado, btn){
+  filtroActual = estado;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderTabla();
+}
+
+async function actualizarCampo(id, campo, valor, sel){
+  // Actualizar color del select inmediatamente
+  if(campo === 'prioridad'){
+    sel.className = 'prioridad-sel ' + (valor==='Alta'?'alta':valor==='Media'?'media':valor==='Baja'?'baja':'');
+  } else {
+    sel.className = 'estado-sel ' + (valor==='Resuelto'?'resuelto':'pendiente');
+    // Actualizar en memoria
+    const r = todosLosReclamos.find(x => x.id === id);
+    if(r) r.estado = valor;
+    renderContadores();
+  }
+
+  try {
+    await fetch(`${APPS_SCRIPT_URL}?action=update&id=${id}&${campo}=${encodeURIComponent(valor)}`);
+  } catch(err) {
+    console.error('Error al guardar:', err);
+  }
+}
+
+function renderContadores(){
+  document.getElementById('countTodos').textContent = todosLosReclamos.length;
+  document.getElementById('countPendiente').textContent = todosLosReclamos.filter(r => r.estado === 'Pendiente').length;
+  document.getElementById('countResuelto').textContent = todosLosReclamos.filter(r => r.estado === 'Resuelto').length;
+}
+
+cargar();
+</script>
+</body>
+</html>
