@@ -120,16 +120,20 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZk-d4h6uLjHFb
 let todosLosReclamos = [];
 let filtroActual = '';
 
-async function cargar(){
-  try {
-    const res = await fetch(APPS_SCRIPT_URL + '?action=list');
-    const data = await res.json();
-    if(!data.ok) throw new Error(data.error);
-    todosLosReclamos = (data.reclamos || []).reverse(); // más recientes primero
+function cargar(){
+  const cb = 'cb_' + Date.now();
+  window[cb] = function(data){
+    delete window[cb];
+    document.getElementById('jsonpScript') && document.getElementById('jsonpScript').remove();
+    if(!data.ok){ document.getElementById('loadingMsg').textContent = '⚠ Error: ' + data.error; return; }
+    todosLosReclamos = (data.reclamos || []).reverse();
     renderTabla();
-  } catch(err) {
-    document.getElementById('loadingMsg').textContent = '⚠ No se pudo conectar. Completá la URL del Apps Script.';
-  }
+  };
+  const s = document.createElement('script');
+  s.id = 'jsonpScript';
+  s.onerror = function(){ document.getElementById('loadingMsg').textContent = '⚠ No se pudo conectar con el servidor.'; };
+  s.src = APPS_SCRIPT_URL + '?action=list&callback=' + cb;
+  document.head.appendChild(s);
 }
 
 function renderTabla(){
@@ -204,11 +208,11 @@ async function actualizarCampo(id, campo, valor, sel){
     renderContadores();
   }
 
-  try {
-    await fetch(`${APPS_SCRIPT_URL}?action=update&id=${id}&${campo}=${encodeURIComponent(valor)}`);
-  } catch(err) {
-    console.error('Error al guardar:', err);
-  }
+  const cb2 = 'cb_' + Date.now();
+  window[cb2] = function(){ delete window[cb2]; };
+  const s2 = document.createElement('script');
+  s2.src = `${APPS_SCRIPT_URL}?action=update&id=${id}&${campo}=${encodeURIComponent(valor)}&callback=${cb2}`;
+  document.head.appendChild(s2);
 }
 
 function renderContadores(){
