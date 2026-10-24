@@ -158,11 +158,14 @@ async function enviar(){
   btn.textContent = 'Enviando…';
 
   try {
-    await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      body: JSON.stringify({ nombre, telefono, tipo: tipoSeleccionado, reclamo, fotos: fotosData }),
+    const params = new URLSearchParams({
+      action: 'nuevo',
+      nombre,
+      telefono,
+      tipo: tipoSeleccionado,
+      reclamo
     });
+    await fetch(APPS_SCRIPT_URL + '?' + params.toString(), { mode: 'no-cors' });
     document.getElementById('formView').style.display = 'none';
     document.getElementById('successView').style.display = 'block';
   } catch(err) {
