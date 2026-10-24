@@ -148,10 +148,8 @@ function ordenarReclamos(lista){
 
 function renderTabla(){
   const filtrados = filtroActual === 'nuevo'
-    ? todosLosReclamos.filter(r => !r.estado || r.estado === 'Sin asignar' || r.estado === '')
-    : filtroActual
-      ? todosLosReclamos.filter(r => r.estado === filtroActual)
-      : todosLosReclamos;
+    ? todosLosReclamos.filter(r => !r.estado || r.estado === '' || r.estado === 'Sin asignar')
+    : todosLosReclamos.filter(r => r.estado === filtroActual);
 
   const ordenados = ordenarReclamos(filtrados);
 
