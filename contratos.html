@@ -2241,7 +2241,7 @@ async function genReserva(){
     body+=rTx('La posesión del inmueble se entregará en la fecha y condiciones que las partes acuerden en el boleto de compraventa.',F);
     body+=rTx('El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
     body+=rTx('Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
-    body+=rTx('La presente reserva no autoriza '+ofOfer+' a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
+    body+=rTx('La presente reserva no autoriza '+(ofFem?'a la':'al')+' OFERENTE a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
     body+=rBr();
 
     // CLÁUSULA 9 - ESCRIBANO
