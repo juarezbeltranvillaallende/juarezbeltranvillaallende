@@ -2184,7 +2184,7 @@ async function genReserva(){
     body+=rTx('La oferta se mantendrá vigente durante dicho plazo, en los términos aquí establecidos. Su retiro o retractación se regirá por las disposiciones legales aplicables y por las condiciones expresamente pactadas.',F);
     body+=rTx('La aceptación deberá ser realizada por '+prArt+' PROPIETARIO/A o por representante con facultades suficientes, mediante firma de la conformidad incluida al final de este instrumento.',F);
     body+=rTx('La aceptación deberá ser íntegra y coincidente con los términos de esta oferta. Toda modificación del precio, forma de pago, plazos o condiciones esenciales constituirá una contraoferta, que requerirá aceptación expresa '+(ofFem?'de LA OFERENTE':'de EL OFERENTE')+'.',F);
-    body+=rTx('La inmobiliaria comunicará al/a la OFERENTE la aceptación o el rechazo por los siguientes medios denunciados por este/a:',F);
+    body+=rTx('La inmobiliaria comunicará '+(ofFem?'a la':'al')+' OFERENTE la aceptación o el rechazo por los siguientes medios denunciados por este/a:',F);
     body+=rTx('WhatsApp: '+(ofWa||ofTel||'______________________________'),F);
     body+=rTx('Correo electrónico: '+(ofEmail||'______________________________'),F);
     body+=rTx('La falta de aceptación dentro del plazo establecido determinará la caducidad de la oferta, sin que el silencio pueda interpretarse como aceptación.',F);
