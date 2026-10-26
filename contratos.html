@@ -2286,24 +2286,29 @@ async function genReserva(){
 
     // FIRMAS
     body+=rBr();
-    body+=rTx('_______________________________          _______________________________          _______________________________',F);
-    body+=rTx('Firma '+(ofFem?'de la Reservante':'del Reservante')+'               Roberts Otero Serv. Inm. S.A.S.          Firma '+(prFem?'de la Propietaria':'del Propietario')+' (si acepta en el acto)',F);
-    body+=rTx(ofNom+'                               Matrícula CPI N.º 6390',F);
+    body+=rTx('Firma '+(ofFem?'de la Reservante':'del Reservante')+':',F);
+    body+=rTx('DNI '+(ofFem?'de la reservante':'del reservante')+': '+ofDni,F);
     body+=rBr();
-    body+=rTx('Se firma en tres ejemplares de igual tenor y a un solo efecto: uno para '+ofReser+', uno para '+prProp+', y uno para ROBERTS OTERO.',F);
+    body+=rTx('Firma Roberts Otero',F);
+    body+=rTx('Matrícula CPI N.º 6390',F);
+    body+=rBr();
+    body+=rTx('Firma '+(prFem?'de la Propietaria':'del Propietario')+' (si acepta en el acto)',F);
+    body+=rBr();
+    body+=rBr();
+    body+=rTx('Se firma en tres ejemplares de igual tenor y a un solo efecto: uno para el RESERVANTE, uno para '+(prFem?'la PROPIETARIA':'el PROPIETARIO')+', y uno para ROBERTS OTERO.',F);
     body+=rBr();
 
     // SECCIÓN ACEPTACIÓN DEL PROPIETARIO/A
     body+=rBr();
     body+=rPar('─────────────────────────────────────────────────────────────────────────',false,true,10,false,F);
-    body+=rTit('ACEPTACIÓN DEL/LA PROPIETARIO/A',F);
+    body+=rTit('ACEPTACIÓN '+(prFem?'DE LA PROPIETARIA':'DEL PROPIETARIO'),F);
     body+=rBr();
     var prEcEl=document.getElementById('rs-pr-ecivil');
     var prEcStr=prEcEl?prEcEl.options[prEcEl.selectedIndex].text:'';
     if(prNom){
       body+=rParMix([
-        {txt:'En la ciudad de '+ciudad+', a los _____ días del mes de _________________ de 20___, yo, '},
-        {txt:prSrTxt+prNom, bold:true},
+        {txt:'En la ciudad de '+ciudad+', '+fechaDoc+', yo, '},
+        {txt:(prFem?'la Sra. ':'el Sr. ')+prNom, bold:true},
         {txt:', DNI N.º '},
         {txt:prDni, bold:true},
         (prEcStr?{txt:', estado civil '+prEcStr}:{txt:''}),
@@ -2313,29 +2318,27 @@ async function genReserva(){
         {txt:'aceptó la propuesta de compra formulada', bold:true},
         {txt:', las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a '},
         {txt:'Roberts Otero Servicios Inmobiliarios S.A.S.', bold:true},
-        {txt:' el '+prPct+'% del precio de la operación en concepto de comisión, al momento de suscribirse el boleto de compraventa o escritura.'}
+        {txt:' el '+prPct+'% del precio de la operación en concepto de comisión, al momento de suscribirse '+tipoFirma.toLowerCase()+'.'}
       ],false,11,F);
     } else {
       body+=rParMix([
-        {txt:'En la ciudad de '+ciudad+', a los _____ días del mes de _________________ de 20___, yo, _________________________, DNI N.º _________________________, con domicilio en _________________________, en mi carácter de '+prPropTxt+' del inmueble individualizado en el presente, '},
+        {txt:'En la ciudad de '+ciudad+', '+fechaDoc+', yo, _________________________, DNI N.º _________________________, con domicilio en _________________________, en mi carácter de '+prPropTxt+' del inmueble individualizado en el presente, '},
         {txt:'aceptó la propuesta de compra formulada', bold:true},
         {txt:', las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a '},
         {txt:'Roberts Otero Servicios Inmobiliarios S.A.S.', bold:true},
-        {txt:' el '+prPct+'% del precio de la operación en concepto de comisión, al momento de suscribirse el boleto de compraventa o escritura.'}
+        {txt:' el '+prPct+'% del precio de la operación en concepto de comisión, al momento de suscribirse '+tipoFirma.toLowerCase()+'.'}
       ],false,11,F);
     }
     body+=rTx('Autorizo a Roberts Otero a retener dicho importe del precio recibido.',F);
     body+=rTx('De plena conformidad, suscribo el presente retirando un ejemplar en este acto.',F);
     body+=rBr();
     body+=rBr();
-    body+=rTx('_______________________________          _______________________________',F);
-    if(prNom){
-      body+=rTx((prFem?'La Sra. ':'El Sr. ')+prNom+'                    Matrícula CPI N.º 6390',F);
-      body+=rTx((prFem?'Propietaria':'Propietario')+'                            Roberts Otero Serv. Inm. S.A.S.',F);
-    } else {
-      body+=rTx('Propietario/a                            Roberts Otero Serv. Inm. S.A.S.',F);
-      body+=rTx('                                         Matrícula CPI N.º 6390',F);
-    }
+    body+=rTx('Firma '+(prFem?'de la Propietaria':'del Propietario')+':',F);
+    body+=rTx((prNom?(prFem?'La Sra. ':'El Sr. ')+prNom:'Propietario/a'),F);
+    body+=rTx('DNI: '+(prDni||''),F);
+    body+=rBr();
+    body+=rTx('Roberts Otero Serv. Inm. S.A.S.:',F);
+    body+=rTx('Matrícula CPI N.º 6390:',F);
   }
   else if(RTIPO==='cesion'){
     var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
