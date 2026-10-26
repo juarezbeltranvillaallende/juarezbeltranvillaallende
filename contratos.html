@@ -2134,7 +2134,7 @@ async function genReserva(){
     body+=rTx('Ubicación: '+dir+'.',F);
     if(catastral) body+=rTx('Nomenclatura catastral: '+catastral+'.',F);
     if(matricula) body+=rTx('Matrícula: '+matricula+'.',F);
-    if(rentas) body+=rTx('Cuenta de Rentas: '+rentas+'.',F);
+    if(rentas) body+=rTx('Identificación DGR: '+rentas+'.',F);
     if(supTer||supCub) body+=rTx('Superficie de terreno: '+(supTer||'___')+' m² / Superficie cubierta: '+(supCub||'___')+' m² (ambos aproximados)',F);
     if(descInm) body+=rTx('Descripción: '+descInm+'.',F);
     body+=rBr();
