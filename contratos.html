@@ -2232,7 +2232,7 @@ async function genReserva(){
 
     // CLÁUSULA 7 - HONORARIOS
     body+=rSubU('7. Honorarios de la Inmobiliaria',F);
-    body+=rTx('Los honorarios de Roberts Otero Servicios Inmobiliarios S.A.S. son del '+prPct+'% del precio de venta, y serán abonados por cada parte (COMPRADOR/A y VENDEDOR/A) al momento de la escrituración.',F);
+    body+=rTx('Los honorarios de Roberts Otero Servicios Inmobiliarios S.A.S. son del '+prPct+'% del precio de venta, y serán abonados por cada parte ('+(ofFem?'COMPRADORA':'COMPRADOR')+' y '+(prFem?'VENDEDORA':'VENDEDOR')+') al momento de la escrituración.',F);
     body+=rTx('En caso de desistimiento imputable '+ofReser+', los honorarios de Roberts Otero se tomarán del importe de la reserva perdida. En caso de desistimiento imputable '+prProp+', los honorarios serán abonados por '+prArt+' mismo/a con independencia de la indemnización correspondiente.',F);
     body+=rBr();
 
