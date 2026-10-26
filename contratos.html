@@ -488,10 +488,9 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
   <div class="card">
     <div class="ch"><h2>Datos de la reserva</h2></div>
     <div class="cb">
-      <div class="g3" style="margin-bottom:8px">
+      <div class="g2" style="margin-bottom:8px">
         <div class="f"><label>Ciudad *</label><input id="rs-vta-ciudad" type="text" value="Villa Allende" oninput="APP.rsChg()"></div>
         <div class="f"><label>Fecha del documento</label><input id="rs-vta-fecha" type="date"></div>
-        <div class="f"><label>Corredor/a interviniente</label><input id="rs-corredor" type="text" placeholder="Nombre del corredor"></div>
       </div>
       <div class="g2" style="margin-bottom:8px">
         <div class="f"><label>Dirección del inmueble *</label><input id="rs-vta-dir" type="text" oninput="APP.rsChg()"></div>
@@ -500,7 +499,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       <div class="g3" style="margin-bottom:8px">
         <div class="f"><label>Nomenclatura catastral</label><input id="rs-catastral" type="text" placeholder="Ej: Secc. A - Manz. 1 - Parc. 5"></div>
         <div class="f"><label>Matrícula registral</label><input id="rs-matricula" type="text" placeholder="Ej: 123456/1"></div>
-        <div class="f"><label>Cuenta de Rentas (DGR)</label><input id="rs-rentas" type="text" placeholder="Ej: 12345678"></div>
+        <div class="f"><label>Identificación DGR</label><input id="rs-rentas" type="text" placeholder="Ej: 12345678"></div>
       </div>
       <div class="g3" style="margin-bottom:8px">
         <div class="f"><label>Superficie terreno m²</label><input id="rs-sup-ter" type="text" placeholder="Ej: 300"></div>
@@ -519,8 +518,16 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       </div>
       <div class="g3" style="margin-bottom:8px">
         <div class="f"><label>Saldo a escritura (USD)</label><input id="rs-saldo-esc" type="text" placeholder="Ej: 70000"></div>
-        <div class="f"><label>Días para firma del boleto</label><input id="rs-dias-boleto" type="text" placeholder="Ej: 30"></div>
-        <div class="f"><label>Escribano designado por</label><select id="rs-escribano"><option value="reservante">Reservante</option><option value="propietario">Propietario/a</option></select></div>
+        <div class="f"><label>Días para firma</label><input id="rs-dias-boleto" type="text" placeholder="Ej: 30"></div>
+        <div class="f"><label>Boleto o Escritura</label><select id="rs-tipo-firma"><option value="Boleto de Compraventa">Boleto de Compraventa</option><option value="Escritura">Escritura</option></select></div>
+      </div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="f"><label>Escribano designado por</label>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:13px;font-weight:400">
+            <input type="checkbox" id="rs-escribano-vend" style="width:15px;height:15px;accent-color:var(--az,#1a56db);cursor:pointer">
+            El escribano lo designa el vendedor
+          </label>
+        </div>
       </div>
     </div>
   </div>
@@ -2021,7 +2028,8 @@ async function genReserva(){
     var saldoEsc=_sr('rs-saldo-esc');
     var diasHab=_sr('rs-vta-dias')||'5';
     var diasBol=_sr('rs-dias-boleto');
-    var escribano=_sr('rs-escribano')||'reservante';
+    var escribanoVend=document.getElementById('rs-escribano-vend')&&document.getElementById('rs-escribano-vend').checked;
+    var tipoFirma=_sr('rs-tipo-firma')||'Boleto de Compraventa';
     var waProp=_sr('rs-wp');
     var emailProp=_sr('rs-email-prop');
     var prPct=_sr('rs-pr-pct')||'3';
@@ -2075,7 +2083,7 @@ async function genReserva(){
     var resActoNum=resActo.replace(/[^0-9]/g,'');
     var resActoLetras=numLetras(resActoNum);
 
-    var corredorStr='Diego Roberts';  // siempre fijo
+    var corredorStr='Diego Roberts, Matrícula CPI N.º 6390';
     var ofSrTxt=(ofFem?'la Sra. ':'el Sr. ');
     var ofSrTxtX=(ofFem?'La Sra. ':'El Sr. ');
     var prSrTxt=(prFem?'la Sra. ':'el Sr. ');
@@ -2108,7 +2116,7 @@ async function genReserva(){
       {txt:'ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.', bold:true},
       {txt:', en adelante '},
       {txt:'Roberts Otero', bold:true},
-      {txt:', interviniendo el Corredor Público Inmobiliario Diego Roberts, Matrícula CPI N.º 6390, '+ofSrTxtX+ofNom+', DNI N.º '+ofDni+(ofCuit?', CUIT/CUIL N.º '+ofCuit:'')+', estado civil '+ofEcStr+', con domicilio en '+ofDom+(ofEmail?', correo electrónico '+ofEmail:'')+((ofTel||ofWa)?' y teléfono/WhatsApp '+(ofWa||ofTel):'')+', en adelante '},
+      {txt:', interviniendo el Corredor Público Inmobiliario '+corredorStr+', '+ofSrTxtX+ofNom+', DNI N.º '+ofDni+(ofCuit?', CUIT/CUIL N.º '+ofCuit:'')+', estado civil '+ofEcStr+', con domicilio en '+ofDom+(ofEmail?', correo electrónico '+ofEmail:'')+((ofTel||ofWa)?' y teléfono/WhatsApp '+(ofWa||ofTel):'')+', en adelante '},
       {txt:(ofFem?'LA OFERENTE':'EL OFERENTE'), bold:true},
       {txt:', entrega en concepto de '},
       {txt:'RESERVA', bold:true},
@@ -2134,12 +2142,12 @@ async function genReserva(){
     body+=rSubU('2. Precio y forma de pago',F);
     body+=rParMix([
       {txt:'El precio total ofrecido por la compra del inmueble asciende a '},
-      {txt:'DÓLARES ESTADOUNIDENSES '+precioLetras+' (USD '+precio+')', bold:true},
+      {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+precioLetras+' (USD '+precio+')', bold:true},
       {txt:', que será abonado de la siguiente manera:'}
     ],false,11,F);
     body+=rParMix([
       {txt:'a) En este acto, '+(ofFem?'LA OFERENTE':'EL OFERENTE')+' entrega la suma de '},
-      {txt:'DÓLARES ESTADOUNIDENSES '+resActoLetras2+' (USD '+resActo+')', bold:true},
+      {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+resActoLetras2+' (USD '+resActo+')', bold:true},
       {txt:' en concepto de reserva, conforme a las condiciones de este instrumento.'}
     ],false,11,F);
     if(alBoleto){
@@ -2186,7 +2194,7 @@ async function genReserva(){
     body+=rTx('- Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
     body+=rTx('- Con servicios activos y aptos para el cambio de titularidad.',F);
     body+=rTx('- Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
-    body+=rTx('- Con títulos perfectos o perfectibles a satisfacción del escribano designado por '+ofReser+'.',F);
+    body+=rTx('- Con títulos perfectos o perfectibles a satisfacción del escribano designado por '+(escribanoVend?'el VENDEDOR':ofReser)+'.',F);
     body+=rBr();
     body+=rTx('Las observaciones documentales o registrales que puedan subsanarse deberán comunicarse a las partes, otorgándose un plazo razonable para su solución, salvo que se haya pactado un plazo específico.',F);
     body+=rTx('Si se comprobara una circunstancia jurídica que impida definitivamente la transferencia en las condiciones convenidas, y no fuera subsanada dentro del plazo acordado, la operación quedará sin efecto conforme al régimen previsto en la cláusula 5, sin perjuicio de las responsabilidades que pudieran corresponder por incumplimiento imputable a alguna de las partes.',F);
@@ -2195,7 +2203,7 @@ async function genReserva(){
     // CLÁUSULA 5 - ACEPTACIÓN / RECHAZO / DESISTIMIENTO
     body+=rSubU('5. Aceptación - Rechazo - Desistimiento',F);
     body+=rTxB('5.a Aceptación',F);
-    body+=rTx('Si '+prProp+' acepta la presente reserva dentro del plazo establecido, las partes se obligan a suscribir el Boleto de Compraventa/Escritura dentro de los '+(diasBol||'___')+' días hábiles siguientes a la notificación de aceptación.',F);
+    body+=rTx('Si '+prProp+' acepta la presente reserva dentro del plazo establecido, las partes se obligan a suscribir '+tipoFirma+' dentro de los '+(diasBol||'___')+' días hábiles siguientes a la notificación de aceptación.',F);
     body+=rBr();
     body+=rTxB('5.b Rechazo por '+prPropCap,F);
     body+=rTx('Si '+prProp+' rechaza la reserva o no se pronuncia dentro del plazo, Roberts Otero devolverá '+ofReser+' la totalidad de la suma entregada en concepto de reserva dentro de las 48 hs hábiles de vencido el plazo, sin penalidad a favor de '+ofReser+'.',F);
@@ -2215,7 +2223,7 @@ async function genReserva(){
       {txt:'USD '+resActo, bold:true},
       {txt:', en concepto de reserva, y extiende el presente como recibo por el importe efectivamente recibido.'}
     ],false,11,F);
-    body+=rTx('Una vez aceptada la oferta por '+prProp+' y obtenidos los certificados de dominio e inhibiciones necesarios para otorgar el boleto de compraventa o escritura, la suma será custodiada por la inmobiliaria hasta que corresponda su restitución o entrega conforme a las condiciones de este instrumento.',F);
+    body+=rTx('Una vez aceptada la oferta por '+prProp+' y obtenidos los certificados de dominio e inhibiciones necesarios para otorgar '+tipoFirma.toLowerCase()+', la suma será custodiada por la inmobiliaria hasta que corresponda su restitución o entrega conforme a las condiciones de este instrumento.',F);
     body+=rTx('Si la oferta fuera rechazada o venciera sin aceptación, la inmobiliaria restituirá el importe en el plazo indicado en la cláusula 5, dejando constancia documentada de la devolución.',F);
     body+=rBr();
 
@@ -2235,7 +2243,7 @@ async function genReserva(){
 
     // CLÁUSULA 9 - ESCRIBANO
     body+=rSubU('9. Escribano',F);
-    body+=rTx('El escribano interviniente será designado por el RESERVANTE / PROPIETARIO/A (tachar lo que no corresponda).',F);
+    body+=rTx(escribanoVend?'El escribano interviniente será designado por el VENDEDOR.':'El escribano interviniente será designado por el RESERVANTE / PROPIETARIO/A (tachar lo que no corresponda).',F);
     body+=rTx('Los gastos, impuestos, tasas, contribuciones, honorarios notariales y demás conceptos derivados de la operación serán soportados por las partes conforme a la legislación aplicable y a la siguiente distribución convencional:',F);
     body+=rTx('Gastos a cargo '+(ofFem?'de la COMPRADORA':'del COMPRADOR')+': ______________________________',F);
     body+=rTx('Gastos a cargo '+(prFem?'de la VENDEDORA':'del VENDEDOR')+': _______________________________',F);
@@ -2244,14 +2252,20 @@ async function genReserva(){
 
     // CLÁUSULA 10 - DOMICILIOS Y NOTIFICACIONES
     body+=rSubU('10. Domicilios y notificaciones',F);
-    body+=rTx('Las notificaciones vinculadas a esta reserva podrán cursarse válidamente por WhatsApp al número denunciado y/o por correo electrónico, y se tendrán por recibidas a las 24 hs de enviadas.',F);
+    body+=rTx('A todos los efectos legales y convencionales, las partes constituyen domicilio en los indicados al comienzo. Las notificaciones vinculadas a esta reserva podrán cursarse válidamente por WhatsApp al número denunciado y/o por correo electrónico, y se tendrán por recibidas a las 24 hs de enviadas.',F);
+    body+=rBr();
     body+=rTx('Las partes constituyen domicilios especiales en los indicados a continuación:',F);
-    body+=rTx((ofFem?'LA OFERENTE':'EL OFERENTE')+': '+(ofDom||'______________________________________________'),F);
-    body+=rTx((prFem?'LA PROPIETARIA':'EL PROPIETARIO')+': __________________________________________',F);
-    body+=rTx('Correo electrónico '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofEmail||'____________________________'),F);
-    body+=rTx('Correo electrónico '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(emailProp||'_________________________'),F);
-    body+=rTx('WhatsApp '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofWa||ofTel||'____________________________________'),F);
-    body+=rTx('WhatsApp '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(waProp||'________________________________'),F);
+    body+=rTx((ofFem?'EL/LA OFERENTE':'EL/LA OFERENTE')+': '+(ofDom||'______________________________________________'),F);
+    body+=rTx('Correo electrónico '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofEmail||'______________________________'),F);
+    body+=rTx('WhatsApp '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofWa||ofTel||'______________________________'),F);
+    body+=rBr();
+    body+=rTx((prFem?'EL/LA PROPIETARIO/A':'EL/LA PROPIETARIO/A')+': ______________________________',F);
+    body+=rTx('Correo electrónico '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(emailProp||'______________________________'),F);
+    body+=rTx('WhatsApp '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(waProp||'______________________________'),F);
+    body+=rBr();
+    body+=rTx('Roberts Otero: Rio de Janeiro 1725, Oficina 11 Torre 1.',F);
+    body+=rTx('Correo electrónico: droberts@juarezbeltran.com.ar',F);
+    body+=rBr();
     body+=rTx('Las comunicaciones relacionadas con la presente podrán cursarse a los domicilios electrónicos y números denunciados, siempre que permitan acreditar razonablemente su envío, contenido, autoría y recepción. Las intimaciones vinculadas con incumplimientos deberán efectuarse por un medio fehaciente cuando así corresponda.',F);
     body+=rBr();
 
