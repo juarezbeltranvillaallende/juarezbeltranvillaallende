@@ -529,6 +529,10 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
           </label>
         </div>
       </div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="f"><label>Gastos a cargo del/de la comprador/a</label><input id="rs-gastos-comp" type="text" placeholder="Ej: sellos, estudio de títulos"></div>
+        <div class="f"><label>Gastos a cargo del/de la vendedor/a</label><input id="rs-gastos-vend" type="text" placeholder="Ej: plusvalía, ITI"></div>
+      </div>
     </div>
   </div>
   <div class="card">
@@ -2033,6 +2037,8 @@ async function genReserva(){
     var diasBol=_sr('rs-dias-boleto');
     var escribanoVend=document.getElementById('rs-escribano-vend')&&document.getElementById('rs-escribano-vend').checked;
     var tipoFirma=_sr('rs-tipo-firma')||'Boleto de Compraventa';
+    var gastosComp=_sr('rs-gastos-comp');
+    var gastosVend=_sr('rs-gastos-vend');
     var waProp=_sr('rs-wp');
     var emailProp=_sr('rs-email-prop');
     var prPct=_sr('rs-pr-pct')||'3';
@@ -2246,10 +2252,10 @@ async function genReserva(){
 
     // CLÁUSULA 9 - ESCRIBANO
     body+=rSubU('9. Escribano',F);
-    body+=rTx(escribanoVend?'El escribano interviniente será designado por el VENDEDOR.':'El escribano interviniente será designado por el RESERVANTE / PROPIETARIO/A (tachar lo que no corresponda).',F);
+    body+=rTx(escribanoVend?'El escribano interviniente será designado por el VENDEDOR.':'El escribano interviniente será designado por el RESERVANTE.',F);
     body+=rTx('Los gastos, impuestos, tasas, contribuciones, honorarios notariales y demás conceptos derivados de la operación serán soportados por las partes conforme a la legislación aplicable y a la siguiente distribución convencional:',F);
-    body+=rTx('Gastos a cargo '+(ofFem?'de la COMPRADORA':'del COMPRADOR')+': ______________________________',F);
-    body+=rTx('Gastos a cargo '+(prFem?'de la VENDEDORA':'del VENDEDOR')+': _______________________________',F);
+    body+=rTx('Gastos a cargo '+(ofFem?'de la COMPRADORA':'del COMPRADOR')+': '+(gastosComp||'______________________________'),F);
+    body+=rTx('Gastos a cargo '+(prFem?'de la VENDEDORA':'del VENDEDOR')+': '+(gastosVend||'_______________________________'),F);
     body+=rTx('La parte vendedora asumirá las deudas, impuestos, tasas, contribuciones, expensas y servicios que expresamente se encuentren a su cargo hasta la fecha de entrega de la posesión, salvo pacto distinto.',F);
     body+=rBr();
 
