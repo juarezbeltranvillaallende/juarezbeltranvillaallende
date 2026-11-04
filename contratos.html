@@ -82,7 +82,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--
 .prog{margin-bottom:1.1rem}
 .pl{display:flex;justify-content:space-between;font-size:11px;color:var(--g);margin-bottom:4px}
 .pb{height:4px;background:var(--bd);border-radius:2px;overflow:hidden}
-.pf{height:4px;background:var(--azm);border-radius:2px;transition:width .3s}
+.pf{height:4px;background:var(--azm);transition:width .3s}
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .bok{background:var(--vdb);color:var(--vd)}.bwrn{background:var(--orb);color:var(--or)}
 .btn{padding:7px 16px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;border:1.5px solid var(--bd);background:#fff;color:var(--k);display:inline-flex;align-items:center;gap:5px;transition:.12s}
@@ -805,6 +805,7 @@ function setModo(m){
   document.body.classList.toggle('rs',s);
   if(s){
     showPg('rs',null);
+    rsChg();
     return;
   }
   showPg('ct',null);
