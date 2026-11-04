@@ -1972,14 +1972,14 @@ async function genReserva(){
     // Cláusula 5: Honorarios
     body+=rSub('5. Honorarios',F);
     body+=rParMix([
-      {txt:(ofFem?'La':'El')+'/la oferente reconoce a favor de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. la suma de Pesos '},
+      {txt:(ofFem?'La':'El')+'/la oferente reconoce a favor de Roberts Otero, la suma de Pesos '},
       {txt:honorLetrasStr, bold:true},
       {txt:' ($ '},
       {txt:honorFmt, bold:true},
       {txt:') en concepto de retribución por su participación en la presente operación, suma que abonaré en dinero efectivo a la firma del contrato.'}
     ],false,11,F);
     body+=rBr();
-    body+=rTx((ofFem?'La':'El')+' oferente autoriza a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S. a recibir la suma indicada en la presente en carácter de reserva de locación, sujeta a la aceptación del propietario, y a comunicar a las partes las decisiones y coordinaciones necesarias para la eventual celebración del contrato.',F);
+    body+=rTx((ofFem?'La':'El')+' oferente autoriza a Roberts Otero a recibir la suma indicada en la presente en carácter de reserva de locación, sujeta a la aceptación del propietario, y a comunicar a las partes las decisiones y coordinaciones necesarias para la eventual celebración del contrato.',F);
     body+=rTx('La recepción de la suma por la inmobiliaria no implica, por sí sola, aceptación de la oferta por parte del propietario ni garantiza la aprobación de la documentación o de la garantía propuesta.',F);
     body+=rBr();
 
