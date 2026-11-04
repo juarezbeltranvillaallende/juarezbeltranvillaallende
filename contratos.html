@@ -82,7 +82,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:#EAECF2;color:var(--
 .prog{margin-bottom:1.1rem}
 .pl{display:flex;justify-content:space-between;font-size:11px;color:var(--g);margin-bottom:4px}
 .pb{height:4px;background:var(--bd);border-radius:2px;overflow:hidden}
-.pf{height:100%;background:var(--azm);border-radius:2px;transition:width .3s}
+.pf{height:4px;background:var(--azm);border-radius:2px;transition:width .3s}
 .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}
 .bok{background:var(--vdb);color:var(--vd)}.bwrn{background:var(--orb);color:var(--or)}
 .btn{padding:7px 16px;border-radius:var(--r);font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;border:1.5px solid var(--bd);background:#fff;color:var(--k);display:inline-flex;align-items:center;gap:5px;transition:.12s}
@@ -1674,6 +1674,8 @@ function rsChg(){
   if(!RTIPO){
     var btn=document.getElementById('rs-btn-dl');
     if(btn) btn.disabled=true;
+    var pf=document.getElementById('rs-pfill');
+    if(pf) pf.style.width='0%';
     return;
   }
   var labels={'rs-of-n':'Nombre oferente','rs-of-d':'DNI oferente','rs-ciudad':'Ciudad','rs-dir':'Dirección','rs-monto':'Monto reserva','rs-alqm':'Alquiler mensual','rs-honor':'Honorarios','rs-vta-ciudad':'Ciudad','rs-vta-dir':'Dirección','rs-precio':'Precio','rs-res-acto':'Reserva en acto','rs-ces-cedente':'Cedente'};
