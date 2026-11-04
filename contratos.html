@@ -579,7 +579,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
 
   <!-- PROPIETARIO/CEDENTE (para completar si acepta en el acto) -->
   <div class="card">
-    <div class="ch"><h2>Propietario/a</h2></div>
+    <div class="ch"><h2 id="lbl-propietario">Propietario/a</h2></div>
     <div class="cb">
       <div class="g4">
         <div class="f"><label>Género</label><div class="gbtn"><button class="gb on" data-g="m" onclick="APP.rsSetG('pr',this)">Hombre</button><button class="gb" data-g="f" onclick="APP.rsSetG('pr',this)">Mujer</button></div></div>
@@ -1662,7 +1662,9 @@ function selR(btn){
   hdn('rs-ces-fields', !isCes);
   hdn('rs-fb', false);
   var lblOf=document.getElementById('lbl-oferente');
-  if(lblOf) lblOf.textContent=(RTIPO==='compraventa'?'Comprador/a':RTIPO==='cesion'?'Cesionario/a':'Reservante');
+  if(lblOf) lblOf.textContent=(RTIPO==='compraventa'?'Comprador/a':RTIPO==='cesion'?'Oferente':'Reservante');
+  var lblPr=document.getElementById('lbl-propietario');
+  if(lblPr) lblPr.textContent=(RTIPO==='cesion'?'Cedente':'Propietario/a');
   var btnMod=document.getElementById('rs-btn-modelo');
   if(btnMod) btnMod.style.display=RS_MODELOS[RTIPO]?'':'none';
   rsChg();
@@ -1688,7 +1690,7 @@ function rsChg(){
   var filled=required.length-missing.length;
   var pct=Math.round((filled/required.length)*100);
   var pf=document.getElementById('rs-pfill');
-  if(pf){ pf.style.width=pct+'%'; pf.textContent=pct+'%'; }
+  if(pf){ pf.style.width=pct+'%'; }
   var bst=document.getElementById('rs-bst');
   if(bst){
     bst.className='badge '+(ok?'bok':'bwrn');
