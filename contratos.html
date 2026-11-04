@@ -467,8 +467,9 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       </div>
       <div class="g3" style="margin-bottom:8px">
         <div class="f"><label>Alquiler mensual (Pesos) *</label><input id="rs-alqm" type="text" placeholder="Ej: 500000" oninput="APP.rsChg()"></div>
-        <div class="f"><label>Ajuste</label><select id="rs-ajuste"><option>Trimestral IPC INDEC</option><option>Cuatrimestral IPC INDEC</option></select></div>
-        <div class="f"><label>Plazo</label><select id="rs-plazo"><option value="24">24 meses</option><option value="36">36 meses</option><option value="48">48 meses</option></select></div>
+        <div class="f"><label>Periodicidad ajuste</label><select id="rs-ajuste-per"><option value="Trimestral">Trimestral</option><option value="Cuatrimestral">Cuatrimestral</option><option value="Semestral">Semestral</option></select></div>
+        <div class="f"><label>Índice</label><select id="rs-ajuste-idx"><option value="IPC INDEC">IPC INDEC</option><option value="ICL">ICL</option></select></div>
+        <div class="f"><label>Plazo</label><select id="rs-plazo"><option value="12">12 meses</option><option value="24" selected>24 meses</option><option value="36">36 meses</option></select></div>
       </div>
       <div class="g3" style="margin-bottom:8px">
         <div class="f"><label>Inicio locación</label><input id="rs-ini" type="date"></div>
@@ -1842,7 +1843,7 @@ async function genReserva(){
     var monto=_sr('rs-monto');
     var fpago=(function(){ var el=document.getElementById('rs-fpago'); if(!el) return 'dinero efectivo'; var v=el.value; return v==='transferencia'?'transferencia bancaria':el.options[el.selectedIndex].text.toLowerCase(); })();
     var mens=_sr('rs-alqm');
-    var ajuste=(function(){ var el=document.getElementById('rs-ajuste'); return el?el.options[el.selectedIndex].text:'Trimestral IPC INDEC'; })();
+    var ajuste=(function(){ var per=document.getElementById('rs-ajuste-per'); var idx=document.getElementById('rs-ajuste-idx'); return (per?per.value:'Trimestral')+' '+(idx?idx.value:'IPC INDEC'); })();
     var plazo=(function(){ var el=document.getElementById('rs-plazo'); return el?el.value:'24'; })();
     var inicio=_sr('rs-ini');
     var dias=_sr('rs-dias')||'5';
