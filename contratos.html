@@ -1901,7 +1901,7 @@ async function genReserva(){
       {txt:montoLetrasStr, bold:true},
       {txt:' ($ '},
       {txt:montoFmt, bold:true},
-      {txt:'), en dinero efectivo / transferencia bancaria, en concepto de reserva y garantía ad referéndum del aceptante, por el término de '},
+      {txt:'), en '+fpago+', en concepto de reserva y garantía ad referéndum del aceptante, por el término de '},
       {txt:diasPalabra+' ('+dias+')', bold:true},
       {txt:' días hábiles a contar de la fecha, por el alquiler del inmueble ubicado en '},
       {txt:dir, bold:true},
@@ -1910,7 +1910,11 @@ async function genReserva(){
     body+=rBr();
 
     // Párrafo 2: Por la presente...
-    body+=rTx('Por la presente y por intermedio de la firma ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., en adelante Roberts Otero, con domicilio en Río de Janeiro 1725, Torre 1, Oficina 11, Villa Allende, Córdoba, '+suscripto+' ofrece tomar en alquiler el inmueble bajo las siguientes condiciones:',F);
+    body+=rParMix([
+      {txt:'Por la presente y por intermedio de la firma '},
+      {txt:'Roberts Otero', bold:true},
+      {txt:', con domicilio en Río de Janeiro 1725, Torre 1, Oficina 11, Villa Allende, Córdoba, '+suscripto+' ofrece tomar en alquiler el inmueble bajo las siguientes condiciones:'}
+    ],false,11,F);
     body+=rBr();
 
     // Cláusula 1: Precio y condiciones generales
@@ -1927,7 +1931,7 @@ async function genReserva(){
       {txt:', con tasas, impuestos y servicios a cargo del oferente.'}
     ],false,11,F);
     body+=rBr();
-    body+=rTx('El sellado del contrato e informes personales de los firmantes será abonado en su totalidad por el oferente al momento de suscribir el contrato.',F);
+    body+=rTx('El sellado del contrato e informes personales de los firmantes será abonado en su totalidad por '+(ofFem?'la':'el')+' oferente al momento de suscribir el contrato.',F);
     body+=rTx('La presente oferta queda sujeta a la aceptación expresa del propietario y a la aprobación de la garantía ofrecida, en los términos previstos en este instrumento.',F);
     body+=rBr();
 
@@ -1946,40 +1950,60 @@ async function genReserva(){
 
     // Cláusula 3: Vigencia y compromisos del oferente
     body+=rSub('3. Vigencia y compromisos del oferente',F);
-    body+=rTx('La resolución del PROPIETARIO será notificada al OFERENTE por WhatsApp o correo electrónico, al teléfono o dirección consignados al pie de la presente, y se tendrá por recibida dentro de las veinticuatro (24) horas de enviada. El OFERENTE deberá responder la notificación dentro de las veinticuatro (24) horas de recibida.',F);
+    var alOf=(ofFem?'a la':'al')+' OFERENTE';
+    var elOf=(ofFem?'La':'El')+' OFERENTE';
+    body+=rTx('La resolución del PROPIETARIO será notificada '+alOf+' por WhatsApp o correo electrónico, al teléfono o dirección consignados al pie de la presente, y se tendrá por recibida dentro de las veinticuatro (24) horas de enviada. '+elOf+' deberá responder la notificación dentro de las veinticuatro (24) horas de recibida.',F);
     body+=rBr();
-    body+=rTx('Dentro del plazo de vigencia de la reserva indicado en el encabezado, el OFERENTE se compromete a entregar la documentación personal y la garantía necesarias para suscribir el contrato de locación.',F);
+    body+=rTx('Dentro del plazo de vigencia de la reserva indicado en el encabezado, '+elOf.toLowerCase()+' se compromete a entregar la documentación personal y la garantía necesarias para suscribir el contrato de locación.',F);
     body+=rBr();
-    body+=rTx('Notificada la aceptación, el contrato se suscribirá en el lugar, día y hora que Roberts Otero indique al OFERENTE. El OFERENTE declara haber recibido y revisado el modelo de contrato de locación que se le envía en este acto y conocer sus condiciones generales, sin perjuicio de las modificaciones que las partes acuerden expresamente por escrito antes de su firma.',F);
+    body+=rParMix([
+      {txt:'Notificada la aceptación, el contrato se suscribirá en el lugar, día y hora que '},
+      {txt:'Roberts Otero', bold:true},
+      {txt:' indique '+alOf+'. '+elOf+' declara haber recibido y revisado el modelo de contrato de locación que se le envía en este acto y conocer sus condiciones generales, sin perjuicio de las modificaciones que las partes acuerden expresamente por escrito antes de su firma.'}
+    ],false,11,F);
     body+=rBr();
-    body+=rTx('En caso de aceptación de la presente oferta y firma del contrato de locación, la suma entregada en concepto de reserva será imputada por Roberts Otero a cuenta de los gastos iniciales totales. Si la suma resultare inferior al concepto al que se imputa, el OFERENTE abonará la diferencia al momento de la firma del contrato. Si resultare superior, el excedente se imputará al siguiente concepto a abonar por el OFERENTE.',F);
+    body+=rParMix([
+      {txt:'En caso de aceptación de la presente oferta y firma del contrato de locación, la suma entregada en concepto de reserva será imputada por '},
+      {txt:'Roberts Otero', bold:true},
+      {txt:' a cuenta de los gastos iniciales totales. Si la suma resultare inferior al concepto al que se imputa, '+elOf.toLowerCase()+' abonará la diferencia al momento de la firma del contrato. Si resultare superior, el excedente se imputará al siguiente concepto a abonar por '+elOf.toLowerCase()+'.'}
+    ],false,11,F);
     body+=rBr();
 
     // Cláusula 4: Desistimiento y penalidades
     body+=rSub('4. Desistimiento y penalidades',F);
-    body+=rTx('El OFERENTE mantendrá irrevocablemente su ofrecimiento durante el plazo de vigencia de la presente. Si desistiera durante dicho período, perderá en beneficio del PROPIETARIO y de Roberts Otero, por partes iguales, y sin derecho a reclamo alguno, la suma entregada en concepto de reserva.',F);
-    body+=rTx('Se considerará también desistimiento del OFERENTE cualquiera de las siguientes actitudes:',F);
+    body+=rParMix([
+      {txt:elOf+' mantendrá irrevocablemente su ofrecimiento durante el plazo de vigencia de la presente. Si desistiera durante dicho período, perderá en beneficio del PROPIETARIO y de '},
+      {txt:'Roberts Otero', bold:true},
+      {txt:', por partes iguales, y sin derecho a reclamo alguno, la suma entregada en concepto de reserva.'}
+    ],false,11,F);
+    body+=rTx('Se considerará también desistimiento de '+elOf.toLowerCase()+' cualquiera de las siguientes actitudes:',F);
     body+=rTx('a) La no respuesta a la notificación de aceptación dentro del plazo establecido en la cláusula 3;',F);
     body+=rTx('b) La no entrega de la documentación personal requerida o de la garantía, dentro del plazo convenido;',F);
     body+=rTx('c) La no concurrencia a suscribir el contrato de locación en el lugar, día y hora indicados;',F);
     body+=rTx('d) Cualquier otra reticencia en el cumplimiento de las obligaciones asumidas en la presente.',F);
     body+=rBr();
-    body+=rTx('Dejo aclarado que la prueba de la comparecencia incumbe al oferente.',F);
-    body+=rTx('Si la operación no pudiera concretarse por una causa no imputable al oferente, por el rechazo del ofrecimiento, por la falta de cumplimiento de una condición expresamente prevista en esta reserva o por una modificación esencial de las condiciones no aceptada por el oferente, la suma entregada será restituida íntegramente, salvo que exista un pacto expreso válido que disponga otra solución para el supuesto concreto.',F);
+    body+=rTx('Dejo aclarado que la prueba de la comparecencia incumbe '+(ofFem?'a la':'al')+' oferente.',F);
+    body+=rTx('Si la operación no pudiera concretarse por una causa no imputable '+(ofFem?'a la':'al')+' oferente, por el rechazo del ofrecimiento, por la falta de cumplimiento de una condición expresamente prevista en esta reserva o por una modificación esencial de las condiciones no aceptada por '+(ofFem?'la':'el')+' oferente, la suma entregada será restituida íntegramente, salvo que exista un pacto expreso válido que disponga otra solución para el supuesto concreto.',F);
     body+=rTx('La inmobiliaria deberá dejar constancia de la recepción, devolución o imputación de la suma entregada, indicando el importe y la persona a cuyo nombre se recibe.',F);
     body+=rBr();
 
     // Cláusula 5: Honorarios
     body+=rSub('5. Honorarios',F);
     body+=rParMix([
-      {txt:(ofFem?'La':'El')+'/la oferente reconoce a favor de Roberts Otero, la suma de Pesos '},
+      {txt:(ofFem?'La':'El')+' oferente reconoce a favor de '},
+      {txt:'Roberts Otero', bold:true},
+      {txt:', la suma de Pesos '},
       {txt:honorLetrasStr, bold:true},
       {txt:' ($ '},
       {txt:honorFmt, bold:true},
       {txt:') en concepto de retribución por su participación en la presente operación, suma que abonaré en dinero efectivo a la firma del contrato.'}
     ],false,11,F);
     body+=rBr();
-    body+=rTx((ofFem?'La':'El')+' oferente autoriza a Roberts Otero a recibir la suma indicada en la presente en carácter de reserva de locación, sujeta a la aceptación del propietario, y a comunicar a las partes las decisiones y coordinaciones necesarias para la eventual celebración del contrato.',F);
+    body+=rParMix([
+      {txt:(ofFem?'La':'El')+' oferente autoriza a '},
+      {txt:'Roberts Otero', bold:true},
+      {txt:' a recibir la suma indicada en la presente en carácter de reserva de locación, sujeta a la aceptación del propietario, y a comunicar a las partes las decisiones y coordinaciones necesarias para la eventual celebración del contrato.'}
+    ],false,11,F);
     body+=rTx('La recepción de la suma por la inmobiliaria no implica, por sí sola, aceptación de la oferta por parte del propietario ni garantiza la aprobación de la documentación o de la garantía propuesta.',F);
     body+=rBr();
 
