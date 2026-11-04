@@ -476,6 +476,12 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <div class="f"><label>Días hábiles vigencia reserva</label><input id="rs-dias" type="text" value="5" placeholder="5"></div>
         <div class="f"><label>Honorarios corredor (Pesos) *</label><input id="rs-honor" type="text" placeholder="Ej: 150000" oninput="APP.rsChg()"></div>
       </div>
+      <div style="margin-bottom:8px">
+        <div class="f" style="margin-bottom:6px"><label>¿El inquilino solicita adecuaciones edilicias?</label>
+          <div class="gbtn"><button class="gb" id="rs-adecu-no" data-v="no" onclick="APP.rsSetAdecu('no',this)">No</button><button class="gb" id="rs-adecu-si" data-v="si" onclick="APP.rsSetAdecu('si',this)">Sí</button></div>
+        </div>
+        <div class="f" id="rs-adecu-det" style="display:none"><label>¿Qué adecuaciones?</label><input id="rs-adecu-txt" type="text" placeholder="Ej: pintura general, instalación de aire acondicionado" oninput="APP.rsChg()"></div>
+      </div>
     </div>
   </div>
   </div>
@@ -1713,6 +1719,13 @@ function rsSetG(pref, btn){
 function _gOf(pref){ return RS_GEN[pref]==='f'; }
 function _sr(id){ var e=document.getElementById(id); return e?e.value.trim():''; }
 
+function rsSetAdecu(v, btn){
+  btn.closest('.gbtn').querySelectorAll('.gb').forEach(function(b){b.classList.remove('on');});
+  btn.classList.add('on');
+  var det=document.getElementById('rs-adecu-det');
+  if(det) det.style.display=(v==='si'?'':'none');
+}
+
 async function genReserva(){
   if(!RTIPO) return;
   var zip=new JSZip();
@@ -1919,9 +1932,16 @@ async function genReserva(){
     body+=rBr();
 
     // Cláusula 2: Estado del inmueble
+    var adecuSi=(function(){ var el=document.getElementById('rs-adecu-si'); return el&&el.classList.contains('on'); })();
+    var adecuTxt=_sr('rs-adecu-txt');
     body+=rSub('2. Estado del inmueble',F);
     body+=rTx('La entrega de la tenencia se realizará en la fecha que se establezca en el contrato, libre de ocupantes y conforme a las condiciones allí convenidas. Los impuestos, servicios y demás conceptos correspondientes al período anterior a la entrega serán afrontados según lo acordado en el contrato y la normativa aplicable.',F);
-    body+=rTx('El oferente solicita las siguientes adecuaciones edilicias:________. A los fines de poder desarrollar la actividad para la cual toma en locación el inmueble objeto del presente.',F);
+    if(adecuSi){
+      body+=rParMix([
+        {txt:'El oferente solicita las siguientes adecuaciones edilicias: '},{txt:adecuTxt||'________',bold:!!adecuTxt},
+        {txt:'. A los fines de poder desarrollar la actividad para la cual toma en locación el inmueble objeto del presente.'}
+      ],false,11,F);
+    }
     body+=rBr();
 
     // Cláusula 3: Vigencia y compromisos del oferente
@@ -2633,7 +2653,7 @@ return {
   renderH:renderH, delH:delH, borrarH:borrarH,
   addLoc:addLoc, remLoc:remLoc,
   initClauseEditor:initClauseEditor, setMoneda:setMoneda,
-  selR:selR, rsChg:rsChg, rsSetG:rsSetG, genReserva:genReserva, descargarModelo:descargarModelo,
+  selR:selR, rsChg:rsChg, rsSetG:rsSetG, rsSetAdecu:rsSetAdecu, genReserva:genReserva, descargarModelo:descargarModelo,
   rsAbrirAviso:function(){
     var esVenta = RTIPO==='compraventa' || RTIPO==='cesion';
     var esAlquiler = RTIPO==='alquiler';
