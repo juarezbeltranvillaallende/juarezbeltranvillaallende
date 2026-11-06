@@ -2064,7 +2064,7 @@ async function genReserva(){
       body+=rTx('En la ciudad de Villa Allende, a los _____ días del mes de _________________ de 202___, yo, _________________________, DNI _________________________, con domicilio en _________________________, en mi carácter de aceptante y '+(prFem?'futura locadora':'futuro locador')+' del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.',F);
     }
     body+=rBr();
-    body+=rTx('Firma del Propietario/a: _________________________',F);
+    body+=rTx('Firma '+(prFem?'de la Propietaria':'del Propietario')+': _________________________',F);
     body+=rTx('Aclaración: _________________________',F);
     if(prNom){
       body+=rParMix([{txt:'DNI/CUIT: '},{txt:prDni,bold:true}],false,11,F);
