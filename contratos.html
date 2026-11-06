@@ -1825,7 +1825,7 @@ async function genReserva(){
   function rBr(){ return '<w:p><w:r><w:t></w:t></w:r></w:p>'; }
   function rPageBreak(){ return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'; }
   function rTit(txt,font){ return rPar(txt,true,true,14,false,font,'center'); }
-  function rTitU(txt,font){ return rPar(txt,true,true,14,true,font,'center'); }
+  function rTitU(txt,font){ return rPar(txt,true,false,14,true,font,'left'); }
   function rSub(txt,font){ return rPar(txt,true,false,12,false,font,'left'); }
   function rSubU(txt,font){ return rPar(txt,true,false,12,true,font,'left'); }
   function rTx(txt,font){ return rPar(txt,false,false,11,false,font,'both'); }
