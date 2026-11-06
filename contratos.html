@@ -394,23 +394,6 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
     </div>
   </div>
 
-  <div class="card">
-    <div class="ch"><h2>✏️ Editar cláusulas del contrato</h2></div>
-    <div class="cb">
-      <p style="font-size:11px;color:var(--g);margin-bottom:9px">Expandí cada cláusula para editarla. Los cambios que hagas se reflejan en el Word generado.</p>
-      <div id="ed-cls-cont">
-        <p style="font-size:12px;color:var(--g);font-style:italic">Seleccioná el tipo de inmueble para ver las cláusulas.</p>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="ch"><h2>✏️ Editar cláusulas del contrato</h2></div>
-    <div class="cb">
-      <p style="font-size:11px;color:var(--g);margin-bottom:9px">Expandí cada cláusula para editarla antes de descargar. Dejá vacío para usar el texto estándar.</p>
-      <div id="ed-cls-cont"><p style="font-size:12px;color:var(--g);font-style:italic">Seleccioná el tipo de inmueble para ver las cláusulas.</p></div>
-    </div>
-  </div>
 
   <div class="card">
     <div class="cb">
@@ -967,7 +950,7 @@ var CLAUSE_EDITS = {}; // stores user edits per clause name
 
 function initClauseEditor(){
   if(MODO!=='renov'){ hdn('pnl-cls',true); return; }
-  var cont = document.getElementById('ed-cls-cont');
+  var cont = document.getElementById('lst-cls');
   if(!cont) return;
   while(cont.firstChild) cont.removeChild(cont.firstChild);
   CLAUSE_EDITS = {};
