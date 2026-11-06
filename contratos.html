@@ -2186,7 +2186,7 @@ async function genReserva(){
       {txt:'ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.', bold:true},
       {txt:', en adelante '},
       {txt:'Roberts Otero', bold:true},
-      {txt:', interviniendo el Corredor Público Inmobiliario '+corredorStr+', '+ofSrTxtX+ofNom+', DNI N.º '+ofDni+(ofCuit?', CUIT/CUIL N.º '+ofCuit:'')+', estado civil '+ofEcStr+', con domicilio en '+ofDom+(ofEmail?', correo electrónico '+ofEmail:'')+((ofTel||ofWa)?' y teléfono/WhatsApp '+(ofWa||ofTel):'')+', en adelante '},
+      {txt:', interviniendo el Corredor Público Inmobiliario '+corredorStr+', '+ofSrTxtX+ofNom+', DNI N.º '+ofDni+(ofCuit?', CUIT N.º '+ofCuit:'')+', estado civil '+ofEcStr+', con domicilio en '+ofDom+(ofEmail?', correo electrónico '+ofEmail:'')+((ofTel||ofWa)?' y teléfono/WhatsApp '+(ofWa||ofTel):'')+', en adelante '},
       {txt:(ofFem?'LA OFERENTE':'EL OFERENTE'), bold:true},
       {txt:', entrega en concepto de '},
       {txt:'RESERVA', bold:true},
@@ -2283,13 +2283,13 @@ async function genReserva(){
     body+=rTx('Se entenderá que hay desistimiento '+(ofFem?'de la':'del')+' OFERENTE cuando: (a) no concurra a la firma del Boleto dentro del plazo pactado; (b) manifieste en forma expresa o tácita su voluntad de no continuar con la operación; (c) no integre los fondos comprometidos en tiempo y forma.',F);
     body+=rBr();
     body+=rTxB('5.d Desistimiento '+(prFem?'de la Propietaria':'del Propietario'),F);
-    body+=rTx('Si '+prProp+', habiendo aceptado la reserva, desiste de la operación, sin causa justificada ni incumplimiento imputable '+ofComp+', deberá devolver '+ofReser+' el doble del importe recibido en concepto de reserva dentro de las 48 hs hábiles de notificado el desistimiento, en concepto de indemnización. Asimismo Roberts Otero tendrá derecho a cobrar sus honorarios '+prProp+' mencionados en la cláusula 7.',F);
+    body+=rTx('Si '+prProp+', habiendo aceptado la reserva, desiste de la operación, sin causa justificada ni incumplimiento imputable '+(ofFem?'a la':'al')+' OFERENTE, deberá devolver '+(ofFem?'a la':'al')+' OFERENTE el doble del importe recibido en concepto de reserva dentro de las 48 hs hábiles de notificado el desistimiento, en concepto de indemnización. Asimismo Roberts Otero tendrá derecho a cobrar sus honorarios '+(prFem?'a la':'al')+' '+(prFem?'PROPIETARIA':'PROPIETARIO')+' mencionados en la cláusula 7.',F);
     body+=rBr();
 
     // CLÁUSULA 6 - AUTORIZACIÓN AL CORREDOR
     body+=rSubU('6. Autorización al Corredor',F);
     body+=rParMix([
-      {txt:'Roberts Otero deja constancia de recibir '+ofOfer+' la suma de '},
+      {txt:'Roberts Otero deja constancia de recibir '+(ofFem?'de la':'del')+' OFERENTE la suma de '},
       {txt:'USD '+resActo, bold:true},
       {txt:', en concepto de reserva, y extiende el presente como recibo por el importe efectivamente recibido.'}
     ],false,11,F);
@@ -2329,7 +2329,7 @@ async function genReserva(){
     body+=rTx('Correo electrónico '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofEmail||'______________________________'),F);
     body+=rTx('WhatsApp '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofWa||ofTel||'______________________________'),F);
     body+=rBr();
-    body+=rTx((prFem?'LA PROPIETARIA':'EL PROPIETARIO')+': ______________________________',F);
+    body+=rTx((prFem?'LA PROPIETARIA':'EL PROPIETARIO')+': '+(_sr('rs-pr-dom')||'______________________________'),F);
     body+=rTx('Correo electrónico '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(emailProp||'______________________________'),F);
     body+=rTx('WhatsApp '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(waProp||'______________________________'),F);
     body+=rBr();
@@ -2487,7 +2487,7 @@ async function genReserva(){
       {txt:fechaDoc,bold:true},
       {txt:', por intermedio de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., en adelante Roberts Otero, interviniendo el Corredor Público Inmobiliario Diego Roberts, Matrícula CPI N.º 6390, '},
       {txt:ofSrTxtX+ofNom,bold:true},
-      {txt:', DNI N.º '+ofDni+(ofCuit?', CUIT/CUIL N.º '+ofCuit:'')+(ofEcTxt?', estado civil '+ofEcTxt:'')+(ofDom?', con domicilio en '+ofDom:'')+', correo electrónico '+(ofEmail||'______________________________')+' y teléfono/WhatsApp '+(ofWa||ofTel||'______________________________')+', en adelante EL/LA OFERENTE, entrega en concepto de RESERVA la suma de '},
+      {txt:', DNI N.º '+ofDni+(ofCuit?', CUIT N.º '+ofCuit:'')+(ofEcTxt?', estado civil '+ofEcTxt:'')+(ofDom?', con domicilio en '+ofDom:'')+', correo electrónico '+(ofEmail||'______________________________')+' y teléfono/WhatsApp '+(ofWa||ofTel||'______________________________')+', en adelante EL/LA OFERENTE, entrega en concepto de RESERVA la suma de '},
       {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(resActoLetras||'___________________________')+' (USD '+(resActoFmt||'_______________')+')',bold:true},
       {txt:' como señal de su intención de suscribir la cesión del inmueble que se describe a continuación:'}
     ],F);
