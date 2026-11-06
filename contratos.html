@@ -1859,6 +1859,40 @@ async function genReserva(){
     return num.toLocaleString('es-AR');
   }
 
+  // Funciones compartidas por compraventa y cesión
+  function _numDiaL(d){
+    var u=['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve','treinta','treinta y uno'];
+    return u[d]||String(d);
+  }
+  function numLetras(n){
+    var ns=String(n).replace(/[^0-9]/g,'');
+    var num=parseInt(ns)||0;
+    var cients=['','CIEN','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
+    var decs=['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
+    var unis=['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE',
+              'DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE','VEINTIUNO','VEINTIDÓS','VEINTITRÉS','VEINTICUATRO','VEINTICINCO',
+              'VEINTISÉIS','VEINTISIETE','VEINTIOCHO','VEINTINUEVE'];
+    function _c(x){
+      if(x===0) return '';
+      var r='';
+      var cv=Math.floor(x/100); var cd=x%100;
+      if(cv>0) r+=(cd===0&&cv===1?'CIEN':cv===1?'CIENTO':cients[cv])+' ';
+      if(cd>=30){ r+=decs[Math.floor(cd/10)]+(cd%10?' Y '+unis[cd%10]:'')+' '; }
+      else if(cd>0){ r+=unis[cd]+' '; }
+      return r;
+    }
+    if(num===0) return 'CERO';
+    var r='';
+    var mill=Math.floor(num/1000000);
+    var resto=num%1000000;
+    var miles=Math.floor(resto/1000);
+    var cen=resto%1000;
+    if(mill>0){ if(mill===1) r+='UN MILLÓN '; else r+=_c(mill)+'MILLONES '; }
+    if(miles>0){ if(miles===1) r+='MIL '; else r+=_c(miles)+'MIL '; }
+    r+=_c(cen);
+    return r.trim();
+  }
+
   if(RTIPO==='alquiler'){
     var ciudad=_sr('rs-ciudad')||'Villa Allende';
     var fecha=_sr('rs-fecha')||'';
@@ -2101,48 +2135,6 @@ async function genReserva(){
       if(!par) return ec.options[ec.selectedIndex].text;
       return ofFem?par[1]:par[0];
     })();
-
-    // Día en letras (1-31)
-    function _numDiaL(d){
-      var u=['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve','treinta','treinta y uno'];
-      return u[d]||String(d);
-    }
-    // Número en letras — soporta hasta 9.999.999
-    function numLetras(n){
-      var ns=String(n).replace(/[^0-9]/g,'');
-      var num=parseInt(ns)||0;
-      var cients=['','CIEN','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'];
-      var decs=['','DIEZ','VEINTE','TREINTA','CUARENTA','CINCUENTA','SESENTA','SETENTA','OCHENTA','NOVENTA'];
-      var unis=['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE','DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE',
-                'DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE','VEINTIUNO','VEINTIDÓS','VEINTITRÉS','VEINTICUATRO','VEINTICINCO',
-                'VEINTISÉIS','VEINTISIETE','VEINTIOCHO','VEINTINUEVE'];
-      // convierte 0-999 a palabras
-      function _c(x){
-        if(x===0) return '';
-        var r='';
-        var cv=Math.floor(x/100); var cd=x%100;
-        if(cv>0) r+=(cd===0&&cv===1?'CIEN':cv===1?'CIENTO':cients[cv])+' ';
-        if(cd>=30){ r+=decs[Math.floor(cd/10)]+(cd%10?' Y '+unis[cd%10]:'')+' '; }
-        else if(cd>0){ r+=unis[cd]+' '; }
-        return r;
-      }
-      if(num===0) return 'CERO';
-      var r='';
-      var mill=Math.floor(num/1000000);
-      var resto=num%1000000;
-      var miles=Math.floor(resto/1000);
-      var cen=resto%1000;
-      if(mill>0){
-        if(mill===1) r+='UN MILLÓN ';
-        else r+=_c(mill)+'MILLONES ';
-      }
-      if(miles>0){
-        if(miles===1) r+='MIL ';
-        else r+=_c(miles)+'MIL ';
-      }
-      r+=_c(cen);
-      return r.trim();
-    }
 
     var resActoNum=resActo.replace(/[^0-9]/g,'');
     var resActoLetras=numLetras(resActoNum);
@@ -2427,13 +2419,13 @@ async function genReserva(){
     var supCub=_sr('rs-sup-cub');
     var desc=_sr('rs-vta-desc');
     var precio=_sr('rs-precio');
-    var precioLetras=numALetras(precio);
+    var precioLetras=numLetras(precio?precio.replace(/[^0-9]/g,''):'');
     var precioFmt=fmtMonto(precio);
     var resActo=_sr('rs-res-acto');
-    var resActoLetras=numALetras(resActo);
+    var resActoLetras=numLetras(resActo?resActo.replace(/[^0-9]/g,''):'');
     var resActoFmt=fmtMonto(resActo);
     var alBoleto=_sr('rs-boleto');
-    var alBoletoLetras=numALetras(alBoleto);
+    var alBoletoLetras=alBoleto?numLetras(alBoleto.replace(/[^0-9]/g,'')):'' ;
     var alBoletoFmt=fmtMonto(alBoleto);
     var diasHab=_sr('rs-vta-dias')||'5';
     var diasBol=_sr('rs-dias-boleto');
