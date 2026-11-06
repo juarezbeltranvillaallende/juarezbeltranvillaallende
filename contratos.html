@@ -538,6 +538,9 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <div class="f"><label>Gastos a cargo del/de la comprador/a</label><input id="rs-gastos-comp" type="text" placeholder="%"></div>
         <div class="f"><label>Gastos a cargo del/de la vendedor/a</label><input id="rs-gastos-vend" type="text" placeholder="%"></div>
       </div>
+      <div class="g2" style="margin-bottom:8px">
+        <div class="f"><label>Honorarios Roberts Otero (%)</label><input id="rs-honor-pct" type="text" placeholder="Ej: 3"></div>
+      </div>
     </div>
   </div>
       <!-- Solo cesión -->
@@ -572,7 +575,8 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
               </label>
             </div>
           </div>
-          <div class="g2" style="margin-bottom:8px">
+          <div class="g3" style="margin-bottom:8px">
+            <div class="f"><label>Honorarios Roberts Otero (%)</label><input id="rs-ces-honor-pct" type="text" placeholder="Ej: 3"></div>
             <div class="f"><label>Gastos a cargo del/de la oferente (%)</label><input id="rs-ces-pct-of" type="text" placeholder="%"></div>
             <div class="f"><label>Gastos a cargo del/de la cedente (%)</label><input id="rs-ces-pct-ced" type="text" placeholder="%"></div>
           </div>
@@ -2154,7 +2158,7 @@ async function genReserva(){
     var gastosVend=_sr('rs-gastos-vend');
     var waProp=_sr('rs-pr-tel');
     var emailProp=_sr('rs-email-prop');
-    var prPct=_sr('rs-pr-pct')||'3';
+    var prPct=_sr('rs-honor-pct')||'3';
     var ofEcStr=(function(){
       var ec=document.getElementById('rs-of-ecivil');
       if(!ec) return '';
@@ -2463,8 +2467,9 @@ async function genReserva(){
     var emailProp=_sr('rs-email-prop');
     var prDom=_sr('rs-pr-dom');
     var prEc=_sr('rs-pr-ecivil');
-    var ofPct=_sr('rs-ces-pct-of')||'3';
-    var prPct=_sr('rs-ces-pct-ced')||'3';
+    var honorPct=_sr('rs-ces-honor-pct')||'3';
+    var ofPct=_sr('rs-ces-pct-of')||'';
+    var prPct=_sr('rs-ces-pct-ced')||'';
     var ofReser=ofFem?'la CESIONARIA':'el CESIONARIO';
     var fechaBoleto=(function(){
       var raw=_sr('rs-ces-fecha-bol');
@@ -2631,7 +2636,7 @@ async function genReserva(){
     body+=rParMix([
       {txt:'Los honorarios de '},
       {txt:'Roberts Otero',bold:true},
-      {txt:' son del '+ofPct+'% a cargo '+(ofFem?'de la OFERENTE':'del OFERENTE')+' y del '+prPct+'% a cargo '+(cedFem?'de la CEDENTE':'del CEDENTE')+', a abonarse al momento de la firma del instrumento de cesión.'}
+      {txt:' son del '+honorPct+'% del precio de venta, y serán abonados por cada parte (OFERENTE y CEDENTE) al momento de la escrituración.'}
     ],false,11,F);
     body+=rParMix([
       {txt:'En caso de desistimiento imputable '+(ofFem?'a la OFERENTE':'al OFERENTE')+', los honorarios de '},
@@ -2707,7 +2712,7 @@ async function genReserva(){
       {txt:'En la ciudad de '+ciudad+', a los ___ días del mes de ___________ de 20___, yo, '},
       {txt:(prNom?(cedFem?'la Sra. ':'el Sr. ')+prNom:'_____________'),bold:true},
       {txt:', DNI N.º '+(prDni||'_____________')+(prDom?', con domicilio en '+prDom:'')+(prEcTxt?', estado civil '+prEcTxt:'')+', en mi carácter de titular de los derechos objeto de la presente cesión, aceptó la propuesta formulada, las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a Roberts Otero el '},
-      {txt:prPct+'%',bold:true},
+      {txt:honorPct+'%',bold:true},
       {txt:' del precio de la operación en concepto de comisión, en dinero efectivo al momento de suscribirse el instrumento de cesión.'}
     ],false,11,F);
     body+=rParMix([{txt:'Autorizo a '},{txt:'Roberts Otero',bold:true},{txt:' a retener dicho importe del precio recibido.'}],false,11,F);
