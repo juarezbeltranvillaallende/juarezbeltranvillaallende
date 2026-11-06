@@ -1790,6 +1790,7 @@ async function genReserva(){
     return '<w:p>'+ppr+runs+'</w:p>';
   }
   function rBr(){ return '<w:p><w:r><w:t></w:t></w:r></w:p>'; }
+  function rPageBreak(){ return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'; }
   function rTit(txt,font){ return rPar(txt,true,true,14,false,font,'center'); }
   function rTitU(txt,font){ return rPar(txt,true,true,14,true,font,'center'); }
   function rSub(txt,font){ return rPar(txt,true,false,12,false,font,'left'); }
@@ -2361,9 +2362,8 @@ async function genReserva(){
     body+=rTx('Se firma en tres ejemplares de igual tenor y a un solo efecto: uno para '+(ofFem?'la OFERENTE':'el OFERENTE')+', uno para '+(prFem?'la PROPIETARIA':'el PROPIETARIO')+', y uno para ROBERTS OTERO.',F);
     body+=rBr();
 
-    // SECCIÓN ACEPTACIÓN DEL PROPIETARIO/A
-    body+=rBr();
-    body+=rPar('─────────────────────────────────────────────────────────────────────────',false,true,10,false,F);
+    // SECCIÓN ACEPTACIÓN DEL PROPIETARIO/A (hoja separada)
+    body+=rPageBreak();
     body+=rTit('ACEPTACIÓN '+(prFem?'DE LA PROPIETARIA':'DEL PROPIETARIO'),F);
     body+=rBr();
     var prEcEl=document.getElementById('rs-pr-ecivil');
@@ -2644,7 +2644,8 @@ async function genReserva(){
     body+=rTx('Aclaración: La presente reserva no implica transferencia de derechos ni posesión del inmueble. Su validez queda condicionada a la aceptación expresa del CEDENTE en el plazo establecido.',F);
     body+=rBr();
 
-    // Aceptación del cedente
+    // Aceptación del cedente (hoja separada)
+    body+=rPageBreak();
     body+=rTitU('ACEPTACIÓN '+(cedFem?'DE LA CEDENTE':'DEL CEDENTE'),F);
     body+=rBr();
     body+=rParMix([
