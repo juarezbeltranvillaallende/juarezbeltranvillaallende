@@ -572,10 +572,10 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <div class="f"><label>Género</label><div class="gbtn"><button class="gb on" data-g="m" onclick="APP.rsSetG('of',this)">Hombre</button><button class="gb" data-g="f" onclick="APP.rsSetG('of',this)">Mujer</button></div></div>
         <div class="f"><label>Nombre y apellido *</label><input id="rs-of-n" type="text" oninput="APP.rsChg()"></div>
         <div class="f"><label>DNI *</label><input id="rs-of-d" type="text" oninput="APP.rsChg()"></div>
-        <div class="f"><label>CUIT</label><input id="rs-of-cuit" type="text"></div>
+        <div class="f rs-campo-noventa" id="rs-of-cuit-wrap"><label>CUIT</label><input id="rs-of-cuit" type="text"></div>
       </div>
       <div class="g3" style="margin-top:8px">
-        <div class="f"><label>Estado civil</label><select id="rs-of-ecivil"><option value="soltero">Soltero/a</option><option value="casado">Casado/a</option><option value="divorciado">Divorciado/a</option><option value="viudo">Viudo/a</option></select></div>
+        <div class="f rs-campo-noventa" id="rs-of-ecivil-wrap"><label>Estado civil</label><select id="rs-of-ecivil"><option value="soltero">Soltero/a</option><option value="casado">Casado/a</option><option value="divorciado">Divorciado/a</option><option value="viudo">Viudo/a</option></select></div>
         <div class="f"><label>Domicilio</label><input id="rs-of-dom" type="text"></div>
         <div class="f"><label>Email</label><input id="rs-of-em" type="email"></div>
       </div>
@@ -1681,6 +1681,11 @@ function selR(btn){
   hdn('rs-vta-fields', isAlq);
   hdn('rs-ces-fields', !isCes);
   hdn('rs-fb', false);
+  // Ocultar CUIT y estado civil en alquiler (no se usan en ese doc)
+  var cuitWrap=document.getElementById('rs-of-cuit-wrap');
+  var ecivilWrap=document.getElementById('rs-of-ecivil-wrap');
+  if(cuitWrap) cuitWrap.style.display=isAlq?'none':'';
+  if(ecivilWrap) ecivilWrap.style.display=isAlq?'none':'';
   var lblOf=document.getElementById('lbl-oferente');
   if(lblOf) lblOf.textContent=(RTIPO==='compraventa'?'Comprador/a':RTIPO==='cesion'?'Oferente':'Reservante');
   var lblPr=document.getElementById('lbl-propietario');
@@ -1894,7 +1899,9 @@ async function genReserva(){
     var inicioStr=inicio?(function(){
       var p=inicio.split('-'); return p[2]+'/'+p[1]+'/'+p[0];
     })():'';
-    var plazoMeses=plazo; // ya es número en meses
+    // Plazo en letras + número: "veinticuatro (24)"
+    var plazoMap={'12':'doce','24':'veinticuatro','36':'treinta y seis'};
+    var plazoMeses=(plazoMap[plazo]||plazo)+' ('+plazo+')';
 
     // === MODELO: RESERVA DE ALQUILER ===
     var F=FONT_ALQ;
@@ -1938,7 +1945,7 @@ async function genReserva(){
       {txt:mensLetrasStr, bold:true},
       {txt:' ($ '},
       {txt:mensFmt, bold:true},
-      {txt:'), actualizable '+(ajuste.split(' ')[0]||'trimestralmente').toLowerCase()+'mente mediante el '+(ajuste.indexOf('ICL')>=0?'Índice para Contratos de Locación (ICL) publicado por el BCRA':'Índice de Precios al Consumidor (IPC) publicado por el INDEC y modificatorias')+'. El plazo de la locación será de '},
+      {txt:'), actualizable '+(function(){ var perMap={'Trimestral':'trimestralmente','Cuatrimestral':'cuatrimestralmente','Semestral':'semestralmente'}; var per=document.getElementById('rs-ajuste-per'); var pv=per?per.value:'Trimestral'; return perMap[pv]||pv.toLowerCase()+'mente'; })()+' mediante el '+(ajuste.indexOf('ICL')>=0?'Índice para Contratos de Locación (ICL) publicado por el BCRA':'Índice de Precios al Consumidor (IPC) publicado por el INDEC y modificatorias')+'. El plazo de la locación será de '},
       {txt:plazoMeses, bold:true},
       {txt:' meses, a partir del '},
       {txt:inicioStr||'______________', bold:true},
@@ -2055,8 +2062,7 @@ async function genReserva(){
         {txt:', en mi carácter de aceptante y '+(prFem?'futura locadora':'futuro locador')+' del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.'}
       ],false,11,F);
     } else {
-      body+=rTx('En la ciudad de Villa Allende, a los _____ días del mes de _________________ de 202___, yo, _________________________, DNI _________________________, con domicilio en _________________________, en mi carácter de aceptante y futuro locador/a del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.',F);
-      // Nota: cuando no se cargaron datos del propietario, se deja "futuro locador/a" genérico
+      body+=rTx('En la ciudad de Villa Allende, a los _____ días del mes de _________________ de 202___, yo, _________________________, DNI _________________________, con domicilio en _________________________, en mi carácter de aceptante y '+(prFem?'futura locadora':'futuro locador')+' del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.',F);
     }
     body+=rBr();
     body+=rTx('Firma del Propietario/a: _________________________',F);
