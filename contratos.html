@@ -2652,8 +2652,8 @@ async function genReserva(){
     body+=rTitU('9. Escribano',F);
     body+=rTx('El escribano interviniente será designado '+(escribanoOf?(ofFem?'por la OFERENTE':'por el OFERENTE'):(cedFem?'por la CEDENTE':'por el CEDENTE'))+'.',F);
     body+=rTx('Los gastos, impuestos, tasas, contribuciones, honorarios notariales y demás conceptos derivados de la operación serán soportados por las partes conforme a la legislación aplicable y a la siguiente distribución convencional:',F);
-    body+=rTx('Gastos a cargo del/de la OFERENTE: ______________________________',F);
-    body+=rTx('Gastos a cargo del/de la CEDENTE: _______________________________',F);
+    body+=rParMix([{txt:'Gastos a cargo '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '},{txt:(_sr('rs-ces-pct-of')||'______________________________')+'%',bold:true}],false,11,F);
+    body+=rParMix([{txt:'Gastos a cargo '+(cedFem?'de la CEDENTE':'del CEDENTE')+': '},{txt:(_sr('rs-ces-pct-ced')||'_______________________________')+'%',bold:true}],false,11,F);
     body+=rTx('La parte vendedora asumirá las deudas, impuestos, tasas, contribuciones, expensas y servicios que expresamente se encuentren a su cargo hasta la fecha de entrega de la posesión, salvo pacto distinto.',F);
     body+=rBr();
 
