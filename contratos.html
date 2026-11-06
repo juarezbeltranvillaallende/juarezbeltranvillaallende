@@ -380,7 +380,8 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <div class="f"><label>Fecha de inicio *</label><input id="fi" type="date" oninput="APP.calcV();APP.chg()"></div>
         <div class="f"><label>Duracion</label><select id="dur" onchange="APP.calcV()"><option value="6">6 meses</option><option value="12">12 meses</option><option value="24">24 meses</option><option value="36">36 meses</option><option value="48">48 meses</option><option value="120">120 meses (10 anos)</option></select></div>
         <div class="f"><label>Vencimiento</label><input id="fv" type="text" readonly></div>
-        <div class="f"><label>Ajuste</label><select id="ajuste"><option>Trimestral IPC INDEC</option><option>Cuatrimestral IPC INDEC</option><option>Trimestral ICL</option><option>Cuatrimestral ICL</option></select></div>
+        <div class="f"><label>Índice de ajuste</label><select id="ajuste-idx"><option value="IPC">IPC INDEC</option><option value="ICL">ICL BCRA</option></select></div>
+        <div class="f"><label>Periodicidad ajuste</label><select id="ajuste-per"><option value="trimestral">Trimestral</option><option value="cuatrimestral">Cuatrimestral</option><option value="semestral">Semestral</option></select></div>
       </div>
       <div class="g3" style="margin-top:8px">
         <div class="f"><label>Moneda</label>
@@ -1518,7 +1519,7 @@ async function genWord(){
       {t:v('loc-nac')||'argentino',b:true},
       {t:', mayor de edad, '+lG.nacido+' el '},
       {t:fL(v('loc-fn'))||'XX/XX/XXXX',b:true},
-      {t:', por una parte y en adelante también llamado "El Locador", y por la otra '+l2G.el+' '+l2G.sr+'. '},
+      {t:', por una parte y en adelante también llamado "El Locador"; y por la otra '+l2G.el+' '+l2G.sr+'. '},
       {t:v('loc2-n')||'XXXXXXXXX',b:true},
       {t:', DNI: '},
       {t:v('loc2-d')||'XXXXXXXX',b:true},
@@ -1526,7 +1527,7 @@ async function genWord(){
       {t:v('loc2-nac')||'argentino',b:true},
       {t:', mayor de edad, '+l2G.nacido+' el '},
       {t:fL(v('loc2-fn'))||'XX/XX/XXXX',b:true},
-      {t:locsExtra()+' en adelante también llamado/a '+loc2tit+', se ha convenido en celebrar el siguiente contrato de locación de inmueble que se regirá por las siguientes cláusulas:'}
+      {t:locsExtra()+' en adelante también llamado "El Locatario", se ha convenido en celebrar el siguiente contrato de locación de inmueble que se regirá por las siguientes cláusulas:'}
     ]);
 
     c+=wP(cl(),{b:true,sb:200,sa:80});
@@ -1536,9 +1537,7 @@ async function genWord(){
     else if(C) c+=wP('El Locador, cede en locación al Locatario y este acepta, el bien inmueble de su propiedad que se describe como: Una casa sita en calle '+v('dir')+', Barrio residencial '+v('barrio')+', de la ciudad de '+v('ciudad')+', provincia de Córdoba y cuya identificación de la DGR es '+v('dgr')+'. Esta locación se pacta por el término de '+dL+' meses a contar del día PRIMERO (01) de '+fLU(v('fi'))+', venciendo en consecuencia el día '+v('fv')+', para ser destinado a vivienda exclusivamente, no pudiendo el locatario darle otro destino.-');
     else if(D){
       var d1parts=[
-        {t:'El Locador, cede en locación '},
-        {t:loc2tit,b:false},
-        {t:' al Locatario y éste acepta el bien inmueble de su propiedad que se describe como: Un departamento sito en calle '},
+        {t:'El Locador, cede en locación al Locatario y éste acepta el bien inmueble de su propiedad que se describe como: Un departamento sito en calle '},
         {t:v('dir')||'XXXXXXXXX',b:true},
         {t:', Barrio '},
         {t:v('barrio')||'XXXXXXXX',b:true},
@@ -1564,10 +1563,21 @@ async function genWord(){
     c+=wP(cl(),{b:true,sb:200,sa:80});
     (function(){
       var precioTxt=(esDolar?'DÓLARES ESTADOUNIDENSES':'PESOS')+' '+(esDolar?'':numLetras(alqN)+' ')+'('+simb+v('alq').toLocaleString('es-AR')+'.-';
+      // Leer índice y periodicidad seleccionados
+      var ajIdx=(document.getElementById('ajuste-idx')||{value:'IPC'}).value||'IPC';
+      var ajPer=(document.getElementById('ajuste-per')||{value:'trimestral'}).value||'trimestral';
+      var _perMap={'trimestral':['trimestral','tres (3)'],'cuatrimestral':['cuatrimestral','cuatro (4)'],'semestral':['semestral','seis (6)']};
+      var _pm=_perMap[ajPer]||_perMap['trimestral'];
+      var ajTxt='';
+      if(ajIdx==='IPC'){
+        ajTxt='El precio de alquiler mensual se ajustará en forma '+_pm[0]+', utilizando el Índice de Precios al Consumidor (IPC) elaborado y publicado mensualmente por el INDEC (Instituto Nacional de Estadísticas y Censos) para los '+_pm[1]+' meses anteriores al mes de reajuste.';
+      } else {
+        ajTxt='El precio de alquiler mensual se ajustará en forma '+_pm[0]+', utilizando el índice para contratos de locación (ICL) que publica el Banco Central de la República Argentina (BCRA) para los '+_pm[1]+' meses anteriores al mes de reajuste.';
+      }
       c+=wParts([
         {t:'El precio mensual inicial de la locación se establece de común acuerdo entre las partes en la suma de '},
         {t:precioTxt,b:true},
-        {t:') más el Impuesto al Valor Agregado (si correspondiere). El locatario se compromete a pagar el precio contractual con periodicidad mensual, en forma anticipada y durante cada uno de los '+dL+' meses siguientes al inicio de la vigencia del contrato. El precio de alquiler mensual se ajustará en forma trimestral, utilizando el Índice de Precios al Consumidor (IPC) elaborado y publicado mensualmente por el INDEC '+(D?'(Instituto Nacional de Estadísticas y Censos) ':'')+' para los tres (3) meses anteriores al mes de reajuste. El Locatario se obliga a satisfacer el precio, en el domicilio de la Empresa administradora '},
+        {t:') más el Impuesto al Valor Agregado (si correspondiere). El locatario se compromete a pagar el precio contractual con periodicidad mensual, en forma anticipada y durante cada uno de los '+dL+' meses siguientes al inicio de la vigencia del contrato. '+ajTxt+' El Locatario se obliga a satisfacer el precio, en el domicilio de la Empresa administradora '},
         {t:'ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S, CUIT: 33-71619127-9',b:true},
         {t:', calle Río de Janeiro 1725, Torre 1, oficina 11, Villa Allende'+(L?' Office':'')+', de esta ciudad o en el que con posterioridad se indique, en forma anticipada y del UNO (01) al DIEZ (10) de cada mes, de Lunes a Viernes (excluidos días feriados) en el horario de 9,00 hs a 14,00 hs, en forma regular. Estos pagos deberán realizarse '+(L?'en dinero en efectivo, transferencia bancaria':'mediante transferencia bancaria a los bancos de los que oportunamente la administración informe el CBU correspondiente')+' o con cheque fecha de cobro al día de la ciudad de Córdoba, a la orden de '},
         {t:'ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S',b:true},
