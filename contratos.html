@@ -513,7 +513,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       </div>
     </div>
   </div>
-  <div class="card">
+  <div class="card" id="rs-precio-vta-card">
     <div class="ch"><h2>Precio y forma de pago</h2></div>
     <div class="cb">
       <div class="g3" style="margin-bottom:8px">
@@ -550,6 +550,32 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
           <div class="f"><label>Vendedor original</label><input id="rs-ces-vendedor" type="text"></div>
           <div class="f"><label>Nombre del cedente *</label><input id="rs-ces-cedente" type="text" oninput="APP.rsChg()"></div>
         </div>
+        </div>
+      </div>
+      <!-- Card precio solo para cesión -->
+      <div class="card">
+        <div class="ch"><h2>Precio y forma de pago</h2></div>
+        <div class="cb">
+          <div class="g3" style="margin-bottom:8px">
+            <div class="f"><label>Precio TOTAL USD *</label><input id="rs-ces-precio" type="text" placeholder="Ej: 120000" oninput="APP.rsChg()"></div>
+            <div class="f"><label>Reserva en este acto (USD) *</label><input id="rs-ces-res-acto" type="text" placeholder="Ej: 5000" oninput="APP.rsChg()"></div>
+            <div class="f"><label>Al suscribir la cesión (USD)</label><input id="rs-ces-al-ces" type="text" placeholder="Ej: 50000"></div>
+          </div>
+          <div class="g2" style="margin-bottom:8px">
+            <div class="f"><label>Días para firma de la cesión</label><input id="rs-ces-dias" type="text" placeholder="Ej: 30"></div>
+          </div>
+          <div class="g2" style="margin-bottom:8px">
+            <div class="f"><label>Seleccioná esta casilla si:</label>
+              <label style="display:flex;align-items:center;gap:8px;margin-top:6px;cursor:pointer;font-size:13px;font-weight:400">
+                <input type="checkbox" id="rs-ces-escrib-of" style="width:15px;height:15px;accent-color:var(--az,#1a56db);cursor:pointer">
+                El escribano es designado por el/la que quiere comprar (oferente)
+              </label>
+            </div>
+          </div>
+          <div class="g2" style="margin-bottom:8px">
+            <div class="f"><label>Comisión a cargo del/de la oferente (%)</label><input id="rs-ces-pct-of" type="text" placeholder="Ej: 3"></div>
+            <div class="f"><label>Comisión a cargo del/de la cedente (%)</label><input id="rs-ces-pct-ced" type="text" placeholder="Ej: 3"></div>
+          </div>
         </div>
       </div>
       </div>
@@ -1672,6 +1698,9 @@ function selR(btn){
   hdn('rs-alq-fields', !isAlq);
   hdn('rs-vta-fields', isAlq);
   hdn('rs-ces-fields', !isCes);
+  // Ocultar card de precio compraventa cuando es cesión (cesión tiene su propia card)
+  var precioVtaCard=document.getElementById('rs-precio-vta-card');
+  if(precioVtaCard) precioVtaCard.style.display=isCes?'none':'';
   hdn('rs-fb', false);
   // Ocultar CUIT y estado civil en alquiler (no se usan en ese doc)
   var cuitWrap=document.getElementById('rs-of-cuit-wrap');
@@ -1695,11 +1724,11 @@ function rsChg(){
     if(pf) pf.style.width='0%';
     return;
   }
-  var labels={'rs-of-n':'Nombre oferente','rs-of-d':'DNI oferente','rs-ciudad':'Ciudad','rs-dir':'Dirección','rs-monto':'Monto reserva','rs-alqm':'Alquiler mensual','rs-honor':'Honorarios','rs-vta-ciudad':'Ciudad','rs-vta-dir':'Dirección','rs-precio':'Precio','rs-res-acto':'Reserva en acto','rs-ces-cedente':'Cedente'};
+  var labels={'rs-of-n':'Nombre oferente','rs-of-d':'DNI oferente','rs-ciudad':'Ciudad','rs-dir':'Dirección','rs-monto':'Monto reserva','rs-alqm':'Alquiler mensual','rs-honor':'Honorarios','rs-vta-ciudad':'Ciudad','rs-vta-dir':'Dirección','rs-precio':'Precio','rs-res-acto':'Reserva en acto','rs-ces-cedente':'Cedente','rs-ces-precio':'Precio (cesión)','rs-ces-res-acto':'Reserva en acto (cesión)'};
   var required=['rs-of-n','rs-of-d'];
   if(RTIPO==='alquiler') required=required.concat(['rs-ciudad','rs-dir','rs-monto','rs-alqm','rs-honor']);
+  else if(RTIPO==='cesion') required=required.concat(['rs-vta-ciudad','rs-vta-dir','rs-ces-precio','rs-ces-res-acto','rs-ces-cedente']);
   else required=required.concat(['rs-vta-ciudad','rs-vta-dir','rs-precio','rs-res-acto']);
-  if(RTIPO==='cesion') required=required.concat(['rs-ces-cedente']);
   var missing=[];
   required.forEach(function(id){
     var el=document.getElementById(id);
@@ -2409,7 +2438,8 @@ async function genReserva(){
       if(!fechaRaw) return '____';
       var p=fechaRaw.split('-'); if(p.length!==3) return fechaRaw;
       var meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-      return parseInt(p[2],10)+' de '+meses[parseInt(p[1],10)-1]+' de '+p[0];
+      var d=parseInt(p[2],10);
+      return 'a los '+_numDiaL(d)+' ('+d+') días del mes de '+meses[parseInt(p[1],10)-1]+' de '+p[0];
     })();
     var dir=_sr('rs-vta-dir');
     var catastral=_sr('rs-catastral');
@@ -2418,22 +2448,23 @@ async function genReserva(){
     var supTer=_sr('rs-sup-ter');
     var supCub=_sr('rs-sup-cub');
     var desc=_sr('rs-vta-desc');
-    var precio=_sr('rs-precio');
+    var precio=_sr('rs-ces-precio');
     var precioLetras=numLetras(precio?precio.replace(/[^0-9]/g,''):'');
     var precioFmt=fmtMonto(precio);
-    var resActo=_sr('rs-res-acto');
+    var resActo=_sr('rs-ces-res-acto');
     var resActoLetras=numLetras(resActo?resActo.replace(/[^0-9]/g,''):'');
     var resActoFmt=fmtMonto(resActo);
-    var alBoleto=_sr('rs-boleto');
+    var alBoleto=_sr('rs-ces-al-ces');
     var alBoletoLetras=alBoleto?numLetras(alBoleto.replace(/[^0-9]/g,'')):'' ;
     var alBoletoFmt=fmtMonto(alBoleto);
     var diasHab=_sr('rs-vta-dias')||'5';
-    var diasBol=_sr('rs-dias-boleto');
+    var diasBol=_sr('rs-ces-dias');
     var waProp=_sr('rs-pr-tel');
     var emailProp=_sr('rs-email-prop');
     var prDom=_sr('rs-pr-dom');
     var prEc=_sr('rs-pr-ecivil');
-    var prPct=_sr('rs-pr-pct')||'3';
+    var ofPct=_sr('rs-ces-pct-of')||'3';
+    var prPct=_sr('rs-ces-pct-ced')||'3';
     var ofReser=ofFem?'la CESIONARIA':'el CESIONARIO';
     var fechaBoleto=(function(){
       var raw=_sr('rs-ces-fecha-bol');
@@ -2444,7 +2475,9 @@ async function genReserva(){
     })();
     var vendedor=_sr('rs-ces-vendedor')||'___________________________';
     var cedente=_sr('rs-ces-cedente')||'___________________________';
-    var F=false;
+    // Escribano: por default CEDENTE, salvo que se marque la casilla
+    var escribanoOf=document.getElementById('rs-ces-escrib-of')&&document.getElementById('rs-ces-escrib-of').checked;
+    var F='Verdana'; // Verdana 11 para todo el documento de cesión
 
     // Determinación de género del cedente (usar prFem para el cedente)
     var cedFem=prFem;
@@ -2474,12 +2507,19 @@ async function genReserva(){
       if(v==='viudo') return ofFem?'viuda':'viudo';
       return v;
     })();
+    var ofDatosExtra=(ofCuit?', CUIT N.º '+ofCuit:'')+(ofEcTxt?', estado civil '+ofEcTxt:'')+(ofDom?', con domicilio en '+ofDom:'');
     body+=rParMix([
-      {txt:'En la ciudad de '+ciudad+', Provincia de Córdoba, a los '},
-      {txt:fechaDoc,bold:true},
-      {txt:', por intermedio de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., en adelante Roberts Otero, interviniendo el Corredor Público Inmobiliario Diego Roberts, Matrícula CPI N.º 6390, '},
-      {txt:ofSrTxtX+ofNom,bold:true},
-      {txt:', DNI N.º '+ofDni+(ofCuit?', CUIT N.º '+ofCuit:'')+(ofEcTxt?', estado civil '+ofEcTxt:'')+(ofDom?', con domicilio en '+ofDom:'')+', correo electrónico '+(ofEmail||'______________________________')+' y teléfono/WhatsApp '+(ofWa||ofTel||'______________________________')+', en adelante '+(ofFem?'la OFERENTE':'el OFERENTE')+', entrega en concepto de RESERVA la suma de '},
+      {txt:'En la ciudad de '+ciudad+', Provincia de Córdoba, '+fechaDoc+', por intermedio de '},
+      {txt:'Roberts Otero',bold:true},
+      {txt:', interviniendo el Corredor Público Inmobiliario Diego Roberts, Matrícula CPI N.º 6390, '},
+      {txt:ofSrTxtX+(ofNom||'___________________________'),bold:true},
+      {txt:', DNI N.º '},
+      {txt:ofDni||'_______________',bold:true},
+      {txt:ofDatosExtra+', correo electrónico '},
+      {txt:ofEmail||'______________________________',bold:true},
+      {txt:' y teléfono/WhatsApp '},
+      {txt:ofWa||ofTel||'______________________________',bold:true},
+      {txt:', en adelante '+(ofFem?'la OFERENTE':'el OFERENTE')+', entrega en concepto de RESERVA la suma de '},
       {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(resActoLetras||'___________________________')+' (USD '+(resActoFmt||'_______________')+')',bold:true},
       {txt:' como señal de su intención de suscribir la cesión del inmueble que se describe a continuación:'}
     ],F);
@@ -2541,11 +2581,11 @@ async function genReserva(){
     body+=rTx('• Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
     body+=rTx('• Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
     body+=rBr();
-    body+=rTx('Los siguientes gastos estarán a cargo del OFERENTE - COMPRADOR:',F);
-    body+=rTx('Impuesto de sellos correspondiente a la cesión de derechos.',F);
-    body+=rTx('Certificación de firmas y confección del instrumento de cesión.',F);
-    body+=rTx('Tasa de cesión de la fiduciaria o administradora del fideicomiso, estimada en _______________ (monto sujeto a variación según escribano interviniente).',F);
-    body+=rTx('Cualquier otro gasto extraordinario o deuda pendiente con la fiduciaria o administradora del boleto original correrá por cuenta del CEDENTE.',F);
+    body+=rTx('Los siguientes gastos estarán a cargo '+(ofFem?'de la OFERENTE':'del OFERENTE')+':',F);
+    body+=rTx('• Impuesto de sellos correspondiente a la cesión de derechos.',F);
+    body+=rTx('• Certificación de firmas y confección del instrumento de cesión.',F);
+    body+=rTx('• Tasa de cesión de la fiduciaria o administradora del fideicomiso.',F);
+    body+=rTx('• Cualquier otro gasto extraordinario o deuda pendiente con la fiduciaria o administradora del boleto original correrá por cuenta '+(cedFem?'de la CEDENTE':'del CEDENTE')+'.',F);
     body+=rBr();
     body+=rTx('Las observaciones documentales o registrales que puedan subsanarse deberán comunicarse a las partes, otorgándose un plazo razonable para su solución, salvo que se haya pactado un plazo específico.',F);
     body+=rTx('Si se comprobara una circunstancia jurídica que impida definitivamente la transferencia en las condiciones convenidas, y no fuera subsanada dentro del plazo acordado, la operación quedará sin efecto conforme al régimen previsto en la cláusula 5, sin perjuicio de las responsabilidades que pudieran corresponder por incumplimiento imputable a alguna de las partes.',F);
@@ -2566,28 +2606,51 @@ async function genReserva(){
 
     // Cláusula 6
     body+=rTitU('6. Autorización al Corredor',F);
-    body+=rTx('Roberts Otero deja constancia de recibir del/de la OFERENTE la suma de USD '+(resActoFmt||'__________________')+', en concepto de reserva, y extiende el presente como recibo por el importe efectivamente recibido.',F);
-    body+=rTx('Una vez aceptada la oferta por el/la CEDENTE, la suma será custodiada por la inmobiliaria hasta que corresponda su restitución o entrega conforme a las condiciones de este instrumento.',F);
-    body+=rTx('Si la oferta fuera rechazada o venciera sin aceptación, la inmobiliaria restituirá el importe en el plazo indicado en la cláusula 5.b, dejando constancia documentada de la devolución.',F);
+    body+=rParMix([
+      {txt:'Roberts Otero',bold:true},
+      {txt:' deja constancia de recibir '+(ofFem?'de la':'del')+' '},
+      {txt:'OFERENTE',bold:false},
+      {txt:' la suma de '},
+      {txt:'USD '+(resActoFmt||'__________________'),bold:true},
+      {txt:', en concepto de reserva, y extiende el presente como recibo por el importe efectivamente recibido.'}
+    ],F);
+    body+=rParMix([
+      {txt:'Una vez aceptada la oferta '+(cedFem?'por la':'por el')+' CEDENTE, la suma será custodiada por '},
+      {txt:'Roberts Otero',bold:true},
+      {txt:' hasta que corresponda su restitución o entrega conforme a las condiciones de este instrumento.'}
+    ],F);
+    body+=rParMix([
+      {txt:'Si la oferta fuera rechazada o venciera sin aceptación, '},
+      {txt:'Roberts Otero',bold:true},
+      {txt:' restituirá el importe en el plazo indicado en la cláusula 5.b, dejando constancia documentada de la devolución.'}
+    ],F);
     body+=rBr();
 
     // Cláusula 7
     body+=rTitU('7. Honorarios de la Inmobiliaria',F);
-    body+=rTx('Los honorarios de Roberts Otero son del '+prPct+'% del precio de venta, y serán abonados por cada parte (OFERENTE y CEDENTE) al momento de la escrituración.',F);
-    body+=rTx('En caso de desistimiento imputable '+(ofFem?'a la OFERENTE':'al OFERENTE')+', los honorarios de Roberts Otero se tomarán del importe de la reserva perdida. En caso de desistimiento imputable '+(cedFem?'a la CEDENTE':'al CEDENTE')+', los honorarios serán abonados '+(cedFem?'por ella':'por él')+' con independencia de la indemnización correspondiente.',F);
+    body+=rParMix([
+      {txt:'Los honorarios de '},
+      {txt:'Roberts Otero',bold:true},
+      {txt:' son del '+ofPct+'% a cargo '+(ofFem?'de la OFERENTE':'del OFERENTE')+' y del '+prPct+'% a cargo '+(cedFem?'de la CEDENTE':'del CEDENTE')+', a abonarse al momento de la firma del instrumento de cesión.'}
+    ],F);
+    body+=rParMix([
+      {txt:'En caso de desistimiento imputable '+(ofFem?'a la OFERENTE':'al OFERENTE')+', los honorarios de '},
+      {txt:'Roberts Otero',bold:true},
+      {txt:' se tomarán del importe de la reserva perdida. En caso de desistimiento imputable '+(cedFem?'a la CEDENTE':'al CEDENTE')+', los honorarios serán abonados '+(cedFem?'por ella':'por él')+' con independencia de la indemnización correspondiente.'}
+    ],F);
     body+=rBr();
 
     // Cláusula 8
     body+=rTitU('8. Posesión y estado de ocupación',F);
     body+=rTx('La posesión del inmueble se entregará en la fecha y condiciones siguientes:',F);
-    body+=rTx('El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
-    body+=rTx('Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
+    body+=rTx('• El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
+    body+=rTx('• Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
     body+=rTx('La presente reserva no autoriza '+(ofFem?'a la':'al')+' OFERENTE a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
     body+=rBr();
 
     // Cláusula 9
     body+=rTitU('9. Escribano',F);
-    body+=rTx('El escribano interviniente será designado por el OFERENTE/CEDENTE.',F);
+    body+=rTx('El escribano interviniente será designado '+(escribanoOf?(ofFem?'por la OFERENTE':'por el OFERENTE'):(cedFem?'por la CEDENTE':'por el CEDENTE'))+'.',F);
     body+=rTx('Los gastos, impuestos, tasas, contribuciones, honorarios notariales y demás conceptos derivados de la operación serán soportados por las partes conforme a la legislación aplicable y a la siguiente distribución convencional:',F);
     body+=rTx('Gastos a cargo del/de la OFERENTE: ______________________________',F);
     body+=rTx('Gastos a cargo del/de la CEDENTE: _______________________________',F);
@@ -2603,11 +2666,11 @@ async function genReserva(){
     body+=rTx('Correo electrónico '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofEmail||'____________________________'),F);
     body+=rTx('WhatsApp '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofWa||ofTel||'____________________________________'),F);
     body+=rBr();
-    body+=rTx((cedFem?'LA CEDENTE':'EL CEDENTE')+': '+cedente,F);
-    body+=rTx('Correo electrónico del/de la CEDENTE: '+(emailProp||'_________________________'),F);
-    body+=rTx('WhatsApp del/de la CEDENTE: '+(waProp||'________________________________'),F);
+    body+=rParMix([{txt:(cedFem?'LA CEDENTE':'EL CEDENTE')+': '},{txt:cedente,bold:true}],F);
+    body+=rTx('Correo electrónico '+(cedFem?'de la CEDENTE':'del CEDENTE')+': '+(emailProp||'_________________________'),F);
+    body+=rTx('WhatsApp '+(cedFem?'de la CEDENTE':'del CEDENTE')+': '+(waProp||'________________________________'),F);
     body+=rBr();
-    body+=rTx('Roberts Otero: Los Zorzales 1569.',F);
+    body+=rParMix([{txt:'Roberts Otero',bold:true},{txt:': Los Zorzales 1569.'}],F);
     body+=rTx('Correo electrónico: froberts@juarezbeltran.com.ar',F);
     body+=rTx('WhatsApp: 355937037',F);
     body+=rBr();
@@ -2623,7 +2686,7 @@ async function genReserva(){
     body+=rTx('Firma '+(ofFem?'de la Oferente':'del Oferente')+':',F);
     body+=rTx('DNI '+(ofFem?'de la oferente':'del oferente')+': '+ofDni,F);
     body+=rBr();
-    body+=rTx('Firma Roberts Otero',F);
+    body+=rParMix([{txt:'Firma '},{txt:'Roberts Otero',bold:true}],F);
     body+=rTx('Matrícula CPI N.º 6390',F);
     body+=rBr();
     body+=rTx('Firma '+(cedFem?'de la Cedente':'del Cedente')+' (si acepta en el acto)',F);
@@ -2647,7 +2710,7 @@ async function genReserva(){
       {txt:prPct+'%',bold:true},
       {txt:' del precio de la operación en concepto de comisión, en dinero efectivo al momento de suscribirse el instrumento de cesión.'}
     ],F);
-    body+=rTx('Autorizo a Roberts Otero a retener dicho importe del precio recibido.',F);
+    body+=rParMix([{txt:'Autorizo a '},{txt:'Roberts Otero',bold:true},{txt:' a retener dicho importe del precio recibido.'}],F);
     body+=rBr();
     body+=rTx('De plena conformidad, suscribo el presente retirando un ejemplar en este acto.',F);
     body+=rBr();
@@ -2655,7 +2718,7 @@ async function genReserva(){
     body+=rTx((prNom?(cedFem?'La Sra. ':'El Sr. ')+prNom:'Cedente'),F);
     body+=rTx('DNI: '+(prDni||''),F);
     body+=rBr();
-    body+=rTx('Roberts Otero:',F);
+    body+=rParMix([{txt:'Roberts Otero',bold:true},{txt:':'}],F);
     body+=rTx('Matrícula CPI N.º 6390:',F);
   }
 
