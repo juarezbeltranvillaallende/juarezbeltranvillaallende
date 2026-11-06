@@ -2171,7 +2171,7 @@ async function genReserva(){
       if(!raw) return 'los ___ días del mes de ___________ de 20___';
       var p=raw.split('-'); if(p.length!==3) return raw;
       var mesesL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-      return 'los '+parseInt(p[2],10)+' ('+_numDiaL(parseInt(p[2],10))+') días del mes de '+mesesL[parseInt(p[1],10)-1]+' de '+p[0];
+      return 'los '+_numDiaL(parseInt(p[2],10))+' ('+parseInt(p[2],10)+') días del mes de '+mesesL[parseInt(p[1],10)-1]+' de '+p[0];
     })();
     var diasHabStr=diasHab==='5'?'CINCO (5)':diasHab;
     var precioLetras=numLetras(precio.replace(/[^0-9]/g,''));
@@ -2261,11 +2261,11 @@ async function genReserva(){
     // CLÁUSULA 4 - CONDICIÓN DEL INMUEBLE
     body+=rSubU('4. Condición del inmueble',F);
     body+=rTx('El inmueble se entregará:',F);
-    body+=rTx('- Libre de gravámenes, hipotecas, embargos e inhibiciones a la fecha de escrituración.',F);
-    body+=rTx('- Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
-    body+=rTx('- Con servicios activos y aptos para el cambio de titularidad.',F);
-    body+=rTx('- Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
-    body+=rTx('- Con títulos perfectos o perfectibles a satisfacción del escribano designado por '+(escribanoVend?'el VENDEDOR':ofOfer)+'.',F);
+    body+=rTx('• Libre de gravámenes, hipotecas, embargos e inhibiciones a la fecha de escrituración.',F);
+    body+=rTx('• Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
+    body+=rTx('• Con servicios activos y aptos para el cambio de titularidad.',F);
+    body+=rTx('• Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
+    body+=rTx('• Con títulos perfectos o perfectibles a satisfacción del escribano designado por '+(escribanoVend?'el VENDEDOR':ofOfer)+'.',F);
     body+=rBr();
     body+=rTx('Las observaciones documentales o registrales que puedan subsanarse deberán comunicarse a las partes, otorgándose un plazo razonable para su solución, salvo que se haya pactado un plazo específico.',F);
     body+=rTx('Si se comprobara una circunstancia jurídica que impida definitivamente la transferencia en las condiciones convenidas, y no fuera subsanada dentro del plazo acordado, la operación quedará sin efecto conforme al régimen previsto en la cláusula 5, sin perjuicio de las responsabilidades que pudieran corresponder por incumplimiento imputable a alguna de las partes.',F);
@@ -2277,11 +2277,11 @@ async function genReserva(){
     body+=rTx('Si '+prProp+' acepta la presente reserva dentro del plazo establecido, las partes se obligan a suscribir '+tipoFirma+' dentro de los '+(diasBol||'___')+' días hábiles siguientes a la notificación de aceptación.',F);
     body+=rBr();
     body+=rTxB('5.b Rechazo por '+prPropCap,F);
-    body+=rTx('Si '+prProp+' rechaza la reserva o no se pronuncia dentro del plazo, Roberts Otero devolverá '+ofReser+' la totalidad de la suma entregada en concepto de reserva dentro de las 48 hs hábiles de vencido el plazo, sin penalidad a favor de '+ofReser+'.',F);
+    body+=rTx('Si '+prProp+' rechaza la reserva o no se pronuncia dentro del plazo, Roberts Otero devolverá '+(ofFem?'a la':'al')+' OFERENTE la totalidad de la suma entregada en concepto de reserva dentro de las 48 hs hábiles de vencido el plazo, sin penalidad a favor '+(ofFem?'de la':'del')+' OFERENTE.',F);
     body+=rBr();
     body+=rTxB('5.c Desistimiento '+(ofFem?'de la Oferente':'del Oferente'),F);
     body+=rTx('Si '+ofReser+' desiste de la operación una vez aceptada la reserva por '+prProp+', perderá el importe entregado en concepto de reserva, el que será distribuido entre '+prProp+' y Roberts Otero en partes iguales.',F);
-    body+=rTx('Se entenderá que hay desistimiento de '+ofReser+' cuando: (a) no concurra a la firma del Boleto dentro del plazo pactado; (b) manifieste en forma expresa o tácita su voluntad de no continuar con la operación; (c) no integre los fondos comprometidos en tiempo y forma.',F);
+    body+=rTx('Se entenderá que hay desistimiento '+(ofFem?'de la':'del')+' OFERENTE cuando: (a) no concurra a la firma del Boleto dentro del plazo pactado; (b) manifieste en forma expresa o tácita su voluntad de no continuar con la operación; (c) no integre los fondos comprometidos en tiempo y forma.',F);
     body+=rBr();
     body+=rTxB('5.d Desistimiento '+(prFem?'de la Propietaria':'del Propietario'),F);
     body+=rTx('Si '+prProp+', habiendo aceptado la reserva, desiste de la operación, sin causa justificada ni incumplimiento imputable '+ofComp+', deberá devolver '+ofReser+' el doble del importe recibido en concepto de reserva dentro de las 48 hs hábiles de notificado el desistimiento, en concepto de indemnización. Asimismo Roberts Otero tendrá derecho a cobrar sus honorarios '+prProp+' mencionados en la cláusula 7.',F);
