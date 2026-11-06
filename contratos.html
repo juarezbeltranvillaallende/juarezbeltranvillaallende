@@ -2107,6 +2107,11 @@ async function genReserva(){
       return ofFem?par[1]:par[0];
     })();
 
+    // Día en letras (1-31)
+    function _numDiaL(d){
+      var u=['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve','treinta','treinta y uno'];
+      return u[d]||String(d);
+    }
     // Número en letras — soporta hasta 9.999.999
     function numLetras(n){
       var ns=String(n).replace(/[^0-9]/g,'');
@@ -2121,7 +2126,7 @@ async function genReserva(){
         if(x===0) return '';
         var r='';
         var cv=Math.floor(x/100); var cd=x%100;
-        if(cv>0) r+=(x===100?'CIEN':cients[cv])+' ';
+        if(cv>0) r+=(cd===0&&cv===1?'CIEN':cv===1?'CIENTO':cients[cv])+' ';
         if(cd>=30){ r+=decs[Math.floor(cd/10)]+(cd%10?' Y '+unis[cd%10]:'')+' '; }
         else if(cd>0){ r+=unis[cd]+' '; }
         return r;
@@ -2152,12 +2157,12 @@ async function genReserva(){
     var ofSrTxtX=(ofFem?'La Sra. ':'El Sr. ');
     var prSrTxt=(prFem?'la Sra. ':'el Sr. ');
     var prPropTxt=(prFem?'propietaria y vendedora':'propietario y vendedor');
-    var ofResTxt=(ofFem?'la reservante':'el reservante');
-    var ofResTxtCap=(ofFem?'La reservante':'El reservante');
+    var ofResTxt=(ofFem?'la oferente':'el oferente');
+    var ofResTxtCap=(ofFem?'La oferente':'El oferente');
     var ofArt=(ofFem?'la':'el');
     var ofArtCap=(ofFem?'La':'El');
     var ofOfer=(ofFem?'la OFERENTE':'el OFERENTE');
-    var ofReser=(ofFem?'la RESERVANTE':'el RESERVANTE');
+    var ofReser=(ofFem?'la OFERENTE':'el OFERENTE');
     var ofComp=(ofFem?'la compradora':'el comprador');
     var ofEsteEsta=(ofFem?'esta':'este');
     var prArt=(prFem?'la':'el');
@@ -2166,6 +2171,13 @@ async function genReserva(){
     var prPropCap=(prFem?'La PROPIETARIA':'El PROPIETARIO');
 
     var F='Verdana';
+    var fechaDocLetras=(function(){
+      var raw=_sr('rs-vta-fecha')||'';
+      if(!raw) return 'los ___ días del mes de ___________ de 20___';
+      var p=raw.split('-'); if(p.length!==3) return raw;
+      var mesesL=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      return 'los '+parseInt(p[2],10)+' ('+_numDiaL(parseInt(p[2],10))+') días del mes de '+mesesL[parseInt(p[1],10)-1]+' de '+p[0];
+    })();
     var diasHabStr=diasHab==='5'?'CINCO (5)':diasHab;
     var precioLetras=numLetras(precio.replace(/[^0-9]/g,''));
     var resActoLetras2=numLetras(resActoNum);
@@ -2176,7 +2188,7 @@ async function genReserva(){
     body+=rTitU('RESERVA DE COMPRA',F);
     body+=rBr();
     body+=rParMix([
-      {txt:'En la ciudad de '+ciudad+', Provincia de Córdoba, a los '+fechaDoc+', por intermedio de '},
+      {txt:'En la ciudad de '+ciudad+', Provincia de Córdoba, a '+fechaDocLetras+', por intermedio de '},
       {txt:'ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S.', bold:true},
       {txt:', en adelante '},
       {txt:'Roberts Otero', bold:true},
@@ -2243,7 +2255,7 @@ async function genReserva(){
       {txt:' contados desde la fecha de este instrumento.'}
     ],false,11,F);
     body+=rTx('La oferta se mantendrá vigente durante dicho plazo, en los términos aquí establecidos. Su retiro o retractación se regirá por las disposiciones legales aplicables y por las condiciones expresamente pactadas.',F);
-    body+=rTx('La aceptación deberá ser realizada por '+prArt+' PROPIETARIO/A o por representante con facultades suficientes, mediante firma de la conformidad incluida al final de este instrumento.',F);
+    body+=rTx('La aceptación deberá ser realizada por '+prArt+' '+(prFem?'PROPIETARIA':'PROPIETARIO')+' o por representante con facultades suficientes, mediante firma de la conformidad incluida al final de este instrumento.',F);
     body+=rTx('La aceptación deberá ser íntegra y coincidente con los términos de esta oferta. Toda modificación del precio, forma de pago, plazos o condiciones esenciales constituirá una contraoferta, que requerirá aceptación expresa '+(ofFem?'de LA OFERENTE':'de EL OFERENTE')+'.',F);
     body+=rTx('La inmobiliaria comunicará '+(ofFem?'a la':'al')+' OFERENTE la aceptación o el rechazo por los siguientes medios denunciados por este/a:',F);
     body+=rTx('WhatsApp: '+(ofWa||ofTel||'______________________________'),F);
@@ -2258,7 +2270,7 @@ async function genReserva(){
     body+=rTx('- Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
     body+=rTx('- Con servicios activos y aptos para el cambio de titularidad.',F);
     body+=rTx('- Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
-    body+=rTx('- Con títulos perfectos o perfectibles a satisfacción del escribano designado por '+(escribanoVend?'el VENDEDOR':ofReser)+'.',F);
+    body+=rTx('- Con títulos perfectos o perfectibles a satisfacción del escribano designado por '+(escribanoVend?'el VENDEDOR':ofOfer)+'.',F);
     body+=rBr();
     body+=rTx('Las observaciones documentales o registrales que puedan subsanarse deberán comunicarse a las partes, otorgándose un plazo razonable para su solución, salvo que se haya pactado un plazo específico.',F);
     body+=rTx('Si se comprobara una circunstancia jurídica que impida definitivamente la transferencia en las condiciones convenidas, y no fuera subsanada dentro del plazo acordado, la operación quedará sin efecto conforme al régimen previsto en la cláusula 5, sin perjuicio de las responsabilidades que pudieran corresponder por incumplimiento imputable a alguna de las partes.',F);
@@ -2272,7 +2284,7 @@ async function genReserva(){
     body+=rTxB('5.b Rechazo por '+prPropCap,F);
     body+=rTx('Si '+prProp+' rechaza la reserva o no se pronuncia dentro del plazo, Roberts Otero devolverá '+ofReser+' la totalidad de la suma entregada en concepto de reserva dentro de las 48 hs hábiles de vencido el plazo, sin penalidad a favor de '+ofReser+'.',F);
     body+=rBr();
-    body+=rTxB('5.c Desistimiento '+(ofFem?'de la Reservante':'del Reservante'),F);
+    body+=rTxB('5.c Desistimiento '+(ofFem?'de la Oferente':'del Oferente'),F);
     body+=rTx('Si '+ofReser+' desiste de la operación una vez aceptada la reserva por '+prProp+', perderá el importe entregado en concepto de reserva, el que será distribuido entre '+prProp+' y Roberts Otero en partes iguales.',F);
     body+=rTx('Se entenderá que hay desistimiento de '+ofReser+' cuando: (a) no concurra a la firma del Boleto dentro del plazo pactado; (b) manifieste en forma expresa o tácita su voluntad de no continuar con la operación; (c) no integre los fondos comprometidos en tiempo y forma.',F);
     body+=rBr();
@@ -2293,21 +2305,21 @@ async function genReserva(){
 
     // CLÁUSULA 7 - HONORARIOS
     body+=rSubU('7. Honorarios de la Inmobiliaria',F);
-    body+=rTx('Los honorarios de Roberts Otero Servicios Inmobiliarios S.A.S. son del '+prPct+'% del precio de venta, y serán abonados por cada parte ('+(ofFem?'COMPRADORA':'COMPRADOR')+' y '+(prFem?'VENDEDORA':'VENDEDOR')+') al momento de la escrituración.',F);
-    body+=rTx('En caso de desistimiento imputable al RESERVANTE, los honorarios de Roberts Otero se tomarán del importe de la reserva perdida. En caso de desistimiento imputable al '+(prFem?'PROPIETARIA':'PROPIETARIO')+', los honorarios serán abonados por '+(prFem?'ella misma':'él mismo')+' con independencia de la indemnización correspondiente.',F);
+    body+=rTx('Los honorarios de Roberts Otero son del '+prPct+'% del precio de venta, y serán abonados por cada parte ('+(ofFem?'COMPRADORA':'COMPRADOR')+' y '+(prFem?'VENDEDORA':'VENDEDOR')+') al momento de la escrituración.',F);
+    body+=rTx('En caso de desistimiento imputable '+(ofFem?'a la':'al')+' OFERENTE, los honorarios de Roberts Otero se tomarán del importe de la reserva perdida. En caso de desistimiento imputable '+(prFem?'a la':'al')+' '+(prFem?'PROPIETARIA':'PROPIETARIO')+', los honorarios serán abonados por '+(prFem?'ella misma':'él mismo')+' con independencia de la indemnización correspondiente.',F);
     body+=rBr();
 
     // CLÁUSULA 8 - POSESIÓN Y ESTADO DE OCUPACIÓN
     body+=rSubU('8. Posesión y estado de ocupación',F);
     body+=rTx('La posesión del inmueble se entregará en la fecha y condiciones que las partes acuerden en el boleto de compraventa.',F);
-    body+=rTx('El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
-    body+=rTx('Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
+    body+=rTx('• El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
+    body+=rTx('• Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
     body+=rTx('La presente reserva no autoriza '+(ofFem?'a la':'al')+' OFERENTE a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
     body+=rBr();
 
     // CLÁUSULA 9 - ESCRIBANO
     body+=rSubU('9. Escribano',F);
-    body+=rTx(escribanoVend?'El escribano interviniente será designado por el VENDEDOR.':'El escribano interviniente será designado por el RESERVANTE.',F);
+    body+=rTx(escribanoVend?'El escribano interviniente será designado por el VENDEDOR.':'El escribano interviniente será designado por '+ofOfer+'.',F);
     body+=rTx('Los gastos, impuestos, tasas, contribuciones, honorarios notariales y demás conceptos derivados de la operación serán soportados por las partes conforme a la legislación aplicable y a la siguiente distribución convencional:',F);
     body+=rTx('Gastos a cargo '+(ofFem?'de la COMPRADORA':'del COMPRADOR')+': '+(gastosComp||'______________________________'),F);
     body+=rTx('Gastos a cargo '+(prFem?'de la VENDEDORA':'del VENDEDOR')+': '+(gastosVend||'_______________________________'),F);
@@ -2319,11 +2331,11 @@ async function genReserva(){
     body+=rTx('A todos los efectos legales y convencionales, las partes constituyen domicilio en los indicados al comienzo. Las notificaciones vinculadas a esta reserva podrán cursarse válidamente por WhatsApp al número denunciado y/o por correo electrónico, y se tendrán por recibidas a las 24 hs de enviadas.',F);
     body+=rBr();
     body+=rTx('Las partes constituyen domicilios especiales en los indicados a continuación:',F);
-    body+=rTx((ofFem?'EL/LA OFERENTE':'EL/LA OFERENTE')+': '+(ofDom||'______________________________________________'),F);
+    body+=rTx((ofFem?'LA OFERENTE':'EL OFERENTE')+': '+(ofDom||'______________________________________________'),F);
     body+=rTx('Correo electrónico '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofEmail||'______________________________'),F);
     body+=rTx('WhatsApp '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofWa||ofTel||'______________________________'),F);
     body+=rBr();
-    body+=rTx((prFem?'EL/LA PROPIETARIO/A':'EL/LA PROPIETARIO/A')+': ______________________________',F);
+    body+=rTx((prFem?'LA PROPIETARIA':'EL PROPIETARIO')+': ______________________________',F);
     body+=rTx('Correo electrónico '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(emailProp||'______________________________'),F);
     body+=rTx('WhatsApp '+(prFem?'de la PROPIETARIA':'del PROPIETARIO')+': '+(waProp||'______________________________'),F);
     body+=rBr();
@@ -2341,16 +2353,18 @@ async function genReserva(){
 
     // FIRMAS
     body+=rBr();
-    body+=rTx('Firma '+(ofFem?'de la Reservante':'del Reservante')+':',F);
-    body+=rTx('DNI '+(ofFem?'de la reservante':'del reservante')+': '+ofDni,F);
+    body+=rTx((ofFem?'LA OFERENTE':'EL OFERENTE')+':',F);
+    body+=rTx('Firma '+(ofFem?'de la Oferente':'del Oferente')+':',F);
+    body+=rTx('DNI '+(ofFem?'de la oferente':'del oferente')+': '+ofDni,F);
     body+=rBr();
     body+=rTx('Firma Roberts Otero',F);
     body+=rTx('Matrícula CPI N.º 6390',F);
     body+=rBr();
+    body+=rTx((prFem?'LA PROPIETARIA':'EL PROPIETARIO')+':',F);
     body+=rTx('Firma '+(prFem?'de la Propietaria':'del Propietario')+' (si acepta en el acto)',F);
     body+=rBr();
     body+=rBr();
-    body+=rTx('Se firma en tres ejemplares de igual tenor y a un solo efecto: uno para el RESERVANTE, uno para '+(prFem?'la PROPIETARIA':'el PROPIETARIO')+', y uno para ROBERTS OTERO.',F);
+    body+=rTx('Se firma en tres ejemplares de igual tenor y a un solo efecto: uno para '+(ofFem?'la OFERENTE':'el OFERENTE')+', uno para '+(prFem?'la PROPIETARIA':'el PROPIETARIO')+', y uno para ROBERTS OTERO.',F);
     body+=rBr();
 
     // SECCIÓN ACEPTACIÓN DEL PROPIETARIO/A
@@ -2359,10 +2373,17 @@ async function genReserva(){
     body+=rTit('ACEPTACIÓN '+(prFem?'DE LA PROPIETARIA':'DEL PROPIETARIO'),F);
     body+=rBr();
     var prEcEl=document.getElementById('rs-pr-ecivil');
-    var prEcStr=prEcEl?prEcEl.options[prEcEl.selectedIndex].text:'';
+    var prEcStrRaw=prEcEl?prEcEl.options[prEcEl.selectedIndex].value:'';
+    var prEcMap={soltero:['Soltero','Soltera'],casado:['Casado','Casada'],divorciado:['Divorciado','Divorciada'],viudo:['Viudo','Viuda']};
+    var prEcStr=(function(){
+      var par=prEcMap[prEcStrRaw];
+      if(par) return prFem?par[1]:par[0];
+      return prEcEl?prEcEl.options[prEcEl.selectedIndex].text:'';
+    })();
+    var acepFecha='En la ciudad de ___ , a los ___ días del mes de ___________ de 2026, yo';
     if(prNom){
       body+=rParMix([
-        {txt:'En la ciudad de '+ciudad+', '+fechaDoc+', yo, '},
+        {txt:acepFecha+', '},
         {txt:(prFem?'la Sra. ':'el Sr. ')+prNom, bold:true},
         {txt:', DNI N.º '},
         {txt:prDni, bold:true},
@@ -2372,15 +2393,15 @@ async function genReserva(){
         {txt:', en mi carácter de '+prPropTxt+' del inmueble individualizado en el presente, '},
         {txt:'aceptó la propuesta de compra formulada', bold:true},
         {txt:', las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a '},
-        {txt:'Roberts Otero Servicios Inmobiliarios S.A.S.', bold:true},
+        {txt:'Roberts Otero', bold:true},
         {txt:' el '+prPct+'% del precio de la operación en concepto de comisión, al momento de suscribirse '+tipoFirma.toLowerCase()+'.'}
       ],false,11,F);
     } else {
       body+=rParMix([
-        {txt:'En la ciudad de '+ciudad+', '+fechaDoc+', yo, _________________________, DNI N.º _________________________, con domicilio en _________________________, en mi carácter de '+prPropTxt+' del inmueble individualizado en el presente, '},
+        {txt:acepFecha+', _______________, DNI N.º _______________, con domicilio en _______________, en mi carácter de '+prPropTxt+' del inmueble individualizado en el presente, '},
         {txt:'aceptó la propuesta de compra formulada', bold:true},
         {txt:', las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a '},
-        {txt:'Roberts Otero Servicios Inmobiliarios S.A.S.', bold:true},
+        {txt:'Roberts Otero', bold:true},
         {txt:' el '+prPct+'% del precio de la operación en concepto de comisión, al momento de suscribirse '+tipoFirma.toLowerCase()+'.'}
       ],false,11,F);
     }
