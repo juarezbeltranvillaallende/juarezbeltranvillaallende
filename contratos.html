@@ -572,7 +572,6 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       </div>
       <div class="g2" style="margin-top:8px">
         <div class="f"><label>Teléfono / WhatsApp</label><input id="rs-of-tel" type="text"></div>
-        <div class="f"><label>WA oferente (para notificaciones)</label><input id="rs-of-wa" type="text" placeholder="Ej: +54 9 351 XXX"></div>
       </div>
     </div>
   </div>
@@ -589,10 +588,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
       <div class="g3" style="margin-top:8px">
         <div class="f"><label>Estado civil</label><select id="rs-pr-ecivil"><option value="soltero">Soltero/a</option><option value="casado">Casado/a</option><option value="divorciado">Divorciado/a</option><option value="viudo">Viudo/a</option></select></div>
         <div class="f"><label>Domicilio</label><input id="rs-pr-dom" type="text"></div>
-        <div class="f"><label>Email</label><input id="rs-pr-em" type="email"></div>
-      </div>
-      <div class="g2" style="margin-top:8px">
-        <div class="f"><label>Email propietario/a</label><input id="rs-email-prop" type="text"></div>
+        <div class="f"><label>Email</label><input id="rs-email-prop" type="email"></div>
       </div>
     </div>
   </div>
@@ -1872,7 +1868,7 @@ async function genReserva(){
     var dias=_sr('rs-dias')||'5';
     var diasPalabra=numToWords(dias); // e.g. "CINCO"
     var prDom=_sr('rs-pr-dom');
-    var emailProp=_sr('rs-pr-em');
+    var emailProp=_sr('rs-email-prop');
     var waProp=_sr('rs-of-wa')||_sr('rs-of-tel');
     var honor=_sr('rs-honor');
     // Montos en letras
