@@ -966,6 +966,7 @@ function locsExtra(){
 var CLAUSE_EDITS = {}; // stores user edits per clause name
 
 function initClauseEditor(){
+  if(MODO!=='renov'){ hdn('pnl-cls',true); return; }
   var cont = document.getElementById('ed-cls-cont');
   if(!cont) return;
   while(cont.firstChild) cont.removeChild(cont.firstChild);
@@ -1374,8 +1375,8 @@ function wP(txt,opts){
 }
 
 function wCl(num, txt, opts){
-  // Check if user has edited this clause
-  var edit = getClauseEdit(num.replace(':',''));
+  // Check if user has edited this clause (solo en renovación)
+  var edit = (MODO==='renov') ? getClauseEdit(num.replace(':','')) : null;
   if(edit) txt = edit;
   return wP(txt, opts);
 }
@@ -1481,7 +1482,7 @@ async function genWord(){
     var _lastClause='';
     function cl(){_lastClause=NUMS[ni++];return _lastClause+':';}
     function wPcl(txt,opts){
-      var edit=getClauseEdit(_lastClause);
+      var edit=(MODO==='renov')?getClauseEdit(_lastClause):null;
       return wP(edit||txt,opts);
     }
     var c='';
