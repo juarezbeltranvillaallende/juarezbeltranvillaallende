@@ -1359,9 +1359,25 @@ function getCambios(){
 }
 
 // ─── WORD ─────────────────────────────────────────────────
+// _pendingCl: cuando cl() es llamado, guarda el número aquí; wP/wPcl/wParts lo consumen en el próximo párrafo
+var _pendingCl='';
 function wP(txt,opts){
   opts=opts||{};
   var bold=opts.b||false, ctr=opts.c||false, sb=opts.sb||60, sa=opts.sa||80, col=opts.col||null, hi=opts.hi||false;
+  // Si hay cláusula pendiente y el texto NO es el número mismo (cl() devuelve vacío ahora), la combinamos
+  if(_pendingCl && txt!=='' && !bold){
+    var pre=_pendingCl; _pendingCl='';
+    var jc2='<w:jc w:val="both"/>';
+    var sp2='<w:spacing w:before="'+(opts.sb||60)+'" w:after="'+(opts.sa||80)+'" w:line="240" w:lineRule="auto"/>';
+    var rpBold='<w:rFonts w:ascii="Verdana" w:hAnsi="Verdana"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:b/><w:bCs/>';
+    var rpNorm='<w:rFonts w:ascii="Verdana" w:hAnsi="Verdana"/><w:sz w:val="24"/><w:szCs w:val="24"/>';
+    if(col) rpNorm+='<w:color w:val="'+col+'"/>';
+    if(hi) rpNorm+='<w:highlight w:val="yellow"/>';
+    return '<w:p><w:pPr>'+jc2+sp2+'</w:pPr><w:r><w:rPr>'+rpBold+'</w:rPr><w:t xml:space="preserve">'+E(pre)+' </w:t></w:r><w:r><w:rPr>'+rpNorm+'</w:rPr><w:t xml:space="preserve">'+E(String(txt))+'</w:t></w:r></w:p>';
+  }
+  // Si es una llamada a wP(cl()) — txt vacío y bold=true — solo guardamos, no emitimos nada
+  if(txt==='' && bold){ return ''; }
+  _pendingCl=''; // limpiar por si quedó algo
   var jc=ctr?'<w:jc w:val="center"/>':'<w:jc w:val="both"/>';
   var sp='<w:spacing w:before="'+sb+'" w:after="'+sa+'" w:line="240" w:lineRule="auto"/>';
   var rp='<w:rFonts w:ascii="Verdana" w:hAnsi="Verdana"/><w:sz w:val="24"/><w:szCs w:val="24"/>';
@@ -1385,6 +1401,8 @@ function wParts(parts,opts){
   var sb=opts.sb||60,sa=opts.sa||80,ctr=opts.c||false;
   var jc=ctr?'<w:jc w:val="center"/>':'<w:jc w:val="both"/>';
   var sp='<w:spacing w:before="'+sb+'" w:after="'+sa+'" w:line="240" w:lineRule="auto"/>';
+  // Si hay una cláusula pendiente, prependemos su número en negrita
+  if(_pendingCl){var pre=_pendingCl; _pendingCl=''; parts=[{t:pre+' ',b:true}].concat(parts);}
   var runs='';
   for(var i=0;i<parts.length;i++){
     var p=parts[i];
@@ -1500,7 +1518,7 @@ async function genWord(){
     var NUMS=['PRIMERA','SEGUNDA','TERCERA','CUARTA','QUINTA','SEXTA','SEPTIMA','OCTAVA','NOVENA','DECIMA','DÉCIMO PRIMERA','DÉCIMO SEGUNDA','DÉCIMO TERCERA','DÉCIMO CUARTA','DÉCIMO QUINTA','DÉCIMO SEXTA','DÉCIMO SEPTIMA','DÉCIMO OCTAVA','DÉCIMO NOVENA','VIGÉSIMA','VIGÉSIMA PRIMERA','VIGÉSIMA SEGUNDA','VIGÉSIMA TERCERA','VIGÉSIMA CUARTA'];
     var ni=0;
     var _lastClause='';
-    function cl(){_lastClause=NUMS[ni++];return _lastClause+':';}
+    function cl(){_lastClause=NUMS[ni++]; _pendingCl=_lastClause+':'; return '';}
     function wPcl(txt,opts){
       var edit=(MODO==='renov')?getClauseEdit(_lastClause):null;
       return wP(edit||txt,opts);
@@ -1602,19 +1620,38 @@ async function genWord(){
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('El Locatario no podrá efectuar en la propiedad ninguna innovación, alteración o mejora en la construcción sin el previo consentimiento por escrito del Locador'+((L||G)?'; las que se hiciesen debidamente autorizadas quedarán en beneficio exclusivo del inmueble, sin cargo de indemnización.':'. Las que se hiciesen, debidamente autorizadas, quedarán en beneficio exclusivo del inmueble sin cargo de indemnización.')+' Las mejoras que se introduzcan deberán respetar todo lo atinente a disposiciones municipales y provinciales vigentes, estando estrictamente prohibida la alteración funcional de la propiedad'+(D?', como así también la estructura edilicia del inmueble.':'.')+'-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
-    if(D) c+=wPcl('El Locatario NO debe registrar ante las empresas de electricidad y gas el cambio de titularidad. Debe dejarlos pagos hasta el día en que haga devolución del inmueble, declarando conocer que no debe abonar factura alguna por servicios anteriores a la fecha de iniciación del contrato. El Locatario se compromete a contratar un seguro de incendio, y responsabilidad civil hacia linderos sobre el inmueble locado por el período que dure este contrato, endosando la póliza de incendios a favor del Locador, con actualización anual, para el caso de ocurrencia de algún siniestro. El Locatario deberá entregar la póliza dentro de los 15 (quince) días de firmado el contrato.-');
-    else c+=wPcl('El Locatario se obliga a registrar de inmediato '+(L?'ante la empresa de electricidad y gas, los servicios de Luz y Gas (si correspondiere),':'ante las empresas de electricidad y gas (si correspondiere) los servicios correspondientes,')+' a su nombre y a dejarlos pagos hasta el día en que haga devolución del inmueble, declarando conocer que no debe abonar factura alguna por servicios anteriores a la fecha de iniciación del contrato. El Locatario se compromete a contratar '+(SE?'un seguro de incendio y responsabilidad civil sobre el inmueble locado':'un seguro de incendio, y responsabilidad civil hacia linderos sobre el inmueble locado')+' por el período que dure este contrato, endosando la póliza'+(SE?'':' de incendios')+' a favor del Locador, con actualización anual. El Locatario deberá entregar la póliza dentro de los 15 (quince) dias de firmado el contrato.-');
+    if(D) c+=wParts([
+      {t:'El Locatario NO debe registrar ante las empresas de electricidad y gas el cambio de titularidad. Debe dejarlos pagos hasta el día en que haga devolución del inmueble, declarando conocer que no debe abonar factura alguna por servicios anteriores a la fecha de iniciación del contrato. El Locatario se compromete a contratar '},
+      {t:'un seguro de incendio, y responsabilidad civil hacia linderos',b:true},
+      {t:' sobre el inmueble locado por el período que dure este contrato, endosando la póliza de incendios a favor del Locador, con actualización anual, para el caso de ocurrencia de algún siniestro. El Locatario deberá entregar la póliza dentro de los 15 (quince) días de firmado el contrato.-'}
+    ]);
+    else c+=wParts([
+      {t:'El Locatario se obliga a registrar de inmediato '+(L?'ante la empresa de electricidad y gas, los servicios de Luz y Gas (si correspondiere),':'ante las empresas de electricidad y gas (si correspondiere) los servicios correspondientes,')+' a su nombre y a dejarlos pagos hasta el día en que haga devolución del inmueble, declarando conocer que no debe abonar factura alguna por servicios anteriores a la fecha de iniciación del contrato. El Locatario se compromete a contratar '},
+      {t:(SE?'un seguro de incendio y responsabilidad civil':'un seguro de incendio, y responsabilidad civil hacia linderos'),b:true},
+      {t:' sobre el inmueble locado por el período que dure este contrato, endosando la póliza'+(SE?'':' de incendios')+' a favor del Locador, con actualización anual. El Locatario deberá entregar la póliza dentro de los 15 (quince) dias de firmado el contrato.-'}
+    ]);
     c+=wP(cl(),{b:true,sb:200,sa:80});
     if(D) c+=wPcl('Quedan por cuenta y cargo exclusivo del Locatario y TAMBIÉN FORMAN PARTE DEL PRECIO DE LA LOCACIÓN el pago en término del servicio de obras sanitarias y/o agua domiciliaria (el agua incluida en el pago de expensas), de ECOGAS (N° de cuenta de Ecogas: '+(v('ecogas')||'XXXXXX')+') y/o cualquier otro servicio y/o accesorio que recae sobre la unidad locada, como así también el pago de la tasa municipal por alumbrado, barrido y limpieza, (identificación catastral '+(v('catastro')||'XXXXX')+') y el pago del impuesto provincial (DGR número de cuenta '+(v('dgr')||'XXXXXX')+'); las obligaciones descriptas serán abonadas por la empresa administradora quien posteriormente las cobrará al Locatario. Por lo tanto no se considerará cumplida la prestación dineraria por parte del Locatario ni será obligación del Locador recibir el pago, si no se abonara conjuntamente con el alquiler, los servicios, expensas y accesorios precedentemente mencionados, correspondientes al mes en curso. En el caso de mero atraso, los intereses, reajustes, punitorios y/o adicionales correrán por exclusiva cuenta del Locatario.-');
     else c+=wPcl('Quedan por cuenta y cargo exclusivo del Locatario y TAMBIÉN FORMAN PARTE DEL PRECIO DE LA LOCACIÓN el pago en término del servicio de obras sanitarias y/o agua domiciliaria (unidad de facturación número de cuenta '+(v('san')||'XXXX')+') y/o cualquier otro servicio y/o accesorio que recae sobre la unidad locada, como asi también el pago de la tasa municipal por alumbrado, barrido y limpieza (identificación catastral '+(v('catastro')||'XXX')+') y el pago del impuesto provincial (DGR número de cuenta '+(v('dgr')||'XXXXX')+'). Las obligaciones descriptas serán abonadas por la empresa administradora quien posteriormente las cobrará al Locatario. Por lo tanto no se considerará cumplida la prestación dineraria por parte del Locatario ni será obligación del Locador recibir el pago, si no se abonará conjuntamente con el alquiler los servicios, expensas y accesorios precedentemente mencionados, correspondientes al mes en curso. En el caso de mero atraso, los interéses, reajustes, punitorios y/o adicionales correrán por exclusiva cuenta del Locatario.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
-    c+=wPcl('Se deja expresa constancia que el Locatario suscribe como garantía de la presente locación un pagaré por la suma de '+(esDolar?'Dólares Estadounidenses':'Pesos')+' '+pagMletras+' ('+pagM+'.-) con fecha de vencimiento el día '+pagV+'. El mismo será devuelto al Locatario siempre que se hayan cancelado todas las obligaciones emanadas del presente. En caso de producirse la rescisión anticipada del presente, el pagaré se utilizará a los mismos efectos descriptos precedentemente y no se aplicará a las indemnizaciones que debiera abonar el Locatario por la resolución anticipada del contrato.-');
+    c+=wParts([
+      {t:'Se deja expresa constancia que el Locatario suscribe como garantía de la presente locación un pagaré por la suma de '},
+      {t:(esDolar?'Dólares Estadounidenses':'Pesos')+' '+pagMletras+' ('+pagM+'.-) con fecha de vencimiento el día '+pagV,b:true},
+      {t:'. El mismo será devuelto al Locatario siempre que se hayan cancelado todas las obligaciones emanadas del presente. En caso de producirse la rescisión anticipada del presente, el pagaré se utilizará a los mismos efectos descriptos precedentemente y no se aplicará a las indemnizaciones que debiera abonar el Locatario por la resolución anticipada del contrato.-'}
+    ]);
     if(D||L||G){
       c+=wP(cl(),{b:true,sb:200,sa:80});
       if(D){
         var consNom=v('consorcio')||'', consEmail=v('cons-email')||'', consTel=v('cons-tel')||'';
         var consInfo=consNom?(consNom+(consEmail?', email: '+consEmail:'')+(consTel?', teléfono: '+consTel:'')):'';
-        c+=wPcl('Son a cargo del Locatario y también FORMAN PARTE DEL PRECIO DE LA LOCACIÓN, además de lo estipulado en la cláusula tercera, el pago de las Expensas Comunes Ordinarias asignadas a la unidad locada, por el consorcio del que forma parte y conforme a las disposiciones del Reglamento de Copropiedad, o fijadas por la administración del consorcio en la proporción que corresponda, en el caso de no encontrarse perfeccionado el mismo, aceptando en su totalidad las disposiciones que dicha administración determine, debiendo abonar los importes que resulten, en forma adelantada y en un todo de acuerdo a lo establecido por la administración del edificio. Los importes correspondientes a Expensas Extraordinarias, serán soportados por el Locador, y en el caso que sean incluídos dentro del cupón de pago de las expensas comunes mensuales, estos serán abonados por el Locatario y descontados del importe a abonar en concepto de canon locativo correspondiente al mismo período. Por lo tanto no se considerará pagado el alquiler mensual, ni será obligación del Locador recibir el pago del mismo, si no se abonan las Expensas Comunes en la forma establecida por ser éstos PARTE INTEGRANTE DEL PRECIO DEL ALQUILER. Las expensas del Barrio Privado en que se encuentra inserta la unidad, si correspondieren, serán abonadas en forma separada e independiente de las Expensas Comunes del Consorcio del Edificio, y también forman parte del precio de la locación. El Locatario deberá acatar todas las normas contenidas en el reglamento de copropiedad y reglamento interno del edificio, las que declara conocer y aceptar'+(consInfo?' ('+consInfo+').-':'.-'));
+        (function(){
+          var base='Son a cargo del Locatario y también FORMAN PARTE DEL PRECIO DE LA LOCACIÓN, además de lo estipulado en la cláusula tercera, el pago de las Expensas Comunes Ordinarias asignadas a la unidad locada, por el consorcio del que forma parte y conforme a las disposiciones del Reglamento de Copropiedad, o fijadas por la administración del consorcio en la proporción que corresponda, en el caso de no encontrarse perfeccionado el mismo, aceptando en su totalidad las disposiciones que dicha administración determine, debiendo abonar los importes que resulten, en forma adelantada y en un todo de acuerdo a lo establecido por la administración del edificio. Los importes correspondientes a Expensas Extraordinarias, serán soportados por el Locador, y en el caso que sean incluídos dentro del cupón de pago de las expensas comunes mensuales, estos serán abonados por el Locatario y descontados del importe a abonar en concepto de canon locativo correspondiente al mismo período. Por lo tanto no se considerará pagado el alquiler mensual, ni será obligación del Locador recibir el pago del mismo, si no se abonan las Expensas Comunes en la forma establecida por ser éstos PARTE INTEGRANTE DEL PRECIO DEL ALQUILER. Las expensas del Barrio Privado en que se encuentra inserta la unidad, si correspondieren, serán abonadas en forma separada e independiente de las Expensas Comunes del Consorcio del Edificio, y también forman parte del precio de la locación. El Locatario deberá acatar todas las normas contenidas en el reglamento de copropiedad y reglamento interno del edificio, las que declara conocer y aceptar';
+          if(consInfo){
+            c+=wParts([{t:base+' ('},{t:consInfo,b:true},{t:').-'}]);
+          } else {
+            c+=wPcl(base+'.-');
+          }
+        })();
         if(cochNums.length>0){
           var esPlural=cochNums.length>1;
           c+=wP('En caso de que '+(esPlural?'las cocheras identificadas como N° '+cochNums.join(', ')+' formen':'la cochera identificada como N° '+cochNums[0]+' forme')+' parte del presente contrato, las Expensas Comunes Ordinarias que '+(esPlural?'les':'le')+' correspondan serán abonadas por el Locatario conjuntamente con las de la unidad principal, formando igualmente parte del precio de la locación.-');
@@ -1660,8 +1697,8 @@ async function genWord(){
     var tieneInm=false;
     for(var ti=0;ti<GARS.length;ti++){var vt=v(GARS[ti].id+'-tipo')||'inmueble';if(vt==='inmueble'||vt==='ambos'){tieneInm=true;break;}}
     var colC=tieneInm?null:'FF0000';
-    var g1=GARS[0]||{id:'g1',gen:'m'}; var g1G=gT(g1.id); var cony1=v(g1.id+'-cony');
-    c+=wP('Se deja expresa constancia que '+g1G.el+' '+g1G.sr+'. '+(cony1||v(g1.id+'-n')||'XXXXXXXXXXXX')+', M.I. '+(v(g1.id+'-conyd')||v(g1.id+'-d')||'XXXXXXXX')+', con domicilio en calle '+(v(g1.id+'-dom')||'XXXXXX')+', de la ciudad de '+(v(g1.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato'+(cony1?' y su conyuge '+g1G.el+' '+g1G.sr+'. '+cony1+', MI. '+(v(g1.id+'-conyd')||'XXXXXXXX')+',':',')+' renuncia/n a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.-',{col:colC});
+    var g1=GARS[0]||{id:'g1',gen:'m'}; var g1G=gT(g1.id); var cony1=v(g1.id+'-cony'); var conyG=(g1.gen==='m')?{el:'la',sr:'Sra'}:{el:'el',sr:'Sr'};
+    c+=wP('Se deja expresa constancia que '+g1G.el+' '+g1G.sr+'. '+(v(g1.id+'-n')||'XXXXXXXXXXXX')+', M.I. '+(v(g1.id+'-d')||'XXXXXXXX')+', con domicilio en calle '+(v(g1.id+'-dom')||'XXXXXX')+', de la ciudad de '+(v(g1.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato'+(cony1?' y su conyuge '+conyG.el+' '+conyG.sr+'. '+cony1+', MI. '+(v(g1.id+'-conyd')||'XXXXXXXX')+',':',')+' '+(cony1?'renuncian':'renuncia')+' a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.-',{col:colC});
     c+=wP(cl(),{b:true,sb:200,sa:80});
     var cl14txt='A los efectos de la restitución del inmueble una vez vencido el término contractual, se aclara que el Locatario deberá proceder de la siguiente manera: 1) El inmueble deberá entregarse en el mismo buen estado de conservación e higiene que fue entregado según consta en el presente contrato'+(SE?', salvo el desgaste natural producido en las cosas por su correcto uso y el transcurso del tiempo. Además deberá presentar':', debiendo presentar')+' los comprobantes que demuestren los servicios de mantenimiento realizados a: '+rest+'.';
     if(!D||bajaS) cl14txt+=' 2) '+bajaTxt;
@@ -1691,10 +1728,10 @@ async function genWord(){
       c+=wPcl('Por el presente el Locador otorga mandato expreso a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S, para que en su nombre y representación, perciba los alquileres mensuales, otorgue el correspondiente recibo, formule las intimaciones previstas por el C.C.yC. y accione judicialmente persiguiendo el cobro y/o el desalojo del inmueble objeto de la locación si correspondiere y la realización de todo otro acto que estime necesario para una mejor administración del inmueble y mejora de la renta que el mismo puede proporcionar, quedando el locatario notificado de ello en forma fehaciente por la mera suscripción de este contrato.-');
       c+=wP(cl(),{b:true,sb:200,sa:80});
       // D: 22ª = INEMBARGABILIDAD
-      c+=wPcl('Se deja expresa constancia que '+g1G.el+' '+g1G.sr+'. '+(v(g1.id+'-n')||'XXXXXXXXXXXX')+', '+(g1.gen==='m'?'argentino':'argentina')+', mayor de edad, '+g1G.nacido+' el '+fL(v(g1.id+'-fn'))+', M.I. '+(v(g1.id+'-d')||'XXXXXXXX')+', con domicilio en '+(v(g1.id+'-dom')||'XXXXXX')+', de la ciudad de '+(v(g1.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato'+(cony1?' y su conyuge '+g1G.el+' '+g1G.sr+'. '+cony1+', MI. '+(v(g1.id+'-conyd')||'XXXXXXXX')+',':' y su conyuge la/el Sra/Sr, XXXXXXXXXXXXXX, MI. XXXXXXXX,')+' renuncia/n a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.-',{col:colC});
+      c+=wPcl('Se deja expresa constancia que '+g1G.el+' '+g1G.sr+'. '+(v(g1.id+'-n')||'XXXXXXXXXXXX')+', '+(g1.gen==='m'?'argentino':'argentina')+', mayor de edad, '+g1G.nacido+' el '+fL(v(g1.id+'-fn'))+', M.I. '+(v(g1.id+'-d')||'XXXXXXXX')+', con domicilio en '+(v(g1.id+'-dom')||'XXXXXX')+', de la ciudad de '+(v(g1.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato'+(cony1?' y su conyuge '+conyG.el+' '+conyG.sr+'. '+cony1+', MI. '+(v(g1.id+'-conyd')||'XXXXXXXX')+',':' y su conyuge '+conyG.el+' '+conyG.sr+'. XXXXXXXXXXXXXX, MI. XXXXXXXX,')+' '+(cony1?'renuncian':'renuncia')+' a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.-',{col:colC});
     } else {
       // No-D: 21ª = INEMBARGABILIDAD
-      c+=wPcl('Se deja expresa constancia que '+g1G.el+' '+g1G.sr+'. '+(v(g1.id+'-n')||'XXXXXXXXXXXX')+', '+(g1.gen==='m'?'argentino':'argentina')+', mayor de edad, '+g1G.nacido+' el '+fL(v(g1.id+'-fn'))+', M.I. '+(v(g1.id+'-d')||'XXXXXXXX')+', con domicilio en '+(v(g1.id+'-dom')||'XXXXXX')+', de la ciudad de '+(v(g1.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato'+(cony1?' y su conyuge '+g1G.el+' '+g1G.sr+'. '+cony1+', MI. '+(v(g1.id+'-conyd')||'XXXXXXXX')+',':' y su conyuge la/el Sra/Sr, XXXXXXXXXXXXXX, MI. XXXXXXXX,')+' renuncia/n a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.-',{col:colC});
+      c+=wPcl('Se deja expresa constancia que '+g1G.el+' '+g1G.sr+'. '+(v(g1.id+'-n')||'XXXXXXXXXXXX')+', '+(g1.gen==='m'?'argentino':'argentina')+', mayor de edad, '+g1G.nacido+' el '+fL(v(g1.id+'-fn'))+', M.I. '+(v(g1.id+'-d')||'XXXXXXXX')+', con domicilio en '+(v(g1.id+'-dom')||'XXXXXX')+', de la ciudad de '+(v(g1.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato'+(cony1?' y su conyuge '+conyG.el+' '+conyG.sr+'. '+cony1+', MI. '+(v(g1.id+'-conyd')||'XXXXXXXX')+',':' y su conyuge '+conyG.el+' '+conyG.sr+'. XXXXXXXXXXXXXX, MI. XXXXXXXX,')+' '+(cony1?'renuncian':'renuncia')+' a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.-',{col:colC});
       c+=wP(cl(),{b:true,sb:200,sa:80});
       // No-D: 22ª = MANDATO
       c+=wPcl('Por el presente el Locador otorga mandato expreso a ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S'+(C?',':'')+' para que en su nombre y representación, perciba los alquileres mensuales, otorgue el correspondiente recibo, formule las intimaciones previstas por el C.C.yC. y accióne judicialmente persiguiendo el cobro y/o el desalojo del inmueble objeto de la locación si correspondiere y la realización de todo otro acto que estime necesario para una mejor administración del inmueble y mejora de la renta que el mismo puede proporcionar, quedando el locatario notificado de ello en forma fehaciente por la mera suscripción de este contrato.-');
