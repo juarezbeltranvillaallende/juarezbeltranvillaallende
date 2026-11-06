@@ -2522,7 +2522,7 @@ async function genReserva(){
       {txt:', en adelante '+(ofFem?'la OFERENTE':'el OFERENTE')+', entrega en concepto de RESERVA la suma de '},
       {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(resActoLetras||'___________________________')+' (USD '+(resActoFmt||'_______________')+')',bold:true},
       {txt:' como señal de su intención de suscribir la cesión del inmueble que se describe a continuación:'}
-    ],F);
+    ],false,11,F);
     body+=rBr();
 
     // Cláusula 1
@@ -2547,17 +2547,17 @@ async function genReserva(){
       {txt:'El precio total ofrecido por la compra del inmueble asciende a '},
       {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(precioLetras||'__________________________________')+' (USD '+(precioFmt||'______________')+')',bold:true},
       {txt:', que será abonado de la siguiente manera:'}
-    ],F);
+    ],false,11,F);
     body+=rParMix([
       {txt:'a) En este acto, '+(ofFem?'la OFERENTE':'el OFERENTE')+' entrega la suma de '},
       {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(resActoLetras||'__________________')+' (USD '+(resActoFmt||'______________')+')',bold:true},
       {txt:' en concepto de reserva, conforme a las condiciones de este instrumento.'}
-    ],F);
+    ],false,11,F);
     body+=rParMix([
       {txt:'b) Al momento de la firma del boleto de cesión, se abonará la suma de '},
       {txt:'USD '+(alBoletoFmt||'__________________'),bold:true},
       {txt:'.'}
-    ],F);
+    ],false,11,F);
     body+=rBr();
     body+=rTx('Todos los pagos se realizarán en dólares estadounidenses en efectivo, en billetes de cara grande, serie 1996 en adelante, denominación USD 100, en buen estado de conservación, sin manchas, raspaduras ni deterioro, renunciando expresamente al derecho de reajuste establecido en el art. 765 del Código Civil y Comercial de la Nación.',F);
     body+=rTx('Los importes consignados deberán coincidir con el precio total ofrecido. Cualquier modificación de la forma de pago deberá ser acordada expresamente por escrito.',F);
@@ -2613,17 +2613,17 @@ async function genReserva(){
       {txt:' la suma de '},
       {txt:'USD '+(resActoFmt||'__________________'),bold:true},
       {txt:', en concepto de reserva, y extiende el presente como recibo por el importe efectivamente recibido.'}
-    ],F);
+    ],false,11,F);
     body+=rParMix([
       {txt:'Una vez aceptada la oferta '+(cedFem?'por la':'por el')+' CEDENTE, la suma será custodiada por '},
       {txt:'Roberts Otero',bold:true},
       {txt:' hasta que corresponda su restitución o entrega conforme a las condiciones de este instrumento.'}
-    ],F);
+    ],false,11,F);
     body+=rParMix([
       {txt:'Si la oferta fuera rechazada o venciera sin aceptación, '},
       {txt:'Roberts Otero',bold:true},
       {txt:' restituirá el importe en el plazo indicado en la cláusula 5.b, dejando constancia documentada de la devolución.'}
-    ],F);
+    ],false,11,F);
     body+=rBr();
 
     // Cláusula 7
@@ -2632,12 +2632,12 @@ async function genReserva(){
       {txt:'Los honorarios de '},
       {txt:'Roberts Otero',bold:true},
       {txt:' son del '+ofPct+'% a cargo '+(ofFem?'de la OFERENTE':'del OFERENTE')+' y del '+prPct+'% a cargo '+(cedFem?'de la CEDENTE':'del CEDENTE')+', a abonarse al momento de la firma del instrumento de cesión.'}
-    ],F);
+    ],false,11,F);
     body+=rParMix([
       {txt:'En caso de desistimiento imputable '+(ofFem?'a la OFERENTE':'al OFERENTE')+', los honorarios de '},
       {txt:'Roberts Otero',bold:true},
       {txt:' se tomarán del importe de la reserva perdida. En caso de desistimiento imputable '+(cedFem?'a la CEDENTE':'al CEDENTE')+', los honorarios serán abonados '+(cedFem?'por ella':'por él')+' con independencia de la indemnización correspondiente.'}
-    ],F);
+    ],false,11,F);
     body+=rBr();
 
     // Cláusula 8
@@ -2666,11 +2666,11 @@ async function genReserva(){
     body+=rTx('Correo electrónico '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofEmail||'____________________________'),F);
     body+=rTx('WhatsApp '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofWa||ofTel||'____________________________________'),F);
     body+=rBr();
-    body+=rParMix([{txt:(cedFem?'LA CEDENTE':'EL CEDENTE')+': '},{txt:cedente,bold:true}],F);
+    body+=rParMix([{txt:(cedFem?'LA CEDENTE':'EL CEDENTE')+': '},{txt:cedente,bold:true}],false,11,F);
     body+=rTx('Correo electrónico '+(cedFem?'de la CEDENTE':'del CEDENTE')+': '+(emailProp||'_________________________'),F);
     body+=rTx('WhatsApp '+(cedFem?'de la CEDENTE':'del CEDENTE')+': '+(waProp||'________________________________'),F);
     body+=rBr();
-    body+=rParMix([{txt:'Roberts Otero',bold:true},{txt:': Los Zorzales 1569.'}],F);
+    body+=rParMix([{txt:'Roberts Otero',bold:true},{txt:': Los Zorzales 1569.'}],false,11,F);
     body+=rTx('Correo electrónico: froberts@juarezbeltran.com.ar',F);
     body+=rTx('WhatsApp: 355937037',F);
     body+=rBr();
@@ -2686,7 +2686,7 @@ async function genReserva(){
     body+=rTx('Firma '+(ofFem?'de la Oferente':'del Oferente')+':',F);
     body+=rTx('DNI '+(ofFem?'de la oferente':'del oferente')+': '+ofDni,F);
     body+=rBr();
-    body+=rParMix([{txt:'Firma '},{txt:'Roberts Otero',bold:true}],F);
+    body+=rParMix([{txt:'Firma '},{txt:'Roberts Otero',bold:true}],false,11,F);
     body+=rTx('Matrícula CPI N.º 6390',F);
     body+=rBr();
     body+=rTx('Firma '+(cedFem?'de la Cedente':'del Cedente')+' (si acepta en el acto)',F);
@@ -2709,8 +2709,8 @@ async function genReserva(){
       {txt:', DNI N.º '+(prDni||'_____________')+(prDom?', con domicilio en '+prDom:'')+(prEcTxt?', estado civil '+prEcTxt:'')+', en mi carácter de titular de los derechos objeto de la presente cesión, aceptó la propuesta formulada, las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a Roberts Otero el '},
       {txt:prPct+'%',bold:true},
       {txt:' del precio de la operación en concepto de comisión, en dinero efectivo al momento de suscribirse el instrumento de cesión.'}
-    ],F);
-    body+=rParMix([{txt:'Autorizo a '},{txt:'Roberts Otero',bold:true},{txt:' a retener dicho importe del precio recibido.'}],F);
+    ],false,11,F);
+    body+=rParMix([{txt:'Autorizo a '},{txt:'Roberts Otero',bold:true},{txt:' a retener dicho importe del precio recibido.'}],false,11,F);
     body+=rBr();
     body+=rTx('De plena conformidad, suscribo el presente retirando un ejemplar en este acto.',F);
     body+=rBr();
@@ -2718,7 +2718,7 @@ async function genReserva(){
     body+=rTx((prNom?(cedFem?'La Sra. ':'El Sr. ')+prNom:'Cedente'),F);
     body+=rTx('DNI: '+(prDni||''),F);
     body+=rBr();
-    body+=rParMix([{txt:'Roberts Otero',bold:true},{txt:':'}],F);
+    body+=rParMix([{txt:'Roberts Otero',bold:true},{txt:':'}],false,11,F);
     body+=rTx('Matrícula CPI N.º 6390:',F);
   }
 
