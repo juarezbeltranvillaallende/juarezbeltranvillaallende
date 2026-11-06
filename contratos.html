@@ -1825,7 +1825,7 @@ async function genReserva(){
   function rBr(){ return '<w:p><w:r><w:t></w:t></w:r></w:p>'; }
   function rPageBreak(){ return '<w:p><w:r><w:br w:type="page"/></w:r></w:p>'; }
   function rTit(txt,font){ return rPar(txt,true,true,14,false,font,'center'); }
-  function rTitU(txt,font){ return rPar(txt,true,false,14,true,font,'left'); }
+  function rTitU(txt,font){ return rPar(txt,true,false,14,false,font,'left'); }
   function rSub(txt,font){ return rPar(txt,true,false,12,false,font,'left'); }
   function rSubU(txt,font){ return rPar(txt,true,false,12,true,font,'left'); }
   function rTx(txt,font){ return rPar(txt,false,false,11,false,font,'both'); }
@@ -2534,12 +2534,12 @@ async function genReserva(){
     body+=rTitU('1. Objeto de la Cesión',F);
     body+=rTx('Los derechos y posición contractual emergentes del Boleto de Compraventa suscripto con fecha '+fechaBoleto+' entre '+vendedor+' (Vendedor original) y '+cedente+' (Cedente), correspondiente al inmueble:',F);
     body+=rBr();
-    body+=rTx('Ubicación: '+(dir||'_______________________________________________'),F);
-    body+=rTx('Nomenclatura catastral: '+(catastral||'__________________________________'),F);
-    body+=rTx('Matrícula: '+(matricula||'_______________'),F);
-    body+=rTx('Identificación DGR: '+(rentas||'_______________'),F);
-    body+=rTx('Superficie de terreno: '+(supTer||'____')+' m2 ; Superficie cubierta: '+(supCub||'____')+' m2 (ambos aproximados)',F);
-    body+=rTx('Descripción: '+(desc||'____________________________________________'),F);
+    if(dir) body+=rTx('Ubicación: '+dir,F);
+    if(catastral) body+=rTx('Nomenclatura catastral: '+catastral,F);
+    if(matricula) body+=rTx('Matrícula: '+matricula,F);
+    if(rentas) body+=rTx('Identificación DGR: '+rentas,F);
+    if(supTer||supCub) body+=rTx('Superficie de terreno: '+(supTer||'____')+' m2 ; Superficie cubierta: '+(supCub||'____')+' m2 (ambos aproximados)',F);
+    if(desc) body+=rTx('Descripción: '+desc,F);
     body+=rBr();
     body+=rTx((cedFem?'La CEDENTE':'El CEDENTE')+' declara bajo su exclusiva responsabilidad que los derechos objeto de la presente cesión se encuentran vigentes, que no han sido cedidos ni gravados a terceros, y que no existen deudas ni litigios pendientes que afecten la validez del boleto original.',F);
     body+=rBr();
@@ -2560,7 +2560,7 @@ async function genReserva(){
     ],false,11,F);
     body+=rParMix([
       {txt:'b) Al momento de la firma del boleto de cesión, se abonará la suma de '},
-      {txt:'USD '+(alBoletoFmt||'__________________'),bold:true},
+      {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(alBoletoLetras||'__________________')+' (USD '+(alBoletoFmt||'______________')+')',bold:true},
       {txt:'.'}
     ],false,11,F);
     body+=rBr();
