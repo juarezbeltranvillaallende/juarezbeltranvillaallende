@@ -1680,7 +1680,7 @@ function selR(btn){
   if(cuitWrap) cuitWrap.style.display=isAlq?'none':'';
   if(ecivilWrap) ecivilWrap.style.display=isAlq?'none':'';
   var lblOf=document.getElementById('lbl-oferente');
-  if(lblOf) lblOf.textContent=(RTIPO==='compraventa'?'Comprador/a':RTIPO==='cesion'?'Oferente':'Reservante');
+  if(lblOf) lblOf.textContent=(RTIPO==='compraventa'?'Oferente':RTIPO==='cesion'?'Oferente':'Reservante');
   var lblPr=document.getElementById('lbl-propietario');
   if(lblPr) lblPr.textContent=(RTIPO==='cesion'?'Cedente':'Propietario/a');
   var btnMod=document.getElementById('rs-btn-modelo');
