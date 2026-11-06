@@ -2437,7 +2437,7 @@ async function genReserva(){
     var alBoletoFmt=fmtMonto(alBoleto);
     var diasHab=_sr('rs-vta-dias')||'5';
     var diasBol=_sr('rs-dias-boleto');
-    var waProp=_sr('rs-wp');
+    var waProp=_sr('rs-pr-tel');
     var emailProp=_sr('rs-email-prop');
     var prDom=_sr('rs-pr-dom');
     var prEc=_sr('rs-pr-ecivil');
@@ -2487,7 +2487,7 @@ async function genReserva(){
       {txt:fechaDoc,bold:true},
       {txt:', por intermedio de ROBERTS OTERO SERVICIOS INMOBILIARIOS S.A.S., en adelante Roberts Otero, interviniendo el Corredor Público Inmobiliario Diego Roberts, Matrícula CPI N.º 6390, '},
       {txt:ofSrTxtX+ofNom,bold:true},
-      {txt:', DNI N.º '+ofDni+(ofCuit?', CUIT N.º '+ofCuit:'')+(ofEcTxt?', estado civil '+ofEcTxt:'')+(ofDom?', con domicilio en '+ofDom:'')+', correo electrónico '+(ofEmail||'______________________________')+' y teléfono/WhatsApp '+(ofWa||ofTel||'______________________________')+', en adelante EL/LA OFERENTE, entrega en concepto de RESERVA la suma de '},
+      {txt:', DNI N.º '+ofDni+(ofCuit?', CUIT N.º '+ofCuit:'')+(ofEcTxt?', estado civil '+ofEcTxt:'')+(ofDom?', con domicilio en '+ofDom:'')+', correo electrónico '+(ofEmail||'______________________________')+' y teléfono/WhatsApp '+(ofWa||ofTel||'______________________________')+', en adelante '+(ofFem?'la OFERENTE':'el OFERENTE')+', entrega en concepto de RESERVA la suma de '},
       {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(resActoLetras||'___________________________')+' (USD '+(resActoFmt||'_______________')+')',bold:true},
       {txt:' como señal de su intención de suscribir la cesión del inmueble que se describe a continuación:'}
     ],F);
@@ -2504,9 +2504,9 @@ async function genReserva(){
     body+=rTx('Superficie de terreno: '+(supTer||'____')+' m2 ; Superficie cubierta: '+(supCub||'____')+' m2 (ambos aproximados)',F);
     body+=rTx('Descripción: '+(desc||'____________________________________________'),F);
     body+=rBr();
-    body+=rTx('El CEDENTE declara bajo su exclusiva responsabilidad que los derechos objeto de la presente cesión se encuentran vigentes, que no han sido cedidos ni gravados a terceros, y que no existen deudas ni litigios pendientes que afecten la validez del boleto original.',F);
+    body+=rTx((cedFem?'La CEDENTE':'El CEDENTE')+' declara bajo su exclusiva responsabilidad que los derechos objeto de la presente cesión se encuentran vigentes, que no han sido cedidos ni gravados a terceros, y que no existen deudas ni litigios pendientes que afecten la validez del boleto original.',F);
     body+=rBr();
-    body+=rTx('EL/LA OFERENTE declara haber visitado el inmueble y conocer sus características y estado de conservación, sin que ello implique renuncia a los derechos que le correspondan por vicios ocultos, defectos jurídicos, falta de titularidad, incumplimientos del cedente u otras responsabilidades legalmente exigibles.',F);
+    body+=rTx((ofFem?'LA OFERENTE':'EL OFERENTE')+' declara haber visitado el inmueble y conocer sus características y estado de conservación, sin que ello implique renuncia a los derechos que le correspondan por vicios ocultos, defectos jurídicos, falta de titularidad, incumplimientos del cedente u otras responsabilidades legalmente exigibles.',F);
     body+=rBr();
 
     // Cláusula 2
@@ -2517,7 +2517,7 @@ async function genReserva(){
       {txt:', que será abonado de la siguiente manera:'}
     ],F);
     body+=rParMix([
-      {txt:'a) En este acto, EL/LA OFERENTE entrega la suma de '},
+      {txt:'a) En este acto, '+(ofFem?'la OFERENTE':'el OFERENTE')+' entrega la suma de '},
       {txt:'DÓLARES ESTADOUNIDENSES BILLETE '+(resActoLetras||'__________________')+' (USD '+(resActoFmt||'______________')+')',bold:true},
       {txt:' en concepto de reserva, conforme a las condiciones de este instrumento.'}
     ],F);
@@ -2533,21 +2533,21 @@ async function genReserva(){
 
     // Cláusula 3
     body+=rTitU('3. Plazo de vigencia',F);
-    body+=rTx('La presente constituye una oferta de compra sujeta a la aceptación expresa de el/la CEDENTE, quien deberá aceptarla o rechazarla dentro de los CINCO (5) días hábiles contados desde la fecha de este instrumento.',F);
+    body+=rTx('La presente constituye una oferta de compra sujeta a la aceptación expresa '+(cedFem?'de la CEDENTE':'del CEDENTE')+', quien deberá aceptarla o rechazarla dentro de los CINCO (5) días hábiles contados desde la fecha de este instrumento.',F);
     body+=rTx('La oferta se mantendrá vigente durante dicho plazo, en los términos aquí establecidos. Su retiro o retractación se regirá por las disposiciones legales aplicables y por las condiciones expresamente pactadas.',F);
-    body+=rTx('La aceptación deberá ser realizada por el/la CEDENTE o por representante con facultades suficientes, mediante firma de la conformidad incluida al final de este instrumento.',F);
-    body+=rTx('La aceptación deberá ser íntegra y coincidente con los términos de esta oferta. Toda modificación del precio, forma de pago, plazos o condiciones esenciales constituirá una contraoferta, que requerirá aceptación expresa de EL/LA OFERENTE.',F);
+    body+=rTx('La aceptación deberá ser realizada '+(cedFem?'por la CEDENTE':'por el CEDENTE')+' o por representante con facultades suficientes, mediante firma de la conformidad incluida al final de este instrumento.',F);
+    body+=rTx('La aceptación deberá ser íntegra y coincidente con los términos de esta oferta. Toda modificación del precio, forma de pago, plazos o condiciones esenciales constituirá una contraoferta, que requerirá aceptación expresa '+(ofFem?'de la OFERENTE':'del OFERENTE')+'.',F);
     body+=rTx('La inmobiliaria comunicará '+(ofFem?'a la':'al')+' OFERENTE la aceptación o el rechazo por los siguientes medios denunciados por '+(ofFem?'esta':'este')+':',F);
-    body+=rTx('WhatsApp: ______________________________',F);
-    body+=rTx('Correo electrónico: ______________________________',F);
+    body+=rTx('WhatsApp: '+(ofWa||ofTel||'______________________________'),F);
+    body+=rTx('Correo electrónico: '+(ofEmail||'______________________________'),F);
     body+=rTx('La falta de aceptación dentro del plazo establecido determinará la caducidad de la oferta, sin que el silencio pueda interpretarse como aceptación.',F);
     body+=rBr();
 
     // Cláusula 4
     body+=rTitU('4. Condición del inmueble',F);
     body+=rTx('La cesión se formalizará:',F);
-    body+=rTx('Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
-    body+=rTx('Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
+    body+=rTx('• Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
+    body+=rTx('• Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
     body+=rBr();
     body+=rTx('Los siguientes gastos estarán a cargo del OFERENTE - COMPRADOR:',F);
     body+=rTx('Impuesto de sellos correspondiente a la cesión de derechos.',F);
@@ -2562,14 +2562,14 @@ async function genReserva(){
     // Cláusula 5
     body+=rTitU('5. Aceptación - Rechazo - Desistimiento',F);
     body+=rSubU('5.a Aceptación',F);
-    body+=rTx('Si el/la CEDENTE acepta la presente reserva dentro del plazo establecido, las partes se obligan a suscribir el instrumento de Cesión de Derechos dentro de los '+(diasBol||'___')+' días hábiles siguientes a la notificación de aceptación.',F);
-    body+=rSubU('5.b Rechazo por el cedente',F);
-    body+=rTx('Si el/la CEDENTE rechaza la reserva o no se pronuncia dentro del plazo, Roberts Otero devolverá al OFERENTE la totalidad de la suma entregada en concepto de reserva dentro de las 48 hs hábiles de vencido el plazo, sin penalidad alguna a favor del OFERENTE.',F);
-    body+=rSubU('5.c Desistimiento del Oferante',F);
-    body+=rTx('Si el OFERENTE desiste de la operación una vez aceptada la reserva por el CEDENTE, perderá el importe entregado en concepto de reserva, el que será distribuido entre el PROPIETARIO/A y Roberts Otero en partes iguales.',F);
-    body+=rTx('Se entenderá que hay desistimiento del OFERENTE cuando: (a) no concurra a la firma de la cesión dentro del plazo pactado; (b) manifieste en forma expresa o tácita su voluntad de no continuar con la operación; (c) no integre los fondos comprometidos en tiempo y forma.',F);
-    body+=rSubU('5.d Desistimiento del cedente',F);
-    body+=rTx('Si el/la CEDENTE, habiendo aceptado la reserva, desiste de la operación sin causa justificada ni incumplimiento imputable al OFERENTE, deberá devolver al OFERENTE el doble del importe recibido en concepto de reserva dentro de las 48 hs hábiles de notificado el desistimiento, en concepto de indemnización la cual podrá ser ejercida por el OFERENTE vencido el plazo mencionado. Asimismo Roberts Otero tendrá derecho a cobrar sus honorarios al el/la CEDENTE mencionados en la cláusula 7.',F);
+    body+=rTx('Si '+(cedFem?'la CEDENTE':'el CEDENTE')+' acepta la presente reserva dentro del plazo establecido, las partes se obligan a suscribir el instrumento de Cesión de Derechos dentro de los '+(diasBol||'___')+' días hábiles siguientes a la notificación de aceptación.',F);
+    body+=rSubU('5.b Rechazo '+(cedFem?'por la CEDENTE':'por el CEDENTE'),F);
+    body+=rTx('Si '+(cedFem?'la CEDENTE':'el CEDENTE')+' rechaza la reserva o no se pronuncia dentro del plazo, Roberts Otero devolverá '+(ofFem?'a la OFERENTE':'al OFERENTE')+' la totalidad de la suma entregada en concepto de reserva dentro de las 48 hs hábiles de vencido el plazo, sin penalidad alguna a favor '+(ofFem?'de la OFERENTE':'del OFERENTE')+'.',F);
+    body+=rSubU('5.c Desistimiento '+(ofFem?'de la Oferente':'del Oferente'),F);
+    body+=rTx('Si '+(ofFem?'la OFERENTE':'el OFERENTE')+' desiste de la operación una vez aceptada la reserva '+(cedFem?'por la CEDENTE':'por el CEDENTE')+', perderá el importe entregado en concepto de reserva, el que será distribuido entre '+(cedFem?'la CEDENTE':'el CEDENTE')+' y Roberts Otero en partes iguales.',F);
+    body+=rTx('Se entenderá que hay desistimiento '+(ofFem?'de la OFERENTE':'del OFERENTE')+' cuando: (a) no concurra a la firma de la cesión dentro del plazo pactado; (b) manifieste en forma expresa o tácita su voluntad de no continuar con la operación; (c) no integre los fondos comprometidos en tiempo y forma.',F);
+    body+=rSubU('5.d Desistimiento '+(cedFem?'de la CEDENTE':'del CEDENTE'),F);
+    body+=rTx('Si '+(cedFem?'la CEDENTE':'el CEDENTE')+', habiendo aceptado la reserva, desiste de la operación sin causa justificada ni incumplimiento imputable '+(ofFem?'a la OFERENTE':'al OFERENTE')+', deberá devolver '+(ofFem?'a la OFERENTE':'al OFERENTE')+' el doble del importe recibido en concepto de reserva dentro de las 48 hs hábiles de notificado el desistimiento, en concepto de indemnización la cual podrá ser ejercida '+(ofFem?'por la OFERENTE':'por el OFERENTE')+' vencido el plazo mencionado. Asimismo Roberts Otero tendrá derecho a cobrar sus honorarios '+(cedFem?'a la CEDENTE':'al CEDENTE')+' mencionados en la cláusula 7.',F);
     body+=rBr();
 
     // Cláusula 6
@@ -2582,7 +2582,7 @@ async function genReserva(){
     // Cláusula 7
     body+=rTitU('7. Honorarios de la Inmobiliaria',F);
     body+=rTx('Los honorarios de Roberts Otero son del '+prPct+'% del precio de venta, y serán abonados por cada parte (OFERENTE y CEDENTE) al momento de la escrituración.',F);
-    body+=rTx('En caso de desistimiento imputable al OFERENTE, los honorarios de Roberts Otero se tomarán del importe de la reserva perdida. En caso de desistimiento imputable el/la CEDENTE, los honorarios serán abonados por éste con independencia de la indemnización correspondiente.',F);
+    body+=rTx('En caso de desistimiento imputable '+(ofFem?'a la OFERENTE':'al OFERENTE')+', los honorarios de Roberts Otero se tomarán del importe de la reserva perdida. En caso de desistimiento imputable '+(cedFem?'a la CEDENTE':'al CEDENTE')+', los honorarios serán abonados '+(cedFem?'por ella':'por él')+' con independencia de la indemnización correspondiente.',F);
     body+=rBr();
 
     // Cláusula 8
@@ -2607,11 +2607,11 @@ async function genReserva(){
     body+=rTx('A todos los efectos legales y convencionales, las partes constituyen domicilio en los indicados al comienzo. Las notificaciones vinculadas a esta reserva podrán cursarse válidamente por WhatsApp al número denunciado y/o por correo electrónico, y se tendrán por recibidas a las 24 hs de enviadas.',F);
     body+=rBr();
     body+=rTx('Las partes constituyen domicilios especiales en los indicados a continuación:',F);
-    body+=rTx('EL/LA OFERENTE: '+(ofDom||'______________________________________________'),F);
+    body+=rTx((ofFem?'LA OFERENTE':'EL OFERENTE')+': '+(ofDom||'______________________________________________'),F);
     body+=rTx('Correo electrónico '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofEmail||'____________________________'),F);
     body+=rTx('WhatsApp '+(ofFem?'de la OFERENTE':'del OFERENTE')+': '+(ofWa||ofTel||'____________________________________'),F);
     body+=rBr();
-    body+=rTx('EL/LA CEDENTE: '+cedente,F);
+    body+=rTx((cedFem?'LA CEDENTE':'EL CEDENTE')+': '+cedente,F);
     body+=rTx('Correo electrónico del/de la CEDENTE: '+(emailProp||'_________________________'),F);
     body+=rTx('WhatsApp del/de la CEDENTE: '+(waProp||'________________________________'),F);
     body+=rBr();
@@ -2648,11 +2648,9 @@ async function genReserva(){
     body+=rTitU('ACEPTACIÓN '+(cedFem?'DE LA CEDENTE':'DEL CEDENTE'),F);
     body+=rBr();
     body+=rParMix([
-      {txt:'En la ciudad de '+ciudad+', '},
-      {txt:fechaDoc,bold:true},
-      {txt:', yo, '},
+      {txt:'En la ciudad de '+ciudad+', a los ___ días del mes de ___________ de 20___, yo, '},
       {txt:(prNom?(cedFem?'la Sra. ':'el Sr. ')+prNom:'_____________'),bold:true},
-      {txt:', DNI N.º '+(prDni||'_____________')+(prDom?', con domicilio en '+prDom:'')+(prEcTxt?', estado civil '+prEcTxt:'')+', en mi carácter de titular de los derechos objeto de la presente cesión, aceptó la propuesta formulada, las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a Roberts Otero Servicios Inmobiliarios S.A.S. el '},
+      {txt:', DNI N.º '+(prDni||'_____________')+(prDom?', con domicilio en '+prDom:'')+(prEcTxt?', estado civil '+prEcTxt:'')+', en mi carácter de titular de los derechos objeto de la presente cesión, aceptó la propuesta formulada, las condiciones generales y particulares de la operación, las penalidades establecidas, y me comprometo a abonar a Roberts Otero el '},
       {txt:prPct+'%',bold:true},
       {txt:' del precio de la operación en concepto de comisión, en dinero efectivo al momento de suscribirse el instrumento de cesión.'}
     ],F);
@@ -2664,7 +2662,7 @@ async function genReserva(){
     body+=rTx((prNom?(cedFem?'La Sra. ':'El Sr. ')+prNom:'Cedente'),F);
     body+=rTx('DNI: '+(prDni||''),F);
     body+=rBr();
-    body+=rTx('Roberts Otero Serv. Inm. S.A.S.:',F);
+    body+=rTx('Roberts Otero:',F);
     body+=rTx('Matrícula CPI N.º 6390:',F);
   }
 
