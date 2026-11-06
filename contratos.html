@@ -653,19 +653,6 @@ Alias: ARCON.PELEA.COSTA</div>
         <button onclick="APP.rsCopiarBanco()" style="margin-top:8px;background:none;border:1px solid #2d8a4e;color:#2d8a4e;border-radius:5px;padding:4px 12px;cursor:pointer;font-size:0.85rem">Copiar datos bancarios</button>
       </div>
 
-      <!-- Pasos siguientes -->
-      <div style="background:var(--az2,#e8f4f1);border-radius:8px;padding:12px 14px;margin-bottom:18px">
-        <strong style="display:block;margin-bottom:8px;font-size:0.9rem">📋 Pasos siguientes</strong>
-        <ul style="margin:0;padding-left:18px;font-size:0.91rem;color:var(--tx,#222);line-height:1.8">
-          <li>Enviar el documento al interesado para que lo firme</li>
-          <li>Solicitar foto de la reserva firmada</li>
-          <li>Una vez firmada → enviar datos bancarios para la transferencia y confirmar recepción de fondos</li>
-          <li>⚠️ <strong>Pedir que envíen el comprobante por el grupo de WhatsApp de Reservas</strong></li>
-          <li>Pedir documentación: DNI, recibos de sueldo y garantías (inquilino y garantes)</li>
-          <li>Pedir informes de cada persona involucrada (inquilino y garantes)</li>
-          <li>Pedir informe de propiedad con matrícula a administración</li>
-        </ul>
-      </div>
     </div>
 
     <!-- Contenido solo para COMPRAVENTA / CESIÓN -->
@@ -702,6 +689,31 @@ Alias: ARCON.PELEA.COSTA</div>
     <div style="display:flex;gap:10px;justify-content:flex-end">
       <button onclick="APP.rsCerrarAviso()" style="background:none;border:1px solid var(--brd,#ccc);border-radius:7px;padding:8px 18px;cursor:pointer;font-size:0.93rem">Cancelar</button>
       <button onclick="APP.rsCerrarAviso();APP.genReserva();" style="background:var(--az,#1a56db);color:#fff;border:none;border-radius:7px;padding:8px 20px;cursor:pointer;font-size:0.93rem;font-weight:600">⬇ Descargar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal post-descarga: pasos siguientes (solo alquiler) -->
+<div id="rs-modal-post" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.55);align-items:center;justify-content:center">
+  <div style="background:var(--bg,#fff);border-radius:12px;max-width:520px;width:94%;padding:24px 28px;box-shadow:0 8px 40px rgba(0,0,0,0.25);max-height:90vh;overflow-y:auto">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:2rem;margin-bottom:6px">🎉</div>
+      <h3 style="margin:0;font-size:1.1rem;color:var(--tx,#111)">¡Reserva descargada!</h3>
+    </div>
+    <div style="background:var(--az2,#e8f4f1);border-radius:8px;padding:14px 16px;margin-bottom:18px">
+      <strong style="display:block;margin-bottom:10px;font-size:0.95rem">📋 Pasos siguientes</strong>
+      <ul style="margin:0;padding-left:18px;font-size:0.91rem;color:var(--tx,#222);line-height:1.9">
+        <li>Enviar el documento al interesado para que lo firme</li>
+        <li>Solicitar foto de la reserva firmada</li>
+        <li>Una vez firmada → enviar datos bancarios para la transferencia y confirmar recepción de fondos</li>
+        <li>⚠️ <strong>Pedir que envíen el comprobante por el grupo de WhatsApp de Reservas</strong></li>
+        <li>Pedir documentación: DNI, recibos de sueldo y garantías (inquilino y garantes)</li>
+        <li>Pedir informes de cada persona involucrada (inquilino y garantes)</li>
+        <li>Pedir informe de propiedad con matrícula a administración</li>
+      </ul>
+    </div>
+    <div style="display:flex;justify-content:flex-end">
+      <button onclick="document.getElementById('rs-modal-post').style.display='none'" style="background:var(--az,#1a56db);color:#fff;border:none;border-radius:7px;padding:8px 22px;cursor:pointer;font-size:0.93rem;font-weight:600">Entendido</button>
     </div>
   </div>
 </div>
@@ -1928,7 +1940,7 @@ async function genReserva(){
       {txt:mensLetrasStr, bold:true},
       {txt:' ($ '},
       {txt:mensFmt, bold:true},
-      {txt:'), actualizable trimestralmente mediante el Índice de Precios al Consumidor (IPC) publicado por el INDEC y modificatorias. El plazo de la locación será de '},
+      {txt:'), actualizable '+(ajuste.split(' ')[0]||'trimestralmente').toLowerCase()+'mente mediante el '+(ajuste.indexOf('ICL')>=0?'Índice para Contratos de Locación (ICL) publicado por el BCRA':'Índice de Precios al Consumidor (IPC) publicado por el INDEC y modificatorias')+'. El plazo de la locación será de '},
       {txt:plazoMeses, bold:true},
       {txt:' meses, a partir del '},
       {txt:inicioStr||'______________', bold:true},
@@ -2042,10 +2054,11 @@ async function genReserva(){
         {txt:prDni, bold:true},
         {txt:', con domicilio en '},
         {txt:prDom||'_________________________', bold:true},
-        {txt:', en mi carácter de aceptante y futuro '+(prFem?'locadora':'locador')+'/a del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.'}
+        {txt:', en mi carácter de aceptante y '+(prFem?'futura locadora':'futuro locador')+' del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.'}
       ],false,11,F);
     } else {
       body+=rTx('En la ciudad de Villa Allende, a los _____ días del mes de _________________ de 202___, yo, _________________________, DNI _________________________, con domicilio en _________________________, en mi carácter de aceptante y futuro locador/a del inmueble individualizado en el acápite del presente, acepto / rechazo (tachar lo que no corresponda) la propuesta de locación formulada, las condiciones generales y particulares de la operación y las penalidades establecidas.',F);
+      // Nota: cuando no se cargaron datos del propietario, se deja "futuro locador/a" genérico
     }
     body+=rBr();
     body+=rTx('Firma del Propietario/a: _________________________',F);
@@ -2667,6 +2680,13 @@ async function genReserva(){
   zip.file('word/document.xml', docXml);
   var blob=await zip.generateAsync({type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
   var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fn; a.click();
+  // Modal post-descarga solo para alquiler
+  if(RTIPO==='alquiler'){
+    setTimeout(function(){
+      var mp=document.getElementById('rs-modal-post');
+      if(mp) mp.style.display='flex';
+    }, 500);
+  }
 }
 
 // ─── INIT ─────────────────────────────────────────────────
