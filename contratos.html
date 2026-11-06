@@ -847,7 +847,6 @@ function setModo(m){
     return;
   }
   showPg('ct',null);
-  if(TIPO) hdn('pnl-rv',!r);
   if(!r){
     CLO={}; CLE={};
     hdn('pnl-cls',true);
@@ -856,6 +855,13 @@ function setModo(m){
     document.querySelectorAll('[data-pre]').forEach(function(e){
       e.style.background=''; e.removeAttribute('data-pre');
     });
+  }
+  if(r){
+    // Renovación: preseleccionar Departamento automáticamente
+    var btnDepto=document.querySelector('.tb[data-t="depto"]');
+    if(btnDepto) selT(btnDepto);
+  } else if(TIPO){
+    hdn('pnl-rv',true);
   }
 }
 
