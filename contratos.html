@@ -590,6 +590,9 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         <div class="f"><label>Domicilio</label><input id="rs-pr-dom" type="text"></div>
         <div class="f"><label>Email</label><input id="rs-email-prop" type="email"></div>
       </div>
+      <div class="g2" style="margin-top:8px">
+        <div class="f"><label>Teléfono / WhatsApp</label><input id="rs-pr-tel" type="text"></div>
+      </div>
     </div>
   </div>
 
@@ -2085,7 +2088,7 @@ async function genReserva(){
     var tipoFirma=_sr('rs-tipo-firma')||'Boleto de Compraventa';
     var gastosComp=_sr('rs-gastos-comp');
     var gastosVend=_sr('rs-gastos-vend');
-    var waProp=_sr('rs-wp');
+    var waProp=_sr('rs-pr-tel');
     var emailProp=_sr('rs-email-prop');
     var prPct=_sr('rs-pr-pct')||'3';
     var ofEcStr=(function(){
