@@ -701,6 +701,21 @@ Alias: ARCON.PELEA.COSTA</div>
           <div style="margin-top:10px;background:#fff0ee;border-left:3px solid #c9392c;border-radius:5px;padding:9px 12px;font-size:0.84rem;color:#7a1c12;line-height:1.55">
             ⚖️ <strong>Nota legal:</strong> La compraventa de un inmueble alquilado no extingue por sí sola la locación en los supuestos previstos por el CCyC. La situación debe analizarse conforme a los arts. 1189 y concordantes. <strong>No basta con escribir que el contrato «será cedido».</strong>
           </div>
+
+          <div style="margin-top:12px;border-top:1px solid #f0bbb7;padding-top:12px">
+            <strong style="display:block;font-size:0.88rem;color:#7a1c12;margin-bottom:8px">📄 Datos del contrato de locación vigente</strong>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+              <div class="f"><label style="font-size:12px">Género del/de la locatario/a</label>
+                <div class="gbtn"><button class="gb on" data-g="m" onclick="APP.rsSetG('loc',this)">Hombre</button><button class="gb" data-g="f" onclick="APP.rsSetG('loc',this)">Mujer</button></div>
+              </div>
+              <div class="f"><label style="font-size:12px">Nombre del/de la locatario/a *</label><input id="rs-loc-n" type="text" placeholder="Ej: Ana García" style="font-size:12px"></div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px">
+              <div class="f"><label style="font-size:12px">DNI del/de la locatario/a</label><input id="rs-loc-d" type="text" placeholder="Ej: 30.123.456" style="font-size:12px"></div>
+              <div class="f"><label style="font-size:12px">Fecha inicio contrato</label><input id="rs-loc-fi" type="date" style="font-size:12px"></div>
+              <div class="f"><label style="font-size:12px">Fecha vencimiento contrato</label><input id="rs-loc-fv" type="date" style="font-size:12px"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -2311,6 +2326,12 @@ async function genReserva(){
     var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
     var fechaDoc=_sr('rs-vta-fecha')||'';
     var corredor=_sr('rs-corredor')||'';
+    var estaAlquilado=(document.getElementById('rs-chk-alquilado')&&document.getElementById('rs-chk-alquilado').checked)||false;
+    var locFem=_gOf('loc');
+    var locNom=_sr('rs-loc-n')||'XXXXXXXXXXXXXX';
+    var locDni=_sr('rs-loc-d')||'XXXXXXXX';
+    var locFi=(function(){var d=_sr('rs-loc-fi');if(!d)return null;var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];})();
+    var locFv=(function(){var d=_sr('rs-loc-fv');if(!d)return null;var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];})();
     var dir=_sr('rs-vta-dir');
     var descInm=_sr('rs-vta-desc');
     var catastral=_sr('rs-catastral');
@@ -2461,7 +2482,7 @@ async function genReserva(){
     body+=rTx('• Libre de gravámenes, hipotecas, embargos e inhibiciones a la fecha de escrituración.',F);
     body+=rTx('• Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
     body+=rTx('• Con servicios activos y aptos para el cambio de titularidad.',F);
-    body+=rTx('• Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
+    body+=rTx(estaAlquilado?'• Con posesión sujeta a contrato de locación vigente, el que será cedido a la parte compradora en el mismo acto escriturario.':'• Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
     body+=rTx('• Con títulos perfectos o perfectibles a satisfacción del escribano designado por '+(escribanoVend?'el VENDEDOR':ofOfer)+'.',F);
     body+=rBr();
     body+=rTx('Las observaciones documentales o registrales que puedan subsanarse deberán comunicarse a las partes, otorgándose un plazo razonable para su solución, salvo que se haya pactado un plazo específico.',F);
@@ -2503,10 +2524,14 @@ async function genReserva(){
 
     // CLÁUSULA 8 - POSESIÓN Y ESTADO DE OCUPACIÓN
     body+=rSubU('8. Posesión y estado de ocupación',F);
-    body+=rTx('La posesión del inmueble se entregará en la fecha y condiciones que las partes acuerden en el boleto de compraventa.',F);
-    body+=rTx('• El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
-    body+=rTx('• Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
-    body+=rTx('La presente reserva no autoriza '+(ofFem?'a la':'al')+' OFERENTE a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
+    if(estaAlquilado){
+      body+=rTx('POSESIÓN: La posesión del inmueble vendido, se entregará a '+(ofFem?'la compradora':'el comprador')+' en el mismo acto escriturario. Consta por la presente que el inmueble se encuentra Locado a '+(locFem?'la Sra.':'el Sr.')+' '+locNom+', D.N.I. N° '+locDni+', por contrato de locación suscripto con fecha '+(locFi||'__/__/____')+', y por un periodo de dos años, con vencimiento el '+(locFv||'__/__/____')+', contrato que será cedido a la parte compradora en el mismo acto de la escritura traslativa de dominio.-',F);
+    } else {
+      body+=rTx('La posesión del inmueble se entregará en la fecha y condiciones que las partes acuerden en el boleto de compraventa.',F);
+      body+=rTx('• El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
+      body+=rTx('• Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
+      body+=rTx('La presente reserva no autoriza '+(ofFem?'a la':'al')+' OFERENTE a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
+    }
     body+=rBr();
 
     // CLÁUSULA 9 - ESCRIBANO
@@ -2608,6 +2633,12 @@ async function genReserva(){
     body+=rTx('Matrícula CPI N.º 6390:',F);
   }
   else if(RTIPO==='cesion'){
+    var estaAlquilado=(document.getElementById('rs-chk-alquilado')&&document.getElementById('rs-chk-alquilado').checked)||false;
+    var locFem=_gOf('loc');
+    var locNom=_sr('rs-loc-n')||'XXXXXXXXXXXXXX';
+    var locDni=_sr('rs-loc-d')||'XXXXXXXX';
+    var locFi=(function(){var d=_sr('rs-loc-fi');if(!d)return null;var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];})();
+    var locFv=(function(){var d=_sr('rs-loc-fv');if(!d)return null;var p=d.split('-');return p[2]+'/'+p[1]+'/'+p[0];})();
     var ciudad=_sr('rs-vta-ciudad')||'Villa Allende';
     var fechaRaw=_sr('rs-vta-fecha')||'';
     var fechaDoc=(function(){
@@ -2756,7 +2787,7 @@ async function genReserva(){
     body+=rTitU('4. Condición del inmueble',F);
     body+=rTx('La cesión se formalizará:',F);
     body+=rTx('• Libre de deudas por impuestos, tasas municipales y provinciales, expensas y servicios (agua, luz, gas) hasta la fecha de posesión.',F);
-    body+=rTx('• Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
+    body+=rTx(estaAlquilado?'• Con posesión sujeta a contrato de locación vigente, el que será cedido a la parte compradora en el mismo acto escriturario.':'• Con posesión libre de ocupantes y enseres, salvo pacto en contrario.',F);
     body+=rBr();
     body+=rTx('Los siguientes gastos estarán a cargo '+(ofFem?'de la OFERENTE':'del OFERENTE')+':',F);
     body+=rTx('• Impuesto de sellos correspondiente a la cesión de derechos.',F);
@@ -2819,10 +2850,14 @@ async function genReserva(){
 
     // Cláusula 8
     body+=rTitU('8. Posesión y estado de ocupación',F);
-    body+=rTx('La posesión del inmueble se entregará en la fecha y condiciones siguientes:',F);
-    body+=rTx('• El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
-    body+=rTx('• Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
-    body+=rTx('La presente reserva no autoriza '+(ofFem?'a la':'al')+' OFERENTE a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
+    if(estaAlquilado){
+      body+=rTx('POSESIÓN: La posesión del inmueble vendido, se entregará a '+(ofFem?'la compradora':'el comprador')+' en el mismo acto escriturario. Consta por la presente que el inmueble se encuentra Locado a '+(locFem?'la Sra.':'el Sr.')+' '+locNom+', D.N.I. N° '+locDni+', por contrato de locación suscripto con fecha '+(locFi||'__/__/____')+', y por un periodo de dos años, con vencimiento el '+(locFv||'__/__/____')+', contrato que será cedido a la parte compradora en el mismo acto de la escritura traslativa de dominio.-',F);
+    } else {
+      body+=rTx('La posesión del inmueble se entregará en la fecha y condiciones siguientes:',F);
+      body+=rTx('• El inmueble deberá entregarse libre de ocupantes y bienes de terceros, salvo que las partes acuerden expresamente una situación diferente.',F);
+      body+=rTx('• Si el inmueble se encontrara locado, ocupado o sujeto a derechos de terceros, deberá dejarse constancia de ello, acompañarse la documentación pertinente y establecerse expresamente el tratamiento de la locación, los alquileres, depósitos de garantía, deudas y demás obligaciones relacionadas.',F);
+      body+=rTx('La presente reserva no autoriza '+(ofFem?'a la':'al')+' OFERENTE a ocupar el inmueble ni implica entrega anticipada de la posesión.',F);
+    }
     body+=rBr();
 
     // Cláusula 9
