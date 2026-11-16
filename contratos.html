@@ -1067,6 +1067,17 @@ function remG(id){
 function renderGars(){
   var cont=document.getElementById('gar-cont');
   if(!cont) return;
+  // Guardar valores actuales antes de destruir el DOM
+  var saved={};
+  GARS.forEach(function(gar){
+    var id=gar.id;
+    var fields=['-n','-d','-fn','-dom','-barrio','-ciudad','-mat','-cap','-desc','-org','-cuit','-cony','-conyd','-tipo','-em'];
+    saved[id]={};
+    fields.forEach(function(f){
+      var el=document.getElementById(id+f);
+      if(el) saved[id][f]=el.value;
+    });
+  });
   while(cont.firstChild) cont.removeChild(cont.firstChild);
 
   for(var i=0;i<GARS.length;i++){
@@ -1117,7 +1128,7 @@ function renderGars(){
       '<option value="haberes">Haberes / jubilacion</option>'+
       '<option value="ambos">Inmueble + haberes</option>'+
       '</select></div>'+
-      '<div class="f" id="'+id+'-mf"><label>Matrícula N</label><input id="'+id+'-mat" type="text" placeholder="Ej: 123456"></div>';
+      '<div class="f" id="'+id+'-mf" style="display:grid;grid-template-columns:2fr 1fr;gap:6px"><div class="f" style="margin:0"><label>Matrícula N</label><input id="'+id+'-mat" type="text" placeholder="Ej: 123456"></div><div class="f" style="margin:0"><label>Capital (N°)</label><input id="'+id+'-cap" type="text" placeholder="Ej: 13"></div></div>';
     blq.appendChild(r3);
 
     // Row 4: descripción inmueble
@@ -1135,7 +1146,7 @@ function renderGars(){
     blq.appendChild(r5);
 
     // Row 6: conyuge
-    var r6=document.createElement('div'); r6.className='g2';
+    var r6=document.createElement('div'); r6.className='g2'; r6.id=id+'-cf';
     r6.innerHTML=
       '<div class="f"><label>Conyuge (si casado/a)</label><input id="'+id+'-cony" type="text" placeholder="Dejar vacio si no aplica"></div>'+
       '<div class="f"><label>DNI conyuge</label><input id="'+id+'-conyd" type="text"></div>'+
@@ -1144,6 +1155,17 @@ function renderGars(){
 
     cont.appendChild(blq);
   }
+  // Restaurar valores guardados
+  GARS.forEach(function(gar){
+    var id=gar.id;
+    if(!saved[id]) return;
+    Object.keys(saved[id]).forEach(function(f){
+      var el=document.getElementById(id+f);
+      if(el) el.value=saved[id][f];
+    });
+    // Restaurar visibilidad según tipo
+    onTG(id);
+  });
 }
 
 function onTG(id){
@@ -1151,17 +1173,19 @@ function onTG(id){
   hdn(id+'-mf',vt==='haberes');
   hdn(id+'-df',vt==='haberes');
   hdn(id+'-hf',vt==='inmueble');
+  hdn(id+'-cf',vt==='haberes');
 }
 
 function gTxt(id){
   var vt=v(id+'-tipo')||'inmueble';
   var mat=v(id+'-mat')||'XXXXXX';
+  var cap=v(id+'-cap')||'XX';
   var desc=v(id+'-desc')||'(descripción del encabezado de la matrícula)';
   var org=v(id+'-org')||'XXX';
   var cui=v(id+'-cuit')||'XXXXXXXX';
-  if(vt==='inmueble') return 'presenta como garantía su propiedad sobre un inmueble inscripto ante el Registro General de la Provincia a la Matrícula '+mat+' Capital (XX) descripto como: '+desc;
+  if(vt==='inmueble') return 'presenta como garantía su propiedad sobre un inmueble inscripto ante el Registro General de la Provincia a la Matrícula '+mat+' '+cap+' descripto como: '+desc;
   if(vt==='haberes') return 'presenta como garantía sus haberes otorgados por '+org+', CUIT:'+cui;
-  return 'presenta como garantía su propiedad inscripta a la Matrícula '+mat+' Capital (XX) descripto como: '+desc+', y sus haberes otorgados por '+org+', CUIT:'+cui;
+  return 'presenta como garantía su propiedad inscripta a la Matrícula '+mat+' '+cap+' descripto como: '+desc+', y sus haberes otorgados por '+org+', CUIT:'+cui;
 }
 
 function togCb(lbl){
@@ -1438,7 +1462,7 @@ function wParts(parts,opts){
 function wL(){return '<w:p><w:pPr><w:spacing w:before="120" w:after="120"/><w:pBdr><w:bottom w:val="single" w:sz="4" w:space="1" w:color="000000"/></w:pBdr></w:pPr></w:p>';}
 
 function getInst(){
-  var mp={cloacas:'cloacas',cámara:'cámara séptica',pozo:'pozo negro',revoques:'revoques',pinturas:'pinturas',zócalos:'zócalos',vidrios:'vidrios',cerraduras:'cerraduras',llaves:'llaves',puertas:'puertas',ventanas:'ventanas',caldera:'caldera de calefacción',radiadores:'radiadores',calefactores:'calefactores',aire:'equipos de aire acondicionado',calefón:'calefón',termotanque:'termo tanque',piscina:'equipo de mantenimiento de piscina'};
+  var mp={cloacas:'cloacas',camara:'cámara séptica',pozo:'pozo negro',revoques:'revoques',pinturas:'pinturas',zocalos:'zócalos',vidrios:'vidrios',cerraduras:'cerraduras',llaves:'llaves',puertas:'puertas',ventanas:'ventanas',caldera:'caldera de calefacción',radiadores:'radiadores',calefactores:'calefactores',aire:'equipos de aire acondicionado',calefon:'calefón',termotanque:'termo tanque',piscina:'equipo de mantenimiento de piscina'};
   var r=[];
   document.querySelectorAll('#inst-grid input[type=checkbox]').forEach(function(cb){if(cb.checked&&mp[cb.value]) r.push(mp[cb.value]);});
   return r.join(', ');
@@ -1550,6 +1574,7 @@ async function genWord(){
     // Encabezado: negrita en datos, locatario/a según sexo
     var loc2tit=(l2G.el==='la'?'"La Locataria"':'"El Locatario"');
     c+=wParts([
+      {t:'ENTRE '},
       {t:lG.el+' '+lG.sr+'. '},
       {t:v('loc-n')||'XXXXXXXXX',b:true},
       {t:', DNI: '},
@@ -1700,7 +1725,7 @@ async function genWord(){
       garTxt+=(gi>0?' y ':'')+gG.el+' '+gG.sr+'. '+(v(gid+'-n')||'XXXXXXXXXXX')+', DNI '+(v(gid+'-d')||'XXXXXX')+', '+(GARS[gi].gen==='m'?'argentino':'argentina')+', mayor de edad, '+gG.nacido+' el '+fL(v(gid+'-fn'))+', con domicilio en '+(v(gid+'-dom')||'XXXXXXXXXX')+', barrio '+(v(gid+'-barrio')||'XXXXXXXX')+', ciudad de '+(v(gid+'-ciudad')||'XXXXXXXX')+', '+gTxt(gid);
     }
     var nG=GARS.length;
-    garTxt+='; '+(nG>1?'suscriben':'suscribe')+' este contrato como Fiador'+(nG>1?'es':'')+' y Garante'+(nG>1?'s':'')+', solidario'+(nG>1?'s':'')+', liso'+(nG>1?'s':'')+', llano'+(nG>1?'s':'')+' y principal'+(nG>1?'es':'')+' pagador'+(nG>1?'es':'')+' de todas y cada una de las obligaciones emergentes del presente contrato haciendo expresa renuncia a los beneficios de division y excusion que pudieran corresponderle, por el incumplimiento de todas y cada una de las obligaciones contraidas por el Locatario en el presente contrato; garantizando igualmente el pago de los honorarios y gastos de juicios que se promovieren contra el Locatario, por cobro de alquileres, desalojo, posesion judicial, daños y perjuicios, desperfectos, etc.- La Fianza y demás cláusulas subsistiran aun vencido el término contractual y hasta tanto el Locatario restituya al Locador la unidad que se alquila y entregue los comprobantes de pago de los servicios: EPEC, ECOGAS y expensas comúnes. En caso de que los Fiadores dispusiesen o gravaren el bien de su propiedad ofrecido en garantía del presente contrato, o que de cualquier forma disminuyesen su solvencia patrimonial, será obligatorio el reemplazo o refuerzo de la garantía. Los Fiadores quedan obligados a informar al Locador si venden, transfieren, gravan o de algún modo disminuyen el valor de la propiedad que declaran poseer y en base a la cual el Locador los ha aceptado como garantía del presente.-';
+    garTxt+='; '+(nG>1?'suscriben':'suscribe')+' este contrato como Fiador'+(nG>1?'es':'')+' y Garante'+(nG>1?'s':'')+', solidarios, lisos, llanos y principales pagadores de todas y cada una de las obligaciones emergentes del presente contrato haciendo expresa renuncia a los beneficios de división y excusión que pudieran corresponderle, por el incumplimiento de todas y cada una de las obligaciones contraídas por el Locatario en el presente contrato; garantizando igualmente el pago de los honorarios y gastos de juicios que se promovieren contra el Locatario, por cobro de alquileres, desalojo, posesión judicial, daños y perjuicios, desperfectos, etc.- La Fianza subsistirá aún vencido el término contractual y hasta tanto el Locatario restituya al Locador la unidad que se alquila y entregue los comprobantes de pago de los servicios: EPEC, ECOGAS y expensas comunes. En caso de que los Fiadores dispusiesen o gravaren el bien de su propiedad ofrecido en garantía del presente contrato, o que de cualquier forma disminuyesen su solvencia patrimonial, será obligatorio el reemplazo o refuerzo de la garantía. Los Fiadores quedan obligados a informar al Locador si venden, transfieren, gravan o de algún modo disminuyen el valor de la propiedad que declaran poseer y en base a la cual el Locador los ha aceptado como garantía del presente.-';
     (function(){
       // Build garante paragraph with bold names
       var garParts=[];
@@ -1712,17 +1737,13 @@ async function genWord(){
         garParts.push({t:', DNI '+(v(giid+'-d')||'XXXXXX')+', '+(GARS[gii].gen==='m'?'argentino':'argentina')+', mayor de edad, '+gGG.nacido+' el '+fL(v(giid+'-fn'))+', con domicilio en '+(v(giid+'-dom')||'XXXXXXXXXX')+', barrio '+(v(giid+'-barrio')||'XXXXXXXX')+', ciudad de '+(v(giid+'-ciudad')||'XXXXXXXX')+', '+gTxt(giid)});
       }
       var nGG=GARS.length;
-      garParts.push({t:'; '+(nGG>1?'suscriben':'suscribe')+' este contrato como Fiador'+(nGG>1?'es':'')+' y Garante'+(nGG>1?'s':'')+', solidario'+(nGG>1?'s':'')+', liso'+(nGG>1?'s':'')+', llano'+(nGG>1?'s':'')+' y principal'+(nGG>1?'es':'')+' pagador'+(nGG>1?'es':'')+' de todas y cada una de las obligaciones emergentes del presente contrato haciendo expresa renuncia a los beneficios de división y excusión que pudieran corresponderle, por el incumplimiento de todas y cada una de las obligaciones contraídas por el Locatario en el presente contrato; garantizando igualmente el pago de los honorarios y gastos de juicios que se promovieren contra el Locatario, por cobro de alquileres, desalojo, posesión judicial, daños y perjuicios, desperfectos, etc.- La Fianza y demás cláusulas subsistirán aún vencido el término contractual y hasta tanto el Locatario restituya al Locador la unidad que se alquila y entregue los comprobantes de pago de los servicios: EPEC, ECOGAS y expensas comunes. En caso de que los Fiadores dispusiesen o gravaren el bien de su propiedad ofrecido en garantía del presente contrato, o que de cualquier forma disminuyesen su solvencia patrimonial, será obligatorio el reemplazo o refuerzo de la garantía. Los Fiadores quedan obligados a informar al Locador si venden, transfieren, gravan o de algún modo disminuyen el valor de la propiedad que declaran poseer y en base a la cual el Locador los ha aceptado como garantía del presente.-'});
+      garParts.push({t:'; '+(nGG>1?'suscriben':'suscribe')+' este contrato como Fiador'+(nGG>1?'es':'')+' y Garante'+(nGG>1?'s':'')+', solidarios, lisos, llanos y principales pagadores de todas y cada una de las obligaciones emergentes del presente contrato haciendo expresa renuncia a los beneficios de división y excusión que pudieran corresponderle, por el incumplimiento de todas y cada una de las obligaciones contraídas por el Locatario en el presente contrato; garantizando igualmente el pago de los honorarios y gastos de juicios que se promovieren contra el Locatario, por cobro de alquileres, desalojo, posesión judicial, daños y perjuicios, desperfectos, etc.- La Fianza subsistirá aún vencido el término contractual y hasta tanto el Locatario restituya al Locador la unidad que se alquila y entregue los comprobantes de pago de los servicios: EPEC, ECOGAS y expensas comunes. En caso de que los Fiadores dispusiesen o gravaren el bien de su propiedad ofrecido en garantía del presente contrato, o que de cualquier forma disminuyesen su solvencia patrimonial, será obligatorio el reemplazo o refuerzo de la garantía. Los Fiadores quedan obligados a informar al Locador si venden, transfieren, gravan o de algún modo disminuyen el valor de la propiedad que declaran poseer y en base a la cual el Locador los ha aceptado como garantía del presente.-'});
       c+=wParts(garParts);
     })();
-    var tieneInm=false;
-    for(var ti=0;ti<GARS.length;ti++){var vt=v(GARS[ti].id+'-tipo')||'inmueble';if(vt==='inmueble'||vt==='ambos'){tieneInm=true;break;}}
-    var colC=tieneInm?null:'FF0000';
-    var g1=GARS[0]||{id:'g1',gen:'m'}; var g1G=gT(g1.id); var cony1=v(g1.id+'-cony'); var conyG=(g1.gen==='m')?{el:'la',sr:'Sra'}:{el:'el',sr:'Sr'};
-    c+=wP('Se deja expresa constancia que '+g1G.el+' '+g1G.sr+'. '+(v(g1.id+'-n')||'XXXXXXXXXXXX')+', M.I. '+(v(g1.id+'-d')||'XXXXXXXX')+', con domicilio en calle '+(v(g1.id+'-dom')||'XXXXXX')+', de la ciudad de '+(v(g1.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato'+(cony1?' y su conyuge '+conyG.el+' '+conyG.sr+'. '+cony1+', MI. '+(v(g1.id+'-conyd')||'XXXXXXXX')+',':',')+' '+(cony1?'renuncian':'renuncia')+' a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.-',{col:colC});
     c+=wP(cl(),{b:true,sb:200,sa:80});
     var cl14txt='A los efectos de la restitución del inmueble una vez vencido el término contractual, se aclara que el Locatario deberá proceder de la siguiente manera: 1) El inmueble deberá entregarse en el mismo buen estado de conservación e higiene que fue entregado según consta en el presente contrato'+(SE?', salvo el desgaste natural producido en las cosas por su correcto uso y el transcurso del tiempo. Además deberá presentar':', debiendo presentar')+' los comprobantes que demuestren los servicios de mantenimiento realizados a: '+rest+'.';
-    if(!D||bajaS) cl14txt+=' 2) '+bajaTxt;
+    cl14txt+=' 2) Con respecto a los servicios de luz y gas natural, los mismos deberán ser abonados y no dados de baja, debiendo entregar los comprobantes originales pagados correspondientes en el domicilio de la empresa administradora.-';
+    if(!D||bajaS) cl14txt+=' 3) '+bajaTxt;
     c+=wPcl(cl14txt);
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('Las partes acuerdan que durante todo el período en que el Locatario tenga la tenencia del inmueble locado y hasta la recepción definitiva del mismo por parte de la Locadora y/o su representante, ésta queda eximida de cualquier tipo de responsabilidad contractual o extracontractual por daños de cualquier especie que sufran personas y/o cosas en el inmueble locado y/o sus dependencias'+(D?', salvo aquellos supuestos en que la responsabilidad resulte inderogable por disposición legal':'')+'. A tal efecto el Locatario '+(C?'contratará':'deberá contratar')+' un seguro de responsabilidad civil hacia terceros por cualquier tipo de hechos que ocurrieran en el inmueble locado durante la vigencia del presente y aún vencido el mismo hasta tanto el Locatario haga devolución efectiva del inmueble al Locador'+(D?'; el mismo deberá ser endosado a favor del Locador para el caso de ocurrencia de algún siniestro.':'.')+'- ');
