@@ -328,6 +328,14 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
   </div>
 
   <div class="card">
+    <div class="ch"><h2>Pintura al devolver</h2></div>
+    <div class="cb">
+      <div class="tr"><label>Incluye muros y techos exteriores?</label><label class="tog"><input type="checkbox" id="cl-pint-ext"><span class="tt"></span></label></div>
+      <p style="font-size:11px;color:var(--g);margin-top:5px">Activado: "interiores y exteriores". Desactivado: solo "interiores".</p>
+    </div>
+  </div>
+
+  <div class="card">
     <div class="ch"><h2>Locador</h2></div>
     <div class="cb">
       <div class="g4">
@@ -1183,9 +1191,9 @@ function gTxt(id){
   var desc=v(id+'-desc')||'(descripción del encabezado de la matrícula)';
   var org=v(id+'-org')||'XXX';
   var cui=v(id+'-cuit')||'XXXXXXXX';
-  if(vt==='inmueble') return 'presenta como garantía su propiedad sobre un inmueble inscripto ante el Registro General de la Provincia a la Matrícula '+mat+' '+cap+' descripto como: '+desc;
+  if(vt==='inmueble') return 'presenta como garantía su propiedad sobre un inmueble inscripto ante el Registro General de la Provincia a la Matrícula '+mat+' Capital ('+cap+') descripto como: '+desc;
   if(vt==='haberes') return 'presenta como garantía sus haberes otorgados por '+org+', CUIT:'+cui;
-  return 'presenta como garantía su propiedad inscripta a la Matrícula '+mat+' '+cap+' descripto como: '+desc+', y sus haberes otorgados por '+org+', CUIT:'+cui;
+  return 'presenta como garantía su propiedad inscripta a la Matrícula '+mat+' Capital ('+cap+') descripto como: '+desc+', y sus haberes otorgados por '+org+', CUIT:'+cui;
 }
 
 function togCb(lbl){
@@ -1570,7 +1578,6 @@ async function genWord(){
     }
     var c='';
     c+=wP('CONTRATO DE LOCACIÓN',{b:true,c:true,sb:160,sa:200});
-    c+=wL();
     // Encabezado: negrita en datos, locatario/a según sexo
     var loc2tit=(l2G.el==='la'?'"La Locataria"':'"El Locatario"');
     c+=wParts([
@@ -1764,7 +1771,7 @@ async function genWord(){
     var rescT;
     if(D){
       rescT='El Locatario podrá rescindir el presente contrato después de los primeros cuatro (4) meses de arriendo, debiendo comunicarlo en forma fehaciente con al menos sesenta (60) días de anticipación al Locador, mediante notificación por WhatsApp o correo electrónico al domicilio electrónico constituido en el presente, teniéndose por recibida dentro de las veinticuatro (24) horas de enviada.\n\nDe producirse tal circunstancia durante el primer año de alquiler, el Locatario deberá abonar el equivalente a un mes y medio (1½) de alquiler en concepto de indemnización; y el equivalente a un (1) mes si rescindiera transcurrido el primer año de contrato. Dicho importe podrá ser reclamado judicialmente por la vía ejecutiva prevista en el Código de Procedimiento Civil y Comercial para el cobro de alquileres.\n\nDe hacer uso de esta opción, el Locatario se obliga a facilitar al Locador, durante los treinta (30) días hábiles anteriores a la entrega del inmueble, su ofrecimiento y muestra a terceros interesados, permitiendo el acceso en días hábiles y horarios razonables, mínimamente una vez por semana.';
-      if(inclV) rescT+=' Asimismo el Locador podrá rescindir el presente contrato ante la posibilidad cierta de venta del inmueble objeto del presente; a tal efecto deberá notificar al Locatario con una antelación de tres (3) meses a la fecha en que se solicite la desocupación y poniendo a disposición del Locatario el instrumento que fundamente el pedido de rescisión (boleto de compraventa, seña, escritura, etc).-';
+      if(inclV) rescT+='\n\nAsimismo el Locador podrá rescindir el presente contrato ante la posibilidad cierta de venta del inmueble objeto del presente; a tal efecto deberá notificar al Locatario con una antelación de tres (3) meses a la fecha en que se solicite la desocupación y poniendo a disposición del Locatario el instrumento que fundamente el pedido de rescisión (boleto de compraventa, seña, escritura, etc).-';
     } else {
       rescT='El Locatario podrá rescindir el presente contrato después de los primeros cuatro (4) meses de arriendo, debiendo comunicarlo en forma fehaciente con al menos sesenta (60) días de anticipación al Locador, mediante notificación por WhatsApp o correo electrónico al domicilio electrónico constituido en el presente, teniéndose por recibida dentro de las veinticuatro (24) horas de enviada.\n\nDe producirse tal alternativa durante el primer año de alquiler, el Locatario deberá abonar el equivalente a un mes y medio (1½) de alquiler en concepto de indemnización; y el equivalente a un (1) mes si rescindiera transcurrido el primer año de contrato. Dicho importe podrá ser reclamado judicialmente por la vía ejecutiva prevista en el Código de Procedimiento Civil y Comercial para el cobro de alquileres.\n\nDe hacer uso de esta opción, el Locatario se obliga a facilitar al Locador, durante los treinta (30) días hábiles anteriores a la entrega del inmueble, su ofrecimiento y muestra a terceros interesados, permitiendo el acceso en días hábiles y horarios razonables, mínimamente una vez por semana. En caso de que el Locatario entorpeciera voluntariamente esta labor, deberá abonar al Locador, en concepto de indemnización, una suma equivalente a un (1) mes de impuestos del inmueble.';
       if(inclV) rescT+='\n\nAsimismo el Locador podrá rescindir el presente contrato ante la posibilidad cierta de venta del inmueble objeto del presente; a tal efecto deberá notificar al Locatario con una antelación de tres (3) meses a la fecha en que se solicite la desocupación y poniendo a disposición del Locatario el instrumento que fundamente el pedido de rescisión (boleto de compraventa, seña, escritura, etc).-';
@@ -1774,8 +1781,9 @@ async function genWord(){
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('El Locatario y los Fiadores RENUNCIAN expresamente al derecho de recusar sin causa al Tribunal en caso de iniciarse contra los mismos o contra cualquiera de ellos, acciónes judiciales que tengan por base el inmueble objeto del presente contrato, como asi también renuncian expresamente a la limitación acordada por el Art. 730 del C.C.yC. en relación a las costas judiciales que estuvieran o pudieran estar a su cargo.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
-    if(D) c+=wPcl('El LOCATARIO se obliga a restituir el inmueble al finalizar la locación con los muros y techos interiores pintados al momento de la entrega con pintura al látex color blanco, de primera calidad, salvo aquellos muros que originalmente posean otro color o se encuentren revestidos, los que deberán entregarse en el mismo estado y terminación en que fueron recibidos. La mano de obra para la ejecución de dichos trabajos será designada por el LOCADOR, debiendo el LOCATARIO asumir íntegramente el costo correspondiente.');
-    else c+=wPcl('El Locatario se compromete a reintegrar el inmueble recién pintado al látex blanco en sus muros y techos, tanto interiores como exteriores (si correspondiere). La mano de obra será a elección del Locador. Las partes acuerdan que durante todo el período en que el Locatario tenga la tenencia del inmueble locado y hasta la recepción definitiva del mismo por parte de la Locadora y/o su representante, ésta queda eximida de cualquier tipo de responsabilidad contractual o extracontractual por daños de cualquier especie que sufran personas y/o cosas en el inmueble locado y/o sus dependencias.-');
+    var pintExt=document.getElementById('cl-pint-ext')&&document.getElementById('cl-pint-ext').checked;
+    if(D) c+=wPcl('El LOCATARIO se obliga a restituir el inmueble al finalizar la locación con los muros y techos '+(pintExt?'interiores y exteriores':'interiores')+' pintados al momento de la entrega con pintura al látex color blanco, de primera calidad, salvo aquellos muros que originalmente posean otro color o se encuentren revestidos, los que deberán entregarse en el mismo estado y terminación en que fueron recibidos. La mano de obra para la ejecución de dichos trabajos será designada por el LOCADOR, debiendo el LOCATARIO asumir íntegramente el costo correspondiente.');
+    else c+=wPcl('El Locatario se compromete a reintegrar el inmueble recién pintado al látex blanco en sus muros y techos '+(pintExt?'interiores y exteriores':'interiores')+'. La mano de obra será a elección del Locador. Las partes acuerdan que durante todo el período en que el Locatario tenga la tenencia del inmueble locado y hasta la recepción definitiva del mismo por parte de la Locadora y/o su representante, ésta queda eximida de cualquier tipo de responsabilidad contractual o extracontractual por daños de cualquier especie que sufran personas y/o cosas en el inmueble locado y/o sus dependencias.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
     c+=wPcl('Los contratantes manifiestan que es voluntad de las partes mantener el valor locativo del inmueble en términos lógicos y equiparables a unidades similares. Razón por la cual, si la inflación desbordara los precios convenidos en el presente contrato, Locador y Locatario se comprometen a encontrar un mecanismo compensatorio que evite que una parte se beneficie en forma ostentosa respecto de la otra. Para el caso de que surjan nuevas normas que permitan la actualización de los alquileres'+(D?', mediante índices u otros instrumentos similares,':'')+' las partes convienen de común acuerdo, que procederán a su utilización en el presente contrato.-');
     c+=wP(cl(),{b:true,sb:200,sa:80});
