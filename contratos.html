@@ -1654,7 +1654,8 @@ async function genWord(){
     else if(D){
       c+=wP('El Locatario declara haber visitado y examinado la propiedad, estando conforme en recibirla en las buenas condiciones de conservación e higiene en que se encuentra. Contará con un plazo de diez (10) días hábiles desde la firma del presente para notificar por escrito a la empresa administradora las anomalías que encuentre, a fin de que se proceda a su solución. El Locatario se compromete a mantener el inmueble en buen estado de conservación e higiene durante toda la vigencia del contrato, siendo a su exclusivo cargo la reparación de todo desperfecto ocasionado por mal uso o negligencia. A tal efecto, quedan bajo su responsabilidad:');
       var artReal=v('artef')&&v('artef').trim();
-      c+=wP('a) Los elementos de la construcción: cloacas, cámara séptica, pozo negro, mampostería, revoques, pinturas, revestimientos, zócalos, vidrios, cerraduras, llaves, puertas, ventanas e instalaciones sanitarias, de gas y eléctricas y sus respectivos artefactos'+(artReal?', a saber: '+artReal+'.':'.'));
+      var instD=getInst();
+      c+=wP('a) Los elementos de la construcción: '+(instD||'cloacas, cámara séptica, pozo negro, mampostería, revoques, pinturas, revestimientos, zócalos, vidrios, cerraduras, llaves, puertas, ventanas')+' e instalaciones sanitarias, de gas y eléctricas y sus respectivos artefactos'+(artReal?', a saber: '+artReal+'.':'.'));
       var eqs=getEquipos();
       if(eqs.length>0){
         var eqTxt=eqs.slice(0,-1).join(', ')+(eqs.length>1?' y ':'')+eqs[eqs.length-1];
@@ -1663,8 +1664,9 @@ async function genWord(){
       c+=wP('El Locatario se compromete además a mantener en perfecto estado de limpieza los techos del inmueble, a fin de que el agua de lluvia escurra correctamente. Al momento de la devolución del inmueble, por cualquier causa que sea, el Locatario deberá: 1) solicitar a la Administración, con al menos treinta (30) días de anticipación, la revisión integral de los sistemas eléctrico, de gas y plomería, a su exclusivo cargo; y 2) hacer entrega de todas las dependencias en el mismo estado en que fueron recibidas, salvo los deterioros ocasionados por el uso moderado y normal del inmueble. No se considerará terminado el arrendamiento mientras no se hayan cumplido estos requisitos.');
     } else {
       var artReal2=v('artef')&&v('artef').trim();
+      var instND=getInst();
       c+=wP('El Locatario declara haber visitado y examinado la propiedad, estando conforme en recibirla en las buenas condiciones de conservación e higiene en que se encuentra. Contará con un plazo de diez (10) días hábiles desde la firma del presente para notificar por escrito a la empresa administradora las anomalías que encuentre, a fin de que se proceda a su solución. El Locatario se compromete a mantener el inmueble en buen estado de conservación e higiene durante toda la vigencia del contrato, siendo a su exclusivo cargo la reparación de todo desperfecto ocasionado por mal uso o negligencia. A tal efecto, quedan bajo su responsabilidad:');
-      c+=wP('a) Los elementos de la construcción: cloacas, cámara séptica, pozo negro, mampostería, revoques, pinturas, revestimientos, zócalos, vidrios, cerraduras, llaves, puertas, ventanas e instalaciones sanitarias, de gas y eléctricas y sus respectivos artefactos'+(artReal2?', a saber: '+artReal2+'.':'.'));
+      c+=wP('a) Los elementos de la construcción: '+(instND||'cloacas, cámara séptica, pozo negro, mampostería, revoques, pinturas, revestimientos, zócalos, vidrios, cerraduras, llaves, puertas, ventanas')+' e instalaciones sanitarias, de gas y eléctricas y sus respectivos artefactos'+(artReal2?', a saber: '+artReal2+'.':'.'));
       var eqs2=getEquipos();
       if(eqs2.length>0){
         var eqTxt2=eqs2.slice(0,-1).join(', ')+(eqs2.length>1?' y ':'')+eqs2[eqs2.length-1];
