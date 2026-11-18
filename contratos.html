@@ -1408,7 +1408,7 @@ function getCambios(){
 var _pendingCl='';
 function wP(txt,opts){
   opts=opts||{};
-  var bold=opts.b||false, ctr=opts.c||false, sb=opts.sb||60, sa=opts.sa||80, col=opts.col||null, hi=opts.hi||false;
+  var bold=opts.b||false, ctr=opts.c||false, sb=opts.sb||60, sa=opts.sa||200, col=opts.col||null, hi=opts.hi||false;
   // Si hay cláusula pendiente y el texto NO es el número mismo (cl() devuelve vacío ahora), la combinamos
   if(_pendingCl && txt!=='' && !bold){
     var pre=_pendingCl; _pendingCl='';
@@ -1574,7 +1574,7 @@ async function genWord(){
     // Encabezado: negrita en datos, locatario/a según sexo
     var loc2tit=(l2G.el==='la'?'"La Locataria"':'"El Locatario"');
     c+=wParts([
-      {t:'ENTRE '},
+      {t:'Entre '},
       {t:lG.el+' '+lG.sr+'. '},
       {t:v('loc-n')||'XXXXXXXXX',b:true},
       {t:', DNI: '},
