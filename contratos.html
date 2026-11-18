@@ -1000,25 +1000,49 @@ function locsExtra(){
 // ─── EDITOR DE CLAUSULAS ──────────────────────────────────
 var CLAUSE_EDITS = {}; // stores user edits per clause name
 
+// Textos capturados durante la última ejecución de genWord
+var _capturedCls = {};
+var _captureCur = null;
+
+function _captureClTxt(nom, txt){
+  if(!nom) return;
+  // Acumula párrafos de la misma cláusula
+  if(!_capturedCls[nom]) _capturedCls[nom]='';
+  if(typeof txt==='string'&&txt.trim()) _capturedCls[nom]+=(_capturedCls[nom]?'\n\n':'')+txt.trim();
+}
+
+function loadClauseTxt(nom){
+  var key=nom.replace(/\s/g,'_');
+  var ta=document.getElementById('ecl-ta-'+key);
+  if(!ta) return;
+  var txt=_capturedCls[nom]||'';
+  if(txt){
+    ta.value=txt;
+    onEClChange(nom);
+  } else {
+    alert('Primero descargá el contrato (o hacé clic en Descargar) para que se genere el texto, y luego podés cargarlo acá.');
+  }
+}
+
 function initClauseEditor(){
   if(MODO!=='renov'){ hdn('pnl-cls',true); return; }
   var cont = document.getElementById('lst-cls');
   if(!cont) return;
   while(cont.firstChild) cont.removeChild(cont.firstChild);
   CLAUSE_EDITS = {};
-  
+
   var NUMS=['PRIMERA','SEGUNDA','TERCERA','CUARTA','QUINTA','SEXTA','SÉPTIMA','OCTAVA','NOVENA','DÉCIMA','DÉCIMO PRIMERA','DÉCIMO SEGUNDA','DÉCIMO TERCERA','DÉCIMO CUARTA','DÉCIMO QUINTA','DÉCIMO SEXTA','DÉCIMO SÉPTIMA','DÉCIMO OCTAVA','DÉCIMO NOVENA','VIGÉSIMA','VIGÉSIMA PRIMERA','VIGÉSIMA SEGUNDA','VIGÉSIMA TERCERA','VIGÉSIMA CUARTA'];
-  
+
   // Determine which clauses apply based on tipo
   var L=TIPO==='local', D=(TIPO==='depto'||TIPO==='estrenar'), C=TIPO==='country';
   var numCls = (D||L) ? 24 : (C ? 24 : 23);
-  
+
   for(var i=0;i<numCls;i++){
     (function(nom){
       var key = nom.replace(/\s/g,'_');
       var d = document.createElement('div');
       d.style.cssText = 'margin-bottom:6px;border:1px solid var(--bd);border-radius:7px;overflow:hidden';
-      
+
       var hdr = document.createElement('div');
       hdr.style.cssText = 'background:var(--bg);padding:7px 12px;font-size:11px;font-weight:700;color:var(--az);display:flex;align-items:center;justify-content:space-between;cursor:pointer';
       var sp = document.createElement('span'); sp.textContent = 'Cláusula '+nom;
@@ -1028,17 +1052,32 @@ function initClauseEditor(){
       badge.textContent = 'Sin cambios ▼';
       hdr.appendChild(sp); hdr.appendChild(badge);
       hdr.onclick = function(){ toggleECl(key); };
-      
+
       var body = document.createElement('div');
       body.id = 'ecl-body-'+key;
       body.style.cssText = 'display:none;padding:8px';
-      
+
+      var btnRow = document.createElement('div');
+      btnRow.style.cssText = 'display:flex;gap:6px;margin-bottom:6px';
+      var btnLoad = document.createElement('button');
+      btnLoad.type = 'button';
+      btnLoad.textContent = '📋 Cargar texto generado';
+      btnLoad.style.cssText = 'font-size:10px;padding:3px 8px;border:1px solid var(--bd);border-radius:4px;background:var(--bg);cursor:pointer;color:var(--az)';
+      (function(n){ btnLoad.onclick = function(e){ e.stopPropagation(); loadClauseTxt(n); }; })(nom);
+      var btnClear = document.createElement('button');
+      btnClear.type = 'button';
+      btnClear.textContent = '✕ Borrar edición';
+      btnClear.style.cssText = 'font-size:10px;padding:3px 8px;border:1px solid var(--bd);border-radius:4px;background:var(--bg);cursor:pointer;color:#c00';
+      (function(n,k){ btnClear.onclick = function(e){ e.stopPropagation(); var ta=document.getElementById('ecl-ta-'+k); if(ta){ta.value='';} delete CLAUSE_EDITS[n]; var badge=document.getElementById('ecl-badge-'+k); if(badge) badge.textContent='Sin cambios ▲'; }; })(nom,key);
+      btnRow.appendChild(btnLoad); btnRow.appendChild(btnClear);
+
       var ta = document.createElement('textarea');
       ta.id = 'ecl-ta-'+key;
-      ta.placeholder = 'Texto de la cláusula '+nom+' (se genera automáticamente al descargar si lo dejás vacío)';
+      ta.placeholder = 'Escribí aquí el texto modificado para esta cláusula. Si lo dejás vacío se usa el texto generado automáticamente.';
       ta.style.cssText = 'width:100%;min-height:80px;font-size:11px;font-family:inherit;padding:7px;border:1px solid var(--bd);border-radius:5px;resize:vertical';
       (function(n){ ta.oninput = function(){ onEClChange(n); }; })(nom);
-      
+
+      body.appendChild(btnRow);
       body.appendChild(ta);
       d.appendChild(hdr); d.appendChild(body);
       cont.appendChild(d);
@@ -1581,10 +1620,20 @@ async function genWord(){
     var NUMS=['PRIMERA','SEGUNDA','TERCERA','CUARTA','QUINTA','SEXTA','SEPTIMA','OCTAVA','NOVENA','DECIMA','DÉCIMO PRIMERA','DÉCIMO SEGUNDA','DÉCIMO TERCERA','DÉCIMO CUARTA','DÉCIMO QUINTA','DÉCIMO SEXTA','DÉCIMO SEPTIMA','DÉCIMO OCTAVA','DÉCIMO NOVENA','VIGÉSIMA','VIGÉSIMA PRIMERA','VIGÉSIMA SEGUNDA','VIGÉSIMA TERCERA','VIGÉSIMA CUARTA'];
     var ni=0;
     var _lastClause='';
+    // Reset captura para esta ejecución
+    _capturedCls={};
     function cl(){_lastClause=NUMS[ni++]; _pendingCl=_lastClause+':'; return '';}
     function wPcl(txt,opts){
       var edit=(MODO==='renov')?getClauseEdit(_lastClause):null;
       return wP(edit||txt,opts);
+    }
+    // wP local que además captura texto por cláusula (para el botón "Cargar" en renovación)
+    var _wPbase=wP;
+    function wP(txt,opts){
+      if(_lastClause&&opts===undefined&&typeof txt==='string'&&txt.trim()){
+        _captureClTxt(_lastClause,txt);
+      }
+      return _wPbase(txt,opts);
     }
     var c='';
     c+=wP('CONTRATO DE LOCACIÓN',{b:true,c:true,sb:160,sa:200});
