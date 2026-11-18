@@ -1413,7 +1413,7 @@ function wP(txt,opts){
   if(_pendingCl && txt!=='' && !bold){
     var pre=_pendingCl; _pendingCl='';
     var jc2='<w:jc w:val="both"/>';
-    var sp2='<w:spacing w:before="'+(opts.sb||60)+'" w:after="'+(opts.sa||80)+'" w:line="240" w:lineRule="auto"/>';
+    var sp2='<w:spacing w:before="'+(opts.sb||60)+'" w:after="'+(opts.sa||200)+'" w:line="240" w:lineRule="auto"/>';
     var rpBold='<w:rFonts w:ascii="Verdana" w:hAnsi="Verdana"/><w:sz w:val="24"/><w:szCs w:val="24"/><w:b/><w:bCs/>';
     var rpNorm='<w:rFonts w:ascii="Verdana" w:hAnsi="Verdana"/><w:sz w:val="24"/><w:szCs w:val="24"/>';
     if(col) rpNorm+='<w:color w:val="'+col+'"/>';
@@ -1443,7 +1443,7 @@ function wCl(num, txt, opts){
 function wParts(parts,opts){
   // parts = [{t:'text',b:true/false}, ...]
   opts=opts||{};
-  var sb=opts.sb||60,sa=opts.sa||80,ctr=opts.c||false;
+  var sb=opts.sb||60,sa=opts.sa||200,ctr=opts.c||false;
   var jc=ctr?'<w:jc w:val="center"/>':'<w:jc w:val="both"/>';
   var sp='<w:spacing w:before="'+sb+'" w:after="'+sa+'" w:line="240" w:lineRule="auto"/>';
   // Si hay una cláusula pendiente, prependemos su número en negrita
