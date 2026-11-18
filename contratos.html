@@ -1685,14 +1685,8 @@ async function genWord(){
       c+=wP('a) Los elementos de la construcción: '+(instND||'cloacas, cámara séptica, pozo negro, mampostería, revoques, pinturas, revestimientos, zócalos, vidrios, cerraduras, llaves, puertas, ventanas')+' e instalaciones sanitarias, de gas y eléctricas y sus respectivos artefactos'+(artReal2?', a saber: '+artReal2+'.':'.'));
       var eqs2=getEquipos();
       if(eqs2.length>0){
-        var mp2={caldera:'caldera de calefacción',radiadores:'radiadores',calefactores:'calefactores',aire:'equipos de aire acondicionado',calefon:'calefón',termotanque:'termotanque',piscina:'equipo de mantenimiento de piscina'};
-        var sfx2={caldera:'(si existiese)',radiadores:'(si existiesen)',calefactores:'(si existiesen)',aire:'(si existiesen)',calefon:'(si existiese)',termotanque:'(si existiese)',piscina:'(si existiese)'};
-        var eqParts2=[];
-        document.querySelectorAll('#inst-grid input[type=checkbox]').forEach(function(cb){if(cb.checked&&mp2[cb.value]) eqParts2.push(mp2[cb.value]+' '+sfx2[cb.value]);});
-        if(eqParts2.length>0){
-          var eqTxt2=eqParts2.slice(0,-1).join(', ')+(eqParts2.length>1?' y ':'')+eqParts2[eqParts2.length-1];
-          c+=wP('b) Los equipos e instalaciones: '+eqTxt2+'.');
-        }
+        var eqTxt2=eqs2.slice(0,-1).join(', ')+(eqs2.length>1?' y ':'')+eqs2[eqs2.length-1];
+        c+=wP('b) Los equipos e instalaciones: '+eqTxt2+'.');
       }
       c+=wP('El Locatario se compromete además a mantener en perfecto estado de limpieza los techos del inmueble, a fin de que el agua de lluvia escurra correctamente. Al momento de la devolución del inmueble, por cualquier causa que sea, el Locatario deberá: 1) solicitar a la Administración, con al menos treinta (30) días de anticipación, la revisión integral de los sistemas eléctrico, de gas y plomería, a su exclusivo cargo; y 2) hacer entrega de todas las dependencias en el mismo estado en que fueron recibidas, salvo los deterioros ocasionados por el uso moderado y normal del inmueble. No se considerará terminado el arrendamiento mientras no se hayan cumplido estos requisitos.');
     }
