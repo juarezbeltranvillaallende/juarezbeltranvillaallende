@@ -1801,9 +1801,21 @@ async function genWord(){
         if(gi2>0) parts.push({t:' y '});
         parts.push({t:'Se deja expresa constancia que '+(gcEsM?'el Sr.':'la Sra.')});
         parts.push({t:' '+(v(gc.id+'-n')||'XXXXXXXXXXX'),b:true});
-        parts.push({t:', '+(gcEsM?'argentino':'argentina')+', mayor de edad, nacido'+(gcEsM?'':'a')+' el '+(fL(v(gc.id+'-fn'))||'XXXXXXXX')+', M.I. '+(v(gc.id+'-d')||'XXXXXXXX')+', con domicilio en calle '+(v(gc.id+'-dom')||'XXXXXX')+', Bº '+(v(gc.id+'-barrio')||'XXXXXXXX')+', de la ciudad de '+(v(gc.id+'-ciudad')||'XXXXXXXXX')+' en la provincia de Córdoba, garante de este contrato y su cónyuge '+(gcEsM?'la Sra.':'el Sr.')});
+        parts.push({t:', '+(gcEsM?'argentino':'argentina')+', mayor de edad, nacido'+(gcEsM?'':'a')+' el '});
+        parts.push({t:fL(v(gc.id+'-fn'))||'XXXXXXXX',b:true});
+        parts.push({t:', M.I. '});
+        parts.push({t:v(gc.id+'-d')||'XXXXXXXX',b:true});
+        parts.push({t:', con domicilio en calle '});
+        parts.push({t:v(gc.id+'-dom')||'XXXXXX',b:true});
+        parts.push({t:', Bº '});
+        parts.push({t:v(gc.id+'-barrio')||'XXXXXXXX',b:true});
+        parts.push({t:', de la ciudad de '});
+        parts.push({t:v(gc.id+'-ciudad')||'XXXXXXXXX',b:true});
+        parts.push({t:' en la provincia de Córdoba, garante de este contrato y su cónyuge '+(gcEsM?'la Sra.':'el Sr.')});
         parts.push({t:' '+conyNom,b:true});
-        parts.push({t:', M.I. '+conyDni+', renuncia'+(garsCasados.length>1&&gi2<garsCasados.length-1?'n':garsCasados.length>1?'n':'')+' a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.- '});
+        parts.push({t:', M.I. '});
+        parts.push({t:conyDni,b:true});
+        parts.push({t:', renuncia'+(garsCasados.length>1&&gi2<garsCasados.length-1?'n':garsCasados.length>1?'n':'')+' a los beneficios que le otorga la Ley Provincial 8067 (Inembargabilidad de la vivienda única) en un todo de acuerdo a lo dispuesto por el Art. 4 de la mencionada Ley.- '});
       }
       parts.push({t:'OJO QUE SIEMPRE DEBE FIRMAR EL CÓNYUGE SI ESTÁ CASADO PARA PRESTAR EL CONSENTIMIENTO.-',col:'FF0000'});
       c+=wParts(parts);
