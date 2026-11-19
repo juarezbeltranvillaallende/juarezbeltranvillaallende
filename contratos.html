@@ -1465,6 +1465,7 @@ function getCambios(){
 // ─── WORD ─────────────────────────────────────────────────
 // _pendingCl: cuando cl() es llamado, guarda el número aquí; wP/wPcl/wParts lo consumen en el próximo párrafo
 var _pendingCl='';
+var _wPbase; // referencia a wP del scope del IIFE, para evitar shadowing en genWord
 function wP(txt,opts){
   opts=opts||{};
   var bold=opts.b||false, ctr=opts.c||false, sb=opts.sb||60, sa=opts.sa||200, col=opts.col||null, hi=opts.hi||false;
@@ -1490,6 +1491,7 @@ function wP(txt,opts){
   if(hi) rp+='<w:highlight w:val="yellow"/>';
   return '<w:p><w:pPr>'+jc+sp+'</w:pPr><w:r><w:rPr>'+rp+'</w:rPr><w:t xml:space="preserve">'+E(String(txt))+'</w:t></w:r></w:p>';
 }
+_wPbase=wP; // capturamos la referencia ANTES de que genWord la haga shadow
 
 function wCl(num, txt, opts){
   // Check if user has edited this clause (solo en renovación)
@@ -1595,8 +1597,9 @@ function getCocheras(){
 }
 
 async function genWord(modoVacio){
-  // Capturamos la wP global aquí, fuera del try, antes de cualquier función interna
-  var _wPglobal=window.wP;
+  // _wPbase fue asignado en el scope del IIFE justo después de definir wP,
+  // así evitamos el shadowing por hoisting del function wP() local
+  var _wPglobal=_wPbase;
   try {
     // En modo vacío sobreescribimos v() para que todos los campos devuelvan ''
     var _vOrig=v;
