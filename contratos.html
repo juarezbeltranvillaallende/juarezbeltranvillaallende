@@ -1595,6 +1595,8 @@ function getCocheras(){
 }
 
 async function genWord(modoVacio){
+  // Capturamos la wP global aquí, fuera del try, antes de cualquier función interna
+  var _wPglobal=window.wP;
   try {
     // En modo vacío sobreescribimos v() para que todos los campos devuelvan ''
     var _vOrig=v;
@@ -1639,13 +1641,13 @@ async function genWord(modoVacio){
       var edit=(MODO==='renov')?getClauseEdit(_lastClause):null;
       return wP(edit||txt,opts);
     }
-    // wP local que además captura texto por cláusula (para el botón "Cargar" en renovación)
-    var _wPbase=wP;
+    // wP con captura de texto por cláusula (para el botón "Cargar" en renovación)
+    // Usamos _wPglobal capturado antes del hoisting
     function wP(txt,opts){
       if(_lastClause&&opts===undefined&&typeof txt==='string'&&txt.trim()){
         _captureClTxt(_lastClause,txt);
       }
-      return _wPbase(txt,opts);
+      return _wPglobal(txt,opts);
     }
     var c='';
     c+=wP('CONTRATO DE LOCACIÓN',{b:true,c:true,sb:160,sa:200});
