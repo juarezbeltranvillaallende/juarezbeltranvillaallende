@@ -435,6 +435,7 @@ body.rv .gb.on{border-color:#C06B1A;background:#FEF3C7;color:#7B3F00}
         </div>
         <div style="display:flex;gap:6px">
           <button class="btn" onclick="APP.limpiar()">Limpiar</button>
+          <button class="btn" id="btn-modelo" onclick="APP.genWord(true)" disabled title="Descargar el contrato con todos los campos en blanco"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke="currentColor" width="13" height="13" style="margin-right:4px;vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="17" x2="12" y2="11"/><polyline points="9 14 12 17 15 14"/></svg>Modelo vacío</button>
           <button class="btn btnp" id="btn-dl" onclick="APP.genWord()" disabled>Descargar Word</button>
         </div>
       </div>
@@ -908,6 +909,7 @@ function selT(btn){
   hdn('fd-dest',!(L||G)); hdn('fd-masc',!D);
   var bt=document.getElementById('btipo');
   bt.textContent=btn.querySelector('span').textContent; bt.style.display='inline-flex';
+  var btnMod=document.getElementById('btn-modelo'); if(btnMod) btnMod.disabled=false;
   if(MODO==='renov') hdn('pnl-rv',false);
   chg();
   if(GARS.length===0) addG();
@@ -1592,8 +1594,18 @@ function getCocheras(){
   return nums;
 }
 
-async function genWord(){
+async function genWord(modoVacio){
   try {
+    // En modo vacío sobreescribimos v() para que todos los campos devuelvan ''
+    var _vOrig=v;
+    if(modoVacio){
+      v=function(id){
+        // Mantener checkboxes como están (definen la estructura del contrato)
+        var el=document.getElementById(id);
+        if(el&&el.type==='checkbox') return el.checked;
+        return '';
+      };
+    }
     var T=TIPO, L=T==='local', D=(T==='depto'||T==='estrenar'), SE=T==='estrenar', C=T==='country', G=T==='galpon';
     var hasMasc=D&&document.getElementById('mascotas').checked;
     var inclV=document.getElementById('cl-venta').checked;
@@ -1969,13 +1981,21 @@ async function genWord(){
     var blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document'});
     var url=URL.createObjectURL(blob);
     var a=document.createElement('a');
-    var fecha=new Date().toLocaleDateString('es-AR').replace(/\//g,'-');
-    var nom=v('nom-arch')||(v('loc2-n').replace(/\s+/g,'_')+'_'+fecha);
-    a.href=url; a.download=nom.endsWith('.docx')?nom:nom+'.docx';
+    if(modoVacio){
+      v=_vOrig; // restaurar v() antes de seguir
+      var nomTipo=TIPO?TIPO.toUpperCase():'CONTRATO';
+      a.download='MODELO_'+nomTipo+'.docx';
+    } else {
+      var fecha=new Date().toLocaleDateString('es-AR').replace(/\//g,'-');
+      var nom=v('nom-arch')||(v('loc2-n').replace(/\s+/g,'_')+'_'+fecha);
+      a.download=nom.endsWith('.docx')?nom:nom+'.docx';
+    }
+    a.href=url;
     document.body.appendChild(a); a.click();
     setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},200);
-    savH();
+    if(!modoVacio) savH();
   } catch(err){
+    if(modoVacio && typeof _vOrig!=='undefined') v=_vOrig;
     console.error('genWord error:',err);
     alert('Error al generar: '+err.message);
   }
